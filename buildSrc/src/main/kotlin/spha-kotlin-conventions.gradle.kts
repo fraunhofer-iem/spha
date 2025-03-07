@@ -20,6 +20,7 @@ plugins {
     id("publish-conventions")
     jacoco
     id("org.jetbrains.dokka")
+    id("org.jetbrains.dokka-javadoc")
     id("com.ncorti.ktfmt.gradle")
     kotlin("jvm")
 }
@@ -73,4 +74,4 @@ tasks.register("jacocoReport") {
 }
 
 // javadoc
-tasks.named<Jar>("javadocJar") { from(tasks.named("dokkaJavadoc")) }
+tasks.named<Jar>("javadocJar") { from(tasks.named("dokkaGeneratePublicationJavadoc")) }

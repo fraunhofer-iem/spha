@@ -23,6 +23,7 @@ repositories {
 dependencies {
     implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
     implementation(libs.plugin.dokkatoo)
+    implementation(libs.plugin.dokkatoo.javadoc)
     implementation(libs.plugin.kotlin)
     implementation(libs.plugin.ktfmt)
 }

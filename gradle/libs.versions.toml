@@ -1,15 +1,15 @@
 [versions]
-kotlin = "2.1.0"
-kotlinxSerialization = "1.7.3"
-kotlinPlugin = "2.1.0"
-kotlinLogging = "7.0.3"
-slf4jApi = "2.0.16"
-junit = "5.11.3"
-mockk = "1.13.13"
+kotlin = "2.1.10"
+kotlinxSerialization = "1.8.0"
+kotlinPlugin = "2.1.10"
+kotlinLogging = "7.0.5"
+slf4jApi = "2.0.17"
+junit = "5.12.0"
+mockk = "1.13.17"
 semver = "2.0.0"
-kotlinDate = "0.6.1"
+kotlinDate = "0.6.2"
 ktfmtPlugin = "0.20.1"
-dokkatooPlugin = "1.9.20"
+dokkatooPlugin = "2.0.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }

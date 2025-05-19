@@ -12,7 +12,7 @@ see [software-product.health](https://www.software-product.health).
 This project contains SPHA's core library. Its main purpose is to calculate a products health score
 based on a given `KpiHierarchy` and `RawValueKPIs`. Further, SPHA provides the possibility to transform
 tool results into our internal `RawValueKPI` format. The transformation is handled by dedicated tool
-adapters.  
+adapters.
 With the [SPHA CLI Tool](https://www.github.com/fraunhofer-iem/spha-cli) we have created an executable tool using this
 library and showcasing its possibilities.
 A tool demo using our [GitHub Action](https://www.github.com/fraunhofer-iem/spha-action) can be
@@ -28,24 +28,23 @@ To build the project using the wrapper run `./gradlew build`.
 
 ## Usage
 
-SPHA is divided into three modules `core`, `adapter`, and `model` that are individually published.  
+SPHA is divided into three modules `core`, `adapter`, and `model` that are individually published.
 To include one of the components use `implementation("de.fraunhofer.iem:spha-XXX:VERSION")`.
 
 ## Contribute
 
 You are welcome to contribute to SPHA. Please make sure you adhere to our
-[contributing](CONTRIBUTING.md) guidelines.  
+[contributing](CONTRIBUTING.md) guidelines.
 First time contributors are asked to accept our
 [contributor license agreement (CLA)](CLA.md).
 For questions about the CLA please contact us at _SPHA(at)iem.fraunhofer.de_ or create an issue.
 
 ## License
 
-Copyright (C) Fraunhofer IEM.  
+Copyright (C) Fraunhofer IEM.
 Software Product Health Assistant (SPHA) and all its components are published under the MIT license.
 
 <picture>
 <source media="(prefers-color-scheme: dark)" srcset="./docs/img/IEM_Logo_White.png">
 <img alt="Logo IEM" src="./docs/img/IEM_Logo_Dark.png">
 </picture>
- 

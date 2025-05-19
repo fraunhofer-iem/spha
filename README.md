@@ -35,8 +35,8 @@ To include one of the components use `implementation("de.fraunhofer.iem:spha-XXX
 
 You are welcome to contribute to SPHA. Please make sure you adhere to our
 [contributing](CONTRIBUTING.md) guidelines.
-First time contributors are asked to accept our
-[contributor license agreement (CLA)](CLA.md).
+First time contributors are asked to accept our [contributor license agreement (CLA)](CLA.md)
+by creating a pull-request and following the instructions added as a comment.
 For questions about the CLA please contact us at _SPHA(at)iem.fraunhofer.de_ or create an issue.
 
 ## License

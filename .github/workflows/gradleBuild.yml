@@ -8,6 +8,10 @@ on:
 
 jobs:
   build:
+    permissions:
+      contents: read
+      checks: write
+
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -38,7 +42,7 @@ jobs:
 
       - name: Code Coverage
         id: jacoco
-        uses: madrapps/jacoco-report@cae93f61ea553f8babe9d8c1e365c1ce5cece922
+        uses: madrapps/jacoco-report@50d3aff4548aa991e6753342d9ba291084e63848
         with:
           paths: |
             ${{ github.workspace }}/**/adapter/build/reports/jacoco/test/jacocoTestReport.xml,

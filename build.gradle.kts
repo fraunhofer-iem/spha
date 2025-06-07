@@ -6,6 +6,7 @@
  * SPDX-License-Identifier: MIT
  * License-Filename: LICENSE
  */
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 plugins {
     id("com.github.jmongard.git-semver-plugin") version "0.16.0"
@@ -33,5 +34,20 @@ if (version == Project.DEFAULT_VERSION) {
             // Fall back to a plain version without pre-release or build parts.
             ?: semver.version
 }
+
+fun isNonStable(version: String): Boolean {
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
+    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+    val isStable = stableKeyword || regex.matches(version)
+    return isStable.not()
+}
+
+// https://github.com/ben-manes/gradle-versions-plugin
+tasks.withType<DependencyUpdatesTask> {
+    rejectVersionIf {
+        isNonStable(candidate.version)
+    }
+}
+
 
 logger.lifecycle("Building SPHA version $version.")

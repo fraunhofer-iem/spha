@@ -14,6 +14,7 @@ import de.fraunhofer.iem.spha.adapter.ErrorType
 import de.fraunhofer.iem.spha.model.adapter.vcs.RepositoryDetailsDto
 import de.fraunhofer.iem.spha.model.kpi.KpiId
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
+import java.util.*
 
 object VcsAdapter {
 
@@ -30,19 +31,25 @@ object VcsAdapter {
                 RawValueKpi(
                     kpiId = KpiId.NUMBER_OF_COMMITS.name,
                     score = repoDetailsDto.numberOfCommits,
-                )
+                    resultId = null,
+                    id = UUID.randomUUID().toString(),
+                ),
             ),
             AdapterResult.Success.Kpi(
                 RawValueKpi(
                     kpiId = KpiId.NUMBER_OF_SIGNED_COMMITS.name,
                     score = repoDetailsDto.numberOfSignedCommits,
-                )
+                    resultId = null,
+                    id = UUID.randomUUID().toString(),
+                ),
             ),
             AdapterResult.Success.Kpi(
                 RawValueKpi(
                     kpiId = KpiId.IS_DEFAULT_BRANCH_PROTECTED.name,
                     score = if (repoDetailsDto.isDefaultBranchProtected) 100 else 0,
-                )
+                    resultId = null,
+                    id = UUID.randomUUID().toString(),
+                ),
             ),
         )
     }

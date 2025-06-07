@@ -14,6 +14,7 @@ import de.fraunhofer.iem.spha.adapter.ErrorType
 import de.fraunhofer.iem.spha.model.adapter.vulnerability.VulnerabilityDto
 import de.fraunhofer.iem.spha.model.kpi.KpiId
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
+import java.util.*
 
 object CveAdapter {
 
@@ -35,8 +36,14 @@ object CveAdapter {
     ): Collection<AdapterResult> {
         return data.map {
             return@map if (isValid(it)) {
-                AdapterResult.Success.Kpi(
-                    RawValueKpi(kpiId = kpiId.name, score = 100 - (it.severity * 10).toInt())
+                AdapterResult.Success.KpiWithResult(
+                    RawValueKpi(
+                        kpiId = kpiId.name,
+                        score = 100 - (it.severity * 10).toInt(),
+                        resultId = UUID.randomUUID().toString(),
+                        id = UUID.randomUUID().toString(),
+                    ),
+                    toolResult = it,
                 )
             } else {
                 AdapterResult.Error(ErrorType.DATA_VALIDATION_ERROR)

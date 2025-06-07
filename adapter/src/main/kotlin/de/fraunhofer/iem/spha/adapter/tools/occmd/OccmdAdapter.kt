@@ -14,6 +14,7 @@ import de.fraunhofer.iem.spha.model.adapter.occmd.Checks
 import de.fraunhofer.iem.spha.model.adapter.occmd.OccmdDto
 import de.fraunhofer.iem.spha.model.kpi.KpiId
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
+import java.util.*
 
 object OccmdAdapter {
 
@@ -26,7 +27,9 @@ object OccmdAdapter {
                         RawValueKpi(
                             kpiId = KpiId.CHECKED_IN_BINARIES.name,
                             score = (it.score * 100).toInt(),
-                        )
+                            resultId = null,
+                            id = UUID.randomUUID().toString(),
+                        ),
                     )
 
                 Checks.SastUsageBasic ->

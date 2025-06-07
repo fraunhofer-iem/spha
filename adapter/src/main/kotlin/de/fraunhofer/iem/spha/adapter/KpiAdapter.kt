@@ -20,6 +20,8 @@ sealed class AdapterResult {
     sealed class Success(val rawValueKpi: RawValueKpi) : AdapterResult() {
         class Kpi(rawValueKpi: RawValueKpi) : Success(rawValueKpi)
 
+        class KpiWithResult<T>(rawValueKpi: RawValueKpi, val toolResult: T) : Success(rawValueKpi)
+
         class KpiTechLag(rawValueKpi: RawValueKpi, val techLag: TechLagResult.Success) :
             Success(rawValueKpi)
 

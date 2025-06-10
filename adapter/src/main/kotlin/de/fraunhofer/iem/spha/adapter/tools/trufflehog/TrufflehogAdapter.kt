@@ -41,14 +41,21 @@ object TrufflehogAdapter {
         }
     }
 
-    fun transformDataToKpi(data: TrufflehogReportDto): Collection<AdapterResult> {
+    fun transformDataToKpi(
+        data: TrufflehogReportDto
+    ): Collection<AdapterResult<TrufflehogReportDto>> {
         return transformDataToKpi(listOf(data))
     }
 
-    fun transformDataToKpi(data: Collection<TrufflehogReportDto>): Collection<AdapterResult> {
+    fun transformDataToKpi(
+        data: Collection<TrufflehogReportDto>
+    ): Collection<AdapterResult<TrufflehogReportDto>> {
         return data.map {
             val score = if (it.verifiedSecrets > 0) 0 else 100
-            AdapterResult.Success.Kpi(RawValueKpi(score = score, kpiId = KpiId.SECRETS.name))
+            AdapterResult.Success.Kpi(
+                RawValueKpi(score = score, kpiId = KpiId.SECRETS.name),
+                origin = it,
+            )
         }
     }
 }

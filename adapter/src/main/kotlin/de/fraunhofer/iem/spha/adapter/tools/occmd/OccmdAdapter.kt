@@ -18,7 +18,7 @@ import java.util.*
 
 object OccmdAdapter {
 
-    fun transformDataToKpi(data: Collection<OccmdDto>): Collection<AdapterResult> {
+    fun transformDataToKpi(data: Collection<OccmdDto>): Collection<AdapterResult<Unit>> {
 
         return data.mapNotNull {
             return@mapNotNull when (Checks.fromString(it.check)) {
@@ -27,19 +27,24 @@ object OccmdAdapter {
                         RawValueKpi(
                             kpiId = KpiId.CHECKED_IN_BINARIES.name,
                             score = (it.score * 100).toInt(),
-                            resultId = null,
                             id = UUID.randomUUID().toString(),
                         ),
+                        origin = Unit,
                     )
 
                 Checks.SastUsageBasic ->
                     AdapterResult.Success.Kpi(
-                        RawValueKpi(kpiId = KpiId.SAST_USAGE.name, score = (it.score * 100).toInt())
+                        RawValueKpi(
+                            kpiId = KpiId.SAST_USAGE.name,
+                            score = (it.score * 100).toInt(),
+                        ),
+                        origin = Unit,
                     )
 
                 Checks.Secrets ->
                     AdapterResult.Success.Kpi(
-                        RawValueKpi(kpiId = KpiId.SECRETS.name, score = (it.score * 100).toInt())
+                        RawValueKpi(kpiId = KpiId.SECRETS.name, score = (it.score * 100).toInt()),
+                        origin = Unit,
                     )
 
                 Checks.CommentsInCode ->
@@ -47,7 +52,8 @@ object OccmdAdapter {
                         RawValueKpi(
                             kpiId = KpiId.COMMENTS_IN_CODE.name,
                             score = (it.score * 100).toInt(),
-                        )
+                        ),
+                        origin = Unit,
                     )
 
                 Checks.DocumentationInfrastructure ->
@@ -55,7 +61,8 @@ object OccmdAdapter {
                         RawValueKpi(
                             kpiId = KpiId.DOCUMENTATION_INFRASTRUCTURE.name,
                             score = (it.score * 100).toInt(),
-                        )
+                        ),
+                        origin = Unit,
                     )
 
                 else -> {

@@ -45,7 +45,7 @@ object TlcAdapter {
     fun transformDataToKpi(
         data: Collection<TlcDto>,
         config: TlcConfig = TlcDefaultConfig.get(),
-    ): Collection<AdapterResult> {
+    ): Collection<AdapterResult<TechLagResult>> {
 
         return data.flatMap { tlcDto ->
             tlcDto.projectDtos.flatMap {
@@ -69,9 +69,9 @@ object TlcAdapter {
                                 RawValueKpi(score = libyearScore, kpiId = KpiId.LIB_DAYS_DEV.name)
                             }
 
-                        return@map AdapterResult.Success.KpiTechLag(
+                        return@map AdapterResult.Success.Kpi(
                             rawValueKpi = rawValueKpi,
-                            techLag = techLag,
+                            origin = techLag,
                         )
                     }
 

@@ -15,6 +15,7 @@ import java.nio.file.Files
 import kotlin.io.path.Path
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.fail
 import org.junit.jupiter.api.assertDoesNotThrow
 
 class TlcAdapterNpmIntegrationTest {
@@ -99,8 +100,11 @@ class TlcAdapterNpmIntegrationTest {
             //  "releaseDate": 1673369513000,
             // "isDefault": true
             // }
-            val prodTechLag = kpis.first() as AdapterResult.Success.KpiTechLag
-            assertEquals(2297, prodTechLag.techLag.libyear)
+            val prodTechLag = kpis.first() as AdapterResult.Success<TechLagResult>
+            when (prodTechLag.origin) {
+                is TechLagResult.Success -> assertEquals(2297, prodTechLag.origin.libyear)
+                else -> fail()
+            }
 
             // artifact[1] - esbuild - 68 days (due to the release hour)
             // used
@@ -229,9 +233,11 @@ class TlcAdapterNpmIntegrationTest {
             //              "releaseDate": 1699346476000,
             //              "isDefault": true
             //            }
-            val devTechLag = kpis.elementAt(1) as AdapterResult.Success.KpiTechLag
-
-            assertEquals(526, devTechLag.techLag.libyear)
+            val devTechLag = kpis.elementAt(1) as AdapterResult.Success<TechLagResult>
+            when (devTechLag.origin) {
+                is TechLagResult.Success -> assertEquals(526, devTechLag.origin.libyear)
+                else -> fail()
+            }
         }
     }
 }

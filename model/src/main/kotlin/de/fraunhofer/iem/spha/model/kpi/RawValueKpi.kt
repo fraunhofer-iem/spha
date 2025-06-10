@@ -9,6 +9,7 @@
 
 package de.fraunhofer.iem.spha.model.kpi
 
+import java.util.UUID
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -18,7 +19,7 @@ data class RawValueKpi(
     // The calculated score based on the results
     val score: Int,
     // [optional] Used to uniquely identify the given instance
-    val id: String?,
+    val id: String = UUID.randomUUID().toString(),
     // [optional] Connects this instance to the result on which it's based
-    val resultId: String?,
+    val originId: String? = null,
 )

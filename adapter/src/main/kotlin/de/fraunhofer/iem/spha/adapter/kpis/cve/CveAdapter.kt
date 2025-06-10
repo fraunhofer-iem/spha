@@ -20,30 +20,30 @@ object CveAdapter {
 
     fun transformCodeVulnerabilityToKpi(
         data: Collection<VulnerabilityDto>
-    ): Collection<AdapterResult> {
+    ): Collection<AdapterResult<VulnerabilityDto>> {
         return transformDataToKpi(data, KpiId.CODE_VULNERABILITY_SCORE)
     }
 
     fun transformContainerVulnerabilityToKpi(
         data: Collection<VulnerabilityDto>
-    ): Collection<AdapterResult> {
+    ): Collection<AdapterResult<VulnerabilityDto>> {
         return transformDataToKpi(data, KpiId.CONTAINER_VULNERABILITY_SCORE)
     }
 
     private fun transformDataToKpi(
         data: Collection<VulnerabilityDto>,
         kpiId: KpiId,
-    ): Collection<AdapterResult> {
+    ): Collection<AdapterResult<VulnerabilityDto>> {
         return data.map {
             return@map if (isValid(it)) {
-                AdapterResult.Success.KpiWithResult(
+                AdapterResult.Success.Kpi(
                     RawValueKpi(
                         kpiId = kpiId.name,
                         score = 100 - (it.severity * 10).toInt(),
-                        resultId = UUID.randomUUID().toString(),
-                        id = UUID.randomUUID().toString(),
+                        originId =
+                            UUID.randomUUID().toString(), // TODO: create better id with more context
                     ),
-                    toolResult = it,
+                    origin = it,
                 )
             } else {
                 AdapterResult.Error(ErrorType.DATA_VALIDATION_ERROR)

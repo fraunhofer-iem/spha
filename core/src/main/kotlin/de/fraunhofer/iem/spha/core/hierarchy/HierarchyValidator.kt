@@ -23,7 +23,7 @@ object HierarchyValidator {
      *
      * Checks edge weight sums (must always be 1.0).
      *
-     * Uses KpiCalculationStrategy isValid method on each node.
+     * Use KpiCalculationStrategy isValid method on each node.
      *
      * @param kpiHierarchy hierarchy to validate.
      * @param strict validation mode. Some errors in strict may only be warnings in relaxed mode.

@@ -74,19 +74,19 @@ private constructor(
                 kpiIdToValues[it.typeId]!!.add(it)
             }
 
-            val hierarchy = from(node, kpiIdToValues = kpiIdToValues)
+            val hierarchy = from(node, typeIdToRawValue = kpiIdToValues)
 
             return hierarchy
         }
 
         private fun from(
             node: KpiNode,
-            kpiIdToValues: Map<String, List<RawValueKpi>>,
+            typeIdToRawValue: Map<String, List<RawValueKpi>>,
         ): KpiHierarchyNode {
 
             val children: MutableList<KpiHierarchyEdge> = mutableListOf()
             node.edges.forEach { child ->
-                val rawValues = kpiIdToValues[child.target.typeId] ?: emptyList()
+                val rawValues = typeIdToRawValue[child.target.typeId] ?: emptyList()
                 if (rawValues.isNotEmpty()) {
                     rawValues.forEach { rawValueKpi ->
                         val hierarchyNode =
@@ -110,7 +110,7 @@ private constructor(
                 } else {
                     children.add(
                         KpiHierarchyEdge(
-                            to = from(child.target, kpiIdToValues),
+                            to = from(child.target, typeIdToRawValue),
                             plannedWeight = child.weight,
                         )
                     )

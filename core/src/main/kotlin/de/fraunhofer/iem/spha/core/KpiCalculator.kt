@@ -48,8 +48,7 @@ object KpiCalculator {
             return node.result
         }
 
-        val result =
-            getKpiCalculationStrategy(node.strategy).calculateKpi(node.hierarchyEdges, strict)
+        val result = getKpiCalculationStrategy(node.strategy).calculateKpi(node.edges, strict)
         logger.info { "KPI calculation result $result" }
         return result
     }

@@ -77,8 +77,8 @@ class XorKPICalculationStrategyTest {
                 listOf(RawValueKpi(typeId = KpiType.NUMBER_OF_COMMITS.name, score = 15)),
             )
 
-        val relaxed = XorKPICalculationStrategy.calculateKpi(root.hierarchyEdges, strict = false)
-        val strict = XorKPICalculationStrategy.calculateKpi(root.hierarchyEdges, strict = true)
+        val relaxed = XorKPICalculationStrategy.calculateKpi(root.edges, strict = false)
+        val strict = XorKPICalculationStrategy.calculateKpi(root.edges, strict = true)
         assertEquals(true, relaxed is KpiCalculationResult.Error)
         assertEquals(true, strict is KpiCalculationResult.Error)
     }
@@ -119,16 +119,10 @@ class XorKPICalculationStrategyTest {
             )
 
         val calcRelaxed =
-            XorKPICalculationStrategy.calculateKpi(
-                hierarchyEdges = root.hierarchyEdges,
-                strict = false,
-            )
+            XorKPICalculationStrategy.calculateKpi(hierarchyEdges = root.edges, strict = false)
 
         val calcStrict =
-            XorKPICalculationStrategy.calculateKpi(
-                hierarchyEdges = root.hierarchyEdges,
-                strict = true,
-            )
+            XorKPICalculationStrategy.calculateKpi(hierarchyEdges = root.edges, strict = true)
 
         assertEquals(true, calcStrict is KpiCalculationResult.Success)
         assertEquals(true, calcRelaxed is KpiCalculationResult.Success)
@@ -173,16 +167,10 @@ class XorKPICalculationStrategyTest {
             )
 
         val calcRelaxed =
-            XorKPICalculationStrategy.calculateKpi(
-                hierarchyEdges = root.hierarchyEdges,
-                strict = false,
-            )
+            XorKPICalculationStrategy.calculateKpi(hierarchyEdges = root.edges, strict = false)
 
         val calcStrict =
-            XorKPICalculationStrategy.calculateKpi(
-                hierarchyEdges = root.hierarchyEdges,
-                strict = true,
-            )
+            XorKPICalculationStrategy.calculateKpi(hierarchyEdges = root.edges, strict = true)
 
         assertEquals(true, calcStrict is KpiCalculationResult.Success)
         assertEquals(true, calcRelaxed is KpiCalculationResult.Success)
@@ -224,16 +212,10 @@ class XorKPICalculationStrategyTest {
             )
 
         val calcRelaxedZero =
-            XorKPICalculationStrategy.calculateKpi(
-                hierarchyEdges = rootZero.hierarchyEdges,
-                strict = false,
-            )
+            XorKPICalculationStrategy.calculateKpi(hierarchyEdges = rootZero.edges, strict = false)
 
         val calcStrictZero =
-            XorKPICalculationStrategy.calculateKpi(
-                hierarchyEdges = rootZero.hierarchyEdges,
-                strict = true,
-            )
+            XorKPICalculationStrategy.calculateKpi(hierarchyEdges = rootZero.edges, strict = true)
 
         assertEquals(true, calcRelaxedZero is KpiCalculationResult.Success)
         assertEquals(true, calcStrictZero is KpiCalculationResult.Success)
@@ -278,16 +260,10 @@ class XorKPICalculationStrategyTest {
             )
 
         val calcRelaxed =
-            XorKPICalculationStrategy.calculateKpi(
-                hierarchyEdges = root.hierarchyEdges,
-                strict = false,
-            )
+            XorKPICalculationStrategy.calculateKpi(hierarchyEdges = root.edges, strict = false)
 
         val calcStrict =
-            XorKPICalculationStrategy.calculateKpi(
-                hierarchyEdges = root.hierarchyEdges,
-                strict = true,
-            )
+            XorKPICalculationStrategy.calculateKpi(hierarchyEdges = root.edges, strict = true)
 
         assertEquals(true, calcStrict is KpiCalculationResult.Success)
         assertEquals(true, calcRelaxed is KpiCalculationResult.Success)

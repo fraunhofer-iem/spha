@@ -68,10 +68,8 @@ class MaximumKPICalculationStrategyTest {
                 ),
             )
 
-        val calcRelaxed =
-            MaximumKPICalculationStrategy.calculateKpi(root.hierarchyEdges, strict = false)
-        val calcStrict =
-            MaximumKPICalculationStrategy.calculateKpi(root.hierarchyEdges, strict = true)
+        val calcRelaxed = MaximumKPICalculationStrategy.calculateKpi(root.edges, strict = false)
+        val calcStrict = MaximumKPICalculationStrategy.calculateKpi(root.edges, strict = true)
 
         assert(calcRelaxed is KpiCalculationResult.Success)
         assert(calcStrict is KpiCalculationResult.Success)

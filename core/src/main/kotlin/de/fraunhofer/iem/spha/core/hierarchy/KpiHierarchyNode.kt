@@ -21,7 +21,7 @@ internal class KpiHierarchyNode
 private constructor(
     val typeId: String,
     val strategy: KpiStrategyId,
-    val hierarchyEdges: List<KpiHierarchyEdge>,
+    val edges: List<KpiHierarchyEdge>,
     val id: String = UUID.randomUUID().toString(),
     val originId: String? = null,
 ) {
@@ -43,7 +43,7 @@ private constructor(
     }
 
     override fun toString(): String {
-        return "KpiHierarchyNode($typeId, $strategy, $result, $hierarchyEdges)"
+        return "KpiHierarchyNode($typeId, $strategy, $result, $edges)"
     }
 
     companion object {
@@ -54,7 +54,7 @@ private constructor(
                 result = node.result,
                 originId = node.originId,
                 children =
-                    node.hierarchyEdges.map {
+                    node.edges.map {
                         KpiResultEdge(
                             target = to(it.to),
                             plannedWeight = it.plannedWeight,
@@ -95,7 +95,7 @@ private constructor(
                                 // we force the kpi strategy to be raw value if we had a
                                 // raw value for the given node.
                                 strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
-                                hierarchyEdges = emptyList(),
+                                edges = emptyList(),
                                 originId = rawValueKpi.originId,
                                 id = rawValueKpi.id,
                             )
@@ -118,11 +118,7 @@ private constructor(
             }
 
             val calcNode =
-                KpiHierarchyNode(
-                    typeId = node.typeId,
-                    hierarchyEdges = children,
-                    strategy = node.strategy,
-                )
+                KpiHierarchyNode(typeId = node.typeId, edges = children, strategy = node.strategy)
 
             return calcNode
         }
@@ -136,7 +132,7 @@ private constructor(
                 return
             }
 
-            node.hierarchyEdges.forEach { child ->
+            node.edges.forEach { child ->
                 depthFirstTraversal(node = child.to, seen = seen, action)
             }
 

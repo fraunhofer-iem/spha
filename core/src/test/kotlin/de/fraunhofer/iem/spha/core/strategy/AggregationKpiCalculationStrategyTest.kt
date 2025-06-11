@@ -75,9 +75,9 @@ class AggregationKpiCalculationStrategyTest {
             )
 
         val calcRelaxed =
-            WeightedAverageKPICalculationStrategy.calculateKpi(root.hierarchyEdges, strict = false)
+            WeightedAverageKPICalculationStrategy.calculateKpi(root.edges, strict = false)
         val calcStrict =
-            WeightedAverageKPICalculationStrategy.calculateKpi(root.hierarchyEdges, strict = true)
+            WeightedAverageKPICalculationStrategy.calculateKpi(root.edges, strict = true)
 
         assert(calcRelaxed is KpiCalculationResult.Success)
         assert(calcStrict is KpiCalculationResult.Success)

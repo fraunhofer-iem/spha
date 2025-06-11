@@ -60,16 +60,10 @@ class OrKPICalculationStrategyTest {
             )
 
         val calcRelaxed =
-            OrKPICalculationStrategy.calculateKpi(
-                hierarchyEdges = root.hierarchyEdges,
-                strict = false,
-            )
+            OrKPICalculationStrategy.calculateKpi(hierarchyEdges = root.edges, strict = false)
 
         val calcStrict =
-            OrKPICalculationStrategy.calculateKpi(
-                hierarchyEdges = root.hierarchyEdges,
-                strict = true,
-            )
+            OrKPICalculationStrategy.calculateKpi(hierarchyEdges = root.edges, strict = true)
 
         assertEquals(true, calcStrict is KpiCalculationResult.Success)
         assertEquals(true, calcRelaxed is KpiCalculationResult.Success)
@@ -114,16 +108,10 @@ class OrKPICalculationStrategyTest {
             )
 
         val calcRelaxed =
-            OrKPICalculationStrategy.calculateKpi(
-                hierarchyEdges = root.hierarchyEdges,
-                strict = false,
-            )
+            OrKPICalculationStrategy.calculateKpi(hierarchyEdges = root.edges, strict = false)
 
         val calcStrict =
-            OrKPICalculationStrategy.calculateKpi(
-                hierarchyEdges = root.hierarchyEdges,
-                strict = true,
-            )
+            OrKPICalculationStrategy.calculateKpi(hierarchyEdges = root.edges, strict = true)
 
         assertEquals(true, calcStrict is KpiCalculationResult.Success)
         assertEquals(true, calcRelaxed is KpiCalculationResult.Success)

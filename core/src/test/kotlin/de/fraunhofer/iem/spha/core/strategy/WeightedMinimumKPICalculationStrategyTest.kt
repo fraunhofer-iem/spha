@@ -75,9 +75,9 @@ class WeightedMinimumKPICalculationStrategyTest {
             )
 
         val calcRelaxed =
-            WeightedMinimumKPICalculationStrategy.calculateKpi(root.hierarchyEdges, strict = false)
+            WeightedMinimumKPICalculationStrategy.calculateKpi(root.edges, strict = false)
         val calcStrict =
-            WeightedMinimumKPICalculationStrategy.calculateKpi(root.hierarchyEdges, strict = true)
+            WeightedMinimumKPICalculationStrategy.calculateKpi(root.edges, strict = true)
 
         assert(calcRelaxed is KpiCalculationResult.Success)
         assert(calcStrict is KpiCalculationResult.Success)

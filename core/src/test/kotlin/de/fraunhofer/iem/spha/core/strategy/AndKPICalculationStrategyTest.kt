@@ -60,16 +60,10 @@ class AndKPICalculationStrategyTest {
             )
 
         val calcRelaxed =
-            AndKPICalculationStrategy.calculateKpi(
-                hierarchyEdges = root.hierarchyEdges,
-                strict = false,
-            )
+            AndKPICalculationStrategy.calculateKpi(hierarchyEdges = root.edges, strict = false)
 
         val calcStrict =
-            AndKPICalculationStrategy.calculateKpi(
-                hierarchyEdges = root.hierarchyEdges,
-                strict = true,
-            )
+            AndKPICalculationStrategy.calculateKpi(hierarchyEdges = root.edges, strict = true)
 
         assertEquals(true, calcStrict is KpiCalculationResult.Success)
         assertEquals(true, calcRelaxed is KpiCalculationResult.Success)
@@ -114,16 +108,10 @@ class AndKPICalculationStrategyTest {
             )
 
         val calcRelaxed =
-            AndKPICalculationStrategy.calculateKpi(
-                hierarchyEdges = root.hierarchyEdges,
-                strict = false,
-            )
+            AndKPICalculationStrategy.calculateKpi(hierarchyEdges = root.edges, strict = false)
 
         val calcStrict =
-            AndKPICalculationStrategy.calculateKpi(
-                hierarchyEdges = root.hierarchyEdges,
-                strict = true,
-            )
+            AndKPICalculationStrategy.calculateKpi(hierarchyEdges = root.edges, strict = true)
 
         assertEquals(true, calcStrict is KpiCalculationResult.Success)
         assertEquals(true, calcRelaxed is KpiCalculationResult.Success)

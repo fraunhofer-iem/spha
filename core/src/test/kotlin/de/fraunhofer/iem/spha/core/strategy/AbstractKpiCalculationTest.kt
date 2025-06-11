@@ -149,7 +149,7 @@ class AbstractKpiCalculationTest {
         }
 
         val testStrategy = TestStrategy(callback = ::callback)
-        testStrategy.calculateKpi(root.hierarchyEdges)
+        testStrategy.calculateKpi(root.edges)
     }
 
     @Test
@@ -175,10 +175,10 @@ class AbstractKpiCalculationTest {
         val incompleteResult = KpiCalculator.calculateKpi(incompleteNode, false)
         assert(incompleteResult is KpiCalculationResult.Incomplete)
 
-        assertEquals(0.5, incompleteNode.hierarchyEdges.first().plannedWeight)
-        assertEquals(0.0, incompleteNode.hierarchyEdges.first().actualWeight)
-        assertEquals(0.5, incompleteNode.hierarchyEdges.last().plannedWeight)
-        assertEquals(1.0, incompleteNode.hierarchyEdges.last().actualWeight)
+        assertEquals(0.5, incompleteNode.edges.first().plannedWeight)
+        assertEquals(0.0, incompleteNode.edges.first().actualWeight)
+        assertEquals(0.5, incompleteNode.edges.last().plannedWeight)
+        assertEquals(1.0, incompleteNode.edges.last().actualWeight)
     }
 
     @Test

@@ -12,7 +12,7 @@ package de.fraunhofer.iem.spha.adapter.tools.occmd
 import de.fraunhofer.iem.spha.adapter.AdapterResult
 import de.fraunhofer.iem.spha.model.adapter.occmd.Checks
 import de.fraunhofer.iem.spha.model.adapter.occmd.OccmdDto
-import de.fraunhofer.iem.spha.model.kpi.KpiId
+import de.fraunhofer.iem.spha.model.kpi.KpiType
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 import java.util.*
 
@@ -25,7 +25,7 @@ object OccmdAdapter {
                 Checks.CheckedInBinaries ->
                     AdapterResult.Success.Kpi(
                         RawValueKpi(
-                            kpiId = KpiId.CHECKED_IN_BINARIES.name,
+                            typeId = KpiType.CHECKED_IN_BINARIES.name,
                             score = (it.score * 100).toInt(),
                             id = UUID.randomUUID().toString(),
                         ),
@@ -35,7 +35,7 @@ object OccmdAdapter {
                 Checks.SastUsageBasic ->
                     AdapterResult.Success.Kpi(
                         RawValueKpi(
-                            kpiId = KpiId.SAST_USAGE.name,
+                            typeId = KpiType.SAST_USAGE.name,
                             score = (it.score * 100).toInt(),
                         ),
                         origin = Unit,
@@ -43,14 +43,17 @@ object OccmdAdapter {
 
                 Checks.Secrets ->
                     AdapterResult.Success.Kpi(
-                        RawValueKpi(kpiId = KpiId.SECRETS.name, score = (it.score * 100).toInt()),
+                        RawValueKpi(
+                            typeId = KpiType.SECRETS.name,
+                            score = (it.score * 100).toInt(),
+                        ),
                         origin = Unit,
                     )
 
                 Checks.CommentsInCode ->
                     AdapterResult.Success.Kpi(
                         RawValueKpi(
-                            kpiId = KpiId.COMMENTS_IN_CODE.name,
+                            typeId = KpiType.COMMENTS_IN_CODE.name,
                             score = (it.score * 100).toInt(),
                         ),
                         origin = Unit,
@@ -59,7 +62,7 @@ object OccmdAdapter {
                 Checks.DocumentationInfrastructure ->
                     AdapterResult.Success.Kpi(
                         RawValueKpi(
-                            kpiId = KpiId.DOCUMENTATION_INFRASTRUCTURE.name,
+                            typeId = KpiType.DOCUMENTATION_INFRASTRUCTURE.name,
                             score = (it.score * 100).toInt(),
                         ),
                         origin = Unit,

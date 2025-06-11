@@ -12,8 +12,8 @@ package de.fraunhofer.iem.spha.core.strategy
 import de.fraunhofer.iem.spha.core.KpiCalculator
 import de.fraunhofer.iem.spha.core.hierarchy.KpiHierarchyEdge
 import de.fraunhofer.iem.spha.core.hierarchy.KpiHierarchyNode
-import de.fraunhofer.iem.spha.model.kpi.KpiId
 import de.fraunhofer.iem.spha.model.kpi.KpiStrategyId
+import de.fraunhofer.iem.spha.model.kpi.KpiType
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiEdge
@@ -26,13 +26,13 @@ import org.junit.jupiter.api.Test
 internal fun getNodeWithErrorResult(plannedWeight: Double): KpiHierarchyNode {
     val node =
         KpiNode(
-            kpiId = KpiId.NUMBER_OF_COMMITS.name,
+            kpiId = KpiType.NUMBER_OF_COMMITS.name,
             kpiStrategyId = KpiStrategyId.WEIGHTED_RATIO_STRATEGY,
             edges =
                 listOf(
                     KpiEdge(
                         KpiNode(
-                            kpiId = KpiId.NUMBER_OF_SIGNED_COMMITS.name,
+                            kpiId = KpiType.NUMBER_OF_SIGNED_COMMITS.name,
                             kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
                             edges = listOf(),
                         ),
@@ -44,7 +44,7 @@ internal fun getNodeWithErrorResult(plannedWeight: Double): KpiHierarchyNode {
     val hierarchyNode =
         KpiHierarchyNode.from(
             node,
-            listOf(RawValueKpi(KpiId.NUMBER_OF_SIGNED_COMMITS.name, score = 20)),
+            listOf(RawValueKpi(KpiType.NUMBER_OF_SIGNED_COMMITS.name, score = 20)),
         )
     KpiCalculator.calculateKpi(hierarchyNode)
     return hierarchyNode
@@ -54,13 +54,13 @@ internal fun getNodeIncompleteResult(plannedWeight: Double): KpiHierarchyNode {
 
     val node =
         KpiNode(
-            kpiId = KpiId.SECRETS.name,
+            kpiId = KpiType.SECRETS.name,
             kpiStrategyId = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
             edges =
                 listOf(
                     KpiEdge(
                         KpiNode(
-                            kpiId = KpiId.NUMBER_OF_COMMITS.name,
+                            kpiId = KpiType.NUMBER_OF_COMMITS.name,
                             kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
                             edges = listOf(),
                         ),
@@ -68,7 +68,7 @@ internal fun getNodeIncompleteResult(plannedWeight: Double): KpiHierarchyNode {
                     ),
                     KpiEdge(
                         KpiNode(
-                            kpiId = KpiId.NUMBER_OF_SIGNED_COMMITS.name,
+                            kpiId = KpiType.NUMBER_OF_SIGNED_COMMITS.name,
                             kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
                             edges = listOf(),
                         ),
@@ -80,7 +80,7 @@ internal fun getNodeIncompleteResult(plannedWeight: Double): KpiHierarchyNode {
     val hierarchyNode =
         KpiHierarchyNode.from(
             node,
-            listOf(RawValueKpi(KpiId.NUMBER_OF_SIGNED_COMMITS.name, score = 20)),
+            listOf(RawValueKpi(KpiType.NUMBER_OF_SIGNED_COMMITS.name, score = 20)),
         )
     return hierarchyNode
 }
@@ -109,14 +109,14 @@ class AbstractKpiCalculationTest {
 
         val nodeCorrectChildren =
             KpiNode(
-                kpiId = KpiId.ROOT.name,
+                kpiId = KpiType.ROOT.name,
                 kpiStrategyId = KpiStrategyId.WEIGHTED_RATIO_STRATEGY,
                 edges =
                     listOf(
                         KpiEdge(
                             target =
                                 KpiNode(
-                                    kpiId = KpiId.NUMBER_OF_COMMITS.name,
+                                    kpiId = KpiType.NUMBER_OF_COMMITS.name,
                                     kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
                                     edges = listOf(),
                                 ),
@@ -125,7 +125,7 @@ class AbstractKpiCalculationTest {
                         KpiEdge(
                             target =
                                 KpiNode(
-                                    kpiId = KpiId.NUMBER_OF_COMMITS.name,
+                                    kpiId = KpiType.NUMBER_OF_COMMITS.name,
                                     kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
                                     edges = listOf(),
                                 ),
@@ -137,7 +137,7 @@ class AbstractKpiCalculationTest {
         val root =
             KpiHierarchyNode.from(
                 nodeCorrectChildren,
-                listOf(RawValueKpi(KpiId.NUMBER_OF_COMMITS.name, 20)),
+                listOf(RawValueKpi(KpiType.NUMBER_OF_COMMITS.name, 20)),
             )
 
         fun callback(edges: Collection<KpiHierarchyEdge>) {

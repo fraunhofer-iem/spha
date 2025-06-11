@@ -12,7 +12,7 @@ package de.fraunhofer.iem.spha.model.kpi.hierarchy
 import de.fraunhofer.iem.spha.model.kpi.KpiStrategyId
 import kotlinx.serialization.Serializable
 
-val SCHEMA_VERSIONS: Array<String> = arrayOf("1.0.1").sortedArray()
+val SCHEMA_VERSIONS: Array<String> = arrayOf("1.1.0").sortedArray()
 
 // XXX: add Hierarchy Validator
 @ConsistentCopyVisibility

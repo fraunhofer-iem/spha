@@ -21,7 +21,7 @@ import de.fraunhofer.iem.spha.model.adapter.tlc.ProjectDto
 import de.fraunhofer.iem.spha.model.adapter.tlc.RepositoryInfoDto
 import de.fraunhofer.iem.spha.model.adapter.tlc.ScopeToGraph
 import de.fraunhofer.iem.spha.model.adapter.tlc.TlcDto
-import de.fraunhofer.iem.spha.model.kpi.KpiId
+import de.fraunhofer.iem.spha.model.kpi.KpiType
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -150,7 +150,7 @@ class TlcAdapterTest {
 
         val rawValueKpi = kpi.rawValueKpi
 
-        assertEquals(KpiId.LIB_DAYS_PROD.name, rawValueKpi.kpiId)
+        assertEquals(KpiType.LIB_DAYS_PROD.name, rawValueKpi.typeId)
         assertEquals(100, rawValueKpi.score)
 
         when (kpi.origin) {

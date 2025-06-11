@@ -12,7 +12,7 @@ package de.fraunhofer.iem.spha.adapter.kpis.vcs
 import de.fraunhofer.iem.spha.adapter.AdapterResult
 import de.fraunhofer.iem.spha.adapter.ErrorType
 import de.fraunhofer.iem.spha.model.adapter.vcs.RepositoryDetailsDto
-import de.fraunhofer.iem.spha.model.kpi.KpiId
+import de.fraunhofer.iem.spha.model.kpi.KpiType
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 
 object VcsAdapter {
@@ -30,21 +30,21 @@ object VcsAdapter {
         return listOf(
             AdapterResult.Success.Kpi(
                 RawValueKpi(
-                    kpiId = KpiId.NUMBER_OF_COMMITS.name,
+                    typeId = KpiType.NUMBER_OF_COMMITS.name,
                     score = repoDetailsDto.numberOfCommits,
                 ),
                 origin = Unit,
             ),
             AdapterResult.Success.Kpi(
                 RawValueKpi(
-                    kpiId = KpiId.NUMBER_OF_SIGNED_COMMITS.name,
+                    typeId = KpiType.NUMBER_OF_SIGNED_COMMITS.name,
                     score = repoDetailsDto.numberOfSignedCommits,
                 ),
                 origin = Unit,
             ),
             AdapterResult.Success.Kpi(
                 RawValueKpi(
-                    kpiId = KpiId.IS_DEFAULT_BRANCH_PROTECTED.name,
+                    typeId = KpiType.IS_DEFAULT_BRANCH_PROTECTED.name,
                     score = if (repoDetailsDto.isDefaultBranchProtected) 100 else 0,
                 ),
                 origin = Unit,

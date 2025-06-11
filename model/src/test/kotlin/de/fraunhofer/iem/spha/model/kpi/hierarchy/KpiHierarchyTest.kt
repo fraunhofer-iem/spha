@@ -9,8 +9,8 @@
 
 package de.fraunhofer.iem.spha.model.kpi.hierarchy
 
-import de.fraunhofer.iem.spha.model.kpi.KpiId
 import de.fraunhofer.iem.spha.model.kpi.KpiStrategyId
+import de.fraunhofer.iem.spha.model.kpi.KpiType
 import kotlin.test.assertEquals
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Test
@@ -31,7 +31,7 @@ class KpiHierarchyTest {
                 listOf(
                     KpiEdge(
                         KpiNode(
-                            kpiId = KpiId.SECURITY.name,
+                            kpiId = KpiType.SECURITY.name,
                             KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                             listOf(),
                         ),
@@ -39,7 +39,7 @@ class KpiHierarchyTest {
                     ),
                     KpiEdge(
                         KpiNode(
-                            kpiId = KpiId.PROCESS_COMPLIANCE.name,
+                            kpiId = KpiType.PROCESS_COMPLIANCE.name,
                             KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                             listOf(),
                         ),
@@ -47,7 +47,7 @@ class KpiHierarchyTest {
                     ),
                     KpiEdge(
                         KpiNode(
-                            kpiId = KpiId.INTERNAL_QUALITY.name,
+                            kpiId = KpiType.INTERNAL_QUALITY.name,
                             KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                             listOf(),
                         ),
@@ -56,7 +56,7 @@ class KpiHierarchyTest {
                 )
             val root =
                 KpiNode(
-                    kpiId = KpiId.ROOT.name,
+                    kpiId = KpiType.ROOT.name,
                     kpiStrategyId = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                     childNodes,
                 )

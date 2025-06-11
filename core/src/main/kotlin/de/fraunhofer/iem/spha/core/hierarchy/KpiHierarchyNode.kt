@@ -64,10 +64,10 @@ private constructor(
             val kpiIdToValues = mutableMapOf<String, MutableList<RawValueKpi>>()
 
             rawValueKpis.forEach {
-                if (!kpiIdToValues.containsKey(it.kpiId)) {
-                    kpiIdToValues[it.kpiId] = mutableListOf()
+                if (!kpiIdToValues.containsKey(it.typeId)) {
+                    kpiIdToValues[it.typeId] = mutableListOf()
                 }
-                kpiIdToValues[it.kpiId]!!.add(it)
+                kpiIdToValues[it.typeId]!!.add(it)
             }
 
             val hierarchy = from(node, kpiIdToValues = kpiIdToValues)

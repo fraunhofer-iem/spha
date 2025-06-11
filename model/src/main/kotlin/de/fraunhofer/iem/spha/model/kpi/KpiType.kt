@@ -9,7 +9,7 @@
 
 package de.fraunhofer.iem.spha.model.kpi
 
-enum class KpiId {
+enum class KpiType {
     // Raw Value KPIs
     CHECKED_IN_BINARIES,
     NUMBER_OF_COMMITS,

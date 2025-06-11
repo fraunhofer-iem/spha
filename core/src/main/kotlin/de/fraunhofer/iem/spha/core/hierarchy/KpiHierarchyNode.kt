@@ -15,12 +15,14 @@ import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiNode
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiResultEdge
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiResultNode
+import java.util.*
 
 internal class KpiHierarchyNode
 private constructor(
     val typeId: String,
     val strategy: KpiStrategyId,
     val hierarchyEdges: List<KpiHierarchyEdge>,
+    val id: String = UUID.randomUUID().toString(),
     val originId: String? = null,
 ) {
 
@@ -95,6 +97,7 @@ private constructor(
                                 strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                 hierarchyEdges = emptyList(),
                                 originId = rawValueKpi.originId,
+                                id = rawValueKpi.id,
                             )
                         hierarchyNode.result = KpiCalculationResult.Success(rawValueKpi.score)
                         val edge =

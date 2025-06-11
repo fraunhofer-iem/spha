@@ -26,8 +26,8 @@ class WeightedRatioKPICalculationStrategyTest {
     fun isValidEmpty() {
         val node =
             KpiNode(
-                kpiId = KpiType.ROOT.name,
-                kpiStrategyId = KpiStrategyId.WEIGHTED_RATIO_STRATEGY,
+                typeId = KpiType.ROOT.name,
+                strategy = KpiStrategyId.WEIGHTED_RATIO_STRATEGY,
                 edges = listOf(),
             )
 
@@ -36,8 +36,8 @@ class WeightedRatioKPICalculationStrategyTest {
 
         val incorrectStrategy =
             KpiNode(
-                kpiId = KpiType.ROOT.name,
-                kpiStrategyId = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
+                typeId = KpiType.ROOT.name,
+                strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                 edges = listOf(),
             )
 
@@ -73,15 +73,15 @@ class WeightedRatioKPICalculationStrategyTest {
     fun isValidCorrectChildren() {
         val nodeCorrectChildren =
             KpiNode(
-                kpiId = KpiType.ROOT.name,
-                kpiStrategyId = KpiStrategyId.WEIGHTED_RATIO_STRATEGY,
+                typeId = KpiType.ROOT.name,
+                strategy = KpiStrategyId.WEIGHTED_RATIO_STRATEGY,
                 edges =
                     listOf(
                         KpiEdge(
                             target =
                                 KpiNode(
-                                    kpiId = KpiType.NUMBER_OF_COMMITS.name,
-                                    kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                    typeId = KpiType.NUMBER_OF_COMMITS.name,
+                                    strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                     edges = listOf(),
                                 ),
                             weight = 0.5,
@@ -89,8 +89,8 @@ class WeightedRatioKPICalculationStrategyTest {
                         KpiEdge(
                             target =
                                 KpiNode(
-                                    kpiId = KpiType.NUMBER_OF_COMMITS.name,
-                                    kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                    typeId = KpiType.NUMBER_OF_COMMITS.name,
+                                    strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                     edges = listOf(),
                                 ),
                             weight = 0.5,
@@ -113,15 +113,15 @@ class WeightedRatioKPICalculationStrategyTest {
         val root =
             KpiHierarchyNode.from(
                 KpiNode(
-                    kpiId = KpiType.ROOT.name,
-                    kpiStrategyId = KpiStrategyId.MAXIMUM_STRATEGY,
+                    typeId = KpiType.ROOT.name,
+                    strategy = KpiStrategyId.MAXIMUM_STRATEGY,
                     edges =
                         listOf(
                             KpiEdge(
                                 target =
                                     KpiNode(
-                                        kpiId = KpiType.NUMBER_OF_SIGNED_COMMITS.name,
-                                        kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                        typeId = KpiType.NUMBER_OF_SIGNED_COMMITS.name,
+                                        strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                         edges = listOf(),
                                     ),
                                 weight = 0.5,
@@ -129,8 +129,8 @@ class WeightedRatioKPICalculationStrategyTest {
                             KpiEdge(
                                 target =
                                     KpiNode(
-                                        kpiId = KpiType.NUMBER_OF_COMMITS.name,
-                                        kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                        typeId = KpiType.NUMBER_OF_COMMITS.name,
+                                        strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                         edges = listOf(),
                                     ),
                                 weight = 0.5,
@@ -165,15 +165,15 @@ class WeightedRatioKPICalculationStrategyTest {
     fun isValidToManyChildren() {
         val nodeManyChildren =
             KpiNode(
-                kpiId = KpiType.ROOT.name,
-                kpiStrategyId = KpiStrategyId.WEIGHTED_RATIO_STRATEGY,
+                typeId = KpiType.ROOT.name,
+                strategy = KpiStrategyId.WEIGHTED_RATIO_STRATEGY,
                 edges =
                     listOf(
                         KpiEdge(
                             target =
                                 KpiNode(
-                                    kpiId = KpiType.NUMBER_OF_COMMITS.name,
-                                    kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                    typeId = KpiType.NUMBER_OF_COMMITS.name,
+                                    strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                     edges = listOf(),
                                 ),
                             weight = 0.5,
@@ -181,8 +181,8 @@ class WeightedRatioKPICalculationStrategyTest {
                         KpiEdge(
                             target =
                                 KpiNode(
-                                    kpiId = KpiType.NUMBER_OF_COMMITS.name,
-                                    kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                    typeId = KpiType.NUMBER_OF_COMMITS.name,
+                                    strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                     edges = listOf(),
                                 ),
                             weight = 0.5,
@@ -190,8 +190,8 @@ class WeightedRatioKPICalculationStrategyTest {
                         KpiEdge(
                             target =
                                 KpiNode(
-                                    kpiId = KpiType.NUMBER_OF_COMMITS.name,
-                                    kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                    typeId = KpiType.NUMBER_OF_COMMITS.name,
+                                    strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                     edges = listOf(),
                                 ),
                             weight = 0.5,
@@ -226,15 +226,15 @@ class WeightedRatioKPICalculationStrategyTest {
     fun nestedError() {
         val nestedError =
             KpiNode(
-                kpiId = KpiType.ROOT.name,
-                kpiStrategyId = KpiStrategyId.WEIGHTED_RATIO_STRATEGY,
+                typeId = KpiType.ROOT.name,
+                strategy = KpiStrategyId.WEIGHTED_RATIO_STRATEGY,
                 edges =
                     listOf(
                         KpiEdge(
                             target =
                                 KpiNode(
-                                    kpiId = KpiType.NUMBER_OF_COMMITS.name,
-                                    kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                    typeId = KpiType.NUMBER_OF_COMMITS.name,
+                                    strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                     edges = listOf(),
                                 ),
                             weight = 0.5,
@@ -242,16 +242,15 @@ class WeightedRatioKPICalculationStrategyTest {
                         KpiEdge(
                             target =
                                 KpiNode(
-                                    kpiId = KpiType.SECURITY.name,
-                                    kpiStrategyId = KpiStrategyId.WEIGHTED_RATIO_STRATEGY,
+                                    typeId = KpiType.SECURITY.name,
+                                    strategy = KpiStrategyId.WEIGHTED_RATIO_STRATEGY,
                                     edges =
                                         listOf(
                                             KpiEdge(
                                                 target =
                                                     KpiNode(
-                                                        kpiId = KpiType.NUMBER_OF_COMMITS.name,
-                                                        kpiStrategyId =
-                                                            KpiStrategyId.RAW_VALUE_STRATEGY,
+                                                        typeId = KpiType.NUMBER_OF_COMMITS.name,
+                                                        strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                                         edges = listOf(),
                                                     ),
                                                 weight = 0.5,
@@ -259,10 +258,9 @@ class WeightedRatioKPICalculationStrategyTest {
                                             KpiEdge(
                                                 target =
                                                     KpiNode(
-                                                        kpiId =
+                                                        typeId =
                                                             KpiType.NUMBER_OF_SIGNED_COMMITS.name,
-                                                        kpiStrategyId =
-                                                            KpiStrategyId.RAW_VALUE_STRATEGY,
+                                                        strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                                         edges = listOf(),
                                                     ),
                                                 weight = 0.5,
@@ -308,15 +306,15 @@ class WeightedRatioKPICalculationStrategyTest {
     fun isValidToFewChildren() {
         val nodeToFewChildren =
             KpiNode(
-                kpiId = KpiType.ROOT.name,
-                kpiStrategyId = KpiStrategyId.WEIGHTED_RATIO_STRATEGY,
+                typeId = KpiType.ROOT.name,
+                strategy = KpiStrategyId.WEIGHTED_RATIO_STRATEGY,
                 edges =
                     listOf(
                         KpiEdge(
                             target =
                                 KpiNode(
-                                    kpiId = KpiType.NUMBER_OF_COMMITS.name,
-                                    kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                    typeId = KpiType.NUMBER_OF_COMMITS.name,
+                                    strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                     edges = listOf(),
                                 ),
                             weight = 0.5,

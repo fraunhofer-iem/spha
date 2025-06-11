@@ -24,10 +24,10 @@ class HierarchyValidatorTest {
     fun emptyKpiHierarchy() {
         val hierarchy =
             KpiHierarchy.create(
-                rootNode =
+                root =
                     KpiNode(
-                        kpiId = KpiType.ROOT.name,
-                        kpiStrategyId = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
+                        typeId = KpiType.ROOT.name,
+                        strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                         edges = emptyList(),
                     )
             )
@@ -40,16 +40,16 @@ class HierarchyValidatorTest {
     fun invalidRawValueHierarchy() {
         val invalidHierarchy =
             KpiHierarchy.create(
-                rootNode =
+                root =
                     KpiNode(
-                        kpiId = KpiType.ROOT.name,
-                        kpiStrategyId = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
+                        typeId = KpiType.ROOT.name,
+                        strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                         edges =
                             listOf(
                                 KpiEdge(
                                     KpiNode(
-                                        kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
-                                        kpiId = KpiType.NUMBER_OF_COMMITS.name,
+                                        strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                        typeId = KpiType.NUMBER_OF_COMMITS.name,
                                         edges = listOf(KpiEdge(target = randomNode(), weight = 1.0)),
                                     ),
                                     weight = 1.0,
@@ -69,16 +69,16 @@ class HierarchyValidatorTest {
 
         val hierarchy =
             KpiHierarchy.create(
-                rootNode =
+                root =
                     KpiNode(
-                        kpiId = KpiType.ROOT.name,
-                        kpiStrategyId = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
+                        typeId = KpiType.ROOT.name,
+                        strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                         edges =
                             listOf(
                                 KpiEdge(
                                     KpiNode(
-                                        kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
-                                        kpiId = KpiType.NUMBER_OF_COMMITS.name,
+                                        strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                        typeId = KpiType.NUMBER_OF_COMMITS.name,
                                         edges = listOf(),
                                     ),
                                     weight = 1.0,

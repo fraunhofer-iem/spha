@@ -26,14 +26,14 @@ import org.junit.jupiter.api.Test
 internal fun getNodeWithErrorResult(plannedWeight: Double): KpiHierarchyNode {
     val node =
         KpiNode(
-            kpiId = KpiType.NUMBER_OF_COMMITS.name,
-            kpiStrategyId = KpiStrategyId.WEIGHTED_RATIO_STRATEGY,
+            typeId = KpiType.NUMBER_OF_COMMITS.name,
+            strategy = KpiStrategyId.WEIGHTED_RATIO_STRATEGY,
             edges =
                 listOf(
                     KpiEdge(
                         KpiNode(
-                            kpiId = KpiType.NUMBER_OF_SIGNED_COMMITS.name,
-                            kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                            typeId = KpiType.NUMBER_OF_SIGNED_COMMITS.name,
+                            strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                             edges = listOf(),
                         ),
                         weight = plannedWeight,
@@ -54,22 +54,22 @@ internal fun getNodeIncompleteResult(plannedWeight: Double): KpiHierarchyNode {
 
     val node =
         KpiNode(
-            kpiId = KpiType.SECRETS.name,
-            kpiStrategyId = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
+            typeId = KpiType.SECRETS.name,
+            strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
             edges =
                 listOf(
                     KpiEdge(
                         KpiNode(
-                            kpiId = KpiType.NUMBER_OF_COMMITS.name,
-                            kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                            typeId = KpiType.NUMBER_OF_COMMITS.name,
+                            strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                             edges = listOf(),
                         ),
                         weight = plannedWeight,
                     ),
                     KpiEdge(
                         KpiNode(
-                            kpiId = KpiType.NUMBER_OF_SIGNED_COMMITS.name,
-                            kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                            typeId = KpiType.NUMBER_OF_SIGNED_COMMITS.name,
+                            strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                             edges = listOf(),
                         ),
                         weight = plannedWeight,
@@ -109,15 +109,15 @@ class AbstractKpiCalculationTest {
 
         val nodeCorrectChildren =
             KpiNode(
-                kpiId = KpiType.ROOT.name,
-                kpiStrategyId = KpiStrategyId.WEIGHTED_RATIO_STRATEGY,
+                typeId = KpiType.ROOT.name,
+                strategy = KpiStrategyId.WEIGHTED_RATIO_STRATEGY,
                 edges =
                     listOf(
                         KpiEdge(
                             target =
                                 KpiNode(
-                                    kpiId = KpiType.NUMBER_OF_COMMITS.name,
-                                    kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                    typeId = KpiType.NUMBER_OF_COMMITS.name,
+                                    strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                     edges = listOf(),
                                 ),
                             weight = 0.5,
@@ -125,8 +125,8 @@ class AbstractKpiCalculationTest {
                         KpiEdge(
                             target =
                                 KpiNode(
-                                    kpiId = KpiType.NUMBER_OF_COMMITS.name,
-                                    kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                    typeId = KpiType.NUMBER_OF_COMMITS.name,
+                                    strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                     edges = listOf(),
                                 ),
                             weight = 0.5,

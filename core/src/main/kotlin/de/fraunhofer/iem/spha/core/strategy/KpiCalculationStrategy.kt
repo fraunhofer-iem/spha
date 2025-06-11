@@ -151,7 +151,7 @@ internal abstract class BaseKpiCalculationStrategy : KpiCalculationStrategy {
     ): KpiCalculationResult
 
     final override fun isValid(node: KpiNode, strict: Boolean): Boolean {
-        if (node.kpiStrategyId != kpiStrategyId) {
+        if (node.strategy != kpiStrategyId) {
             return true
         }
 

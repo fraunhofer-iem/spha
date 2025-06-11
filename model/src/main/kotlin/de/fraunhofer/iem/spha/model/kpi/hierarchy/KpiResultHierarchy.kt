@@ -23,10 +23,11 @@ private constructor(val rootNode: KpiResultNode, val schemaVersion: String) {
 
 @Serializable
 data class KpiResultNode(
-    val kpiId: String,
-    val kpiResult: KpiCalculationResult,
-    val strategyType: KpiStrategyId,
+    val typeId: String,
+    val result: KpiCalculationResult,
+    val strategy: KpiStrategyId,
     val children: List<KpiResultEdge>,
+    val originId: String? = null,
 )
 
 @Serializable

@@ -29,15 +29,15 @@ class OrKPICalculationStrategyTest {
         val root =
             KpiHierarchyNode.from(
                 KpiNode(
-                    kpiId = KpiType.ROOT.name,
-                    kpiStrategyId = KpiStrategyId.XOR_STRATEGY,
+                    typeId = KpiType.ROOT.name,
+                    strategy = KpiStrategyId.XOR_STRATEGY,
                     edges =
                         listOf(
                             KpiEdge(
                                 target =
                                     KpiNode(
-                                        kpiId = KpiType.NUMBER_OF_SIGNED_COMMITS.name,
-                                        kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                        typeId = KpiType.NUMBER_OF_SIGNED_COMMITS.name,
+                                        strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                         edges = listOf(),
                                     ),
                                 weight = 0.5,
@@ -45,8 +45,8 @@ class OrKPICalculationStrategyTest {
                             KpiEdge(
                                 target =
                                     KpiNode(
-                                        kpiId = KpiType.NUMBER_OF_COMMITS.name,
-                                        kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                        typeId = KpiType.NUMBER_OF_COMMITS.name,
+                                        strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                         edges = listOf(),
                                     ),
                                 weight = 0.5,
@@ -83,15 +83,15 @@ class OrKPICalculationStrategyTest {
         val root =
             KpiHierarchyNode.from(
                 KpiNode(
-                    kpiId = KpiType.ROOT.name,
-                    kpiStrategyId = KpiStrategyId.XOR_STRATEGY,
+                    typeId = KpiType.ROOT.name,
+                    strategy = KpiStrategyId.XOR_STRATEGY,
                     edges =
                         listOf(
                             KpiEdge(
                                 target =
                                     KpiNode(
-                                        kpiId = KpiType.NUMBER_OF_SIGNED_COMMITS.name,
-                                        kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                        typeId = KpiType.NUMBER_OF_SIGNED_COMMITS.name,
+                                        strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                         edges = listOf(),
                                     ),
                                 weight = 0.5,
@@ -99,8 +99,8 @@ class OrKPICalculationStrategyTest {
                             KpiEdge(
                                 target =
                                     KpiNode(
-                                        kpiId = KpiType.NUMBER_OF_COMMITS.name,
-                                        kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                        typeId = KpiType.NUMBER_OF_COMMITS.name,
+                                        strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                         edges = listOf(),
                                     ),
                                 weight = 0.5,

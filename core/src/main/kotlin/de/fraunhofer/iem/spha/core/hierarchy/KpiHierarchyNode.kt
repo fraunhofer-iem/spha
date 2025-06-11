@@ -18,9 +18,10 @@ import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiResultNode
 
 internal class KpiHierarchyNode
 private constructor(
-    val kpiId: String,
-    val kpiStrategyId: KpiStrategyId,
+    val typeId: String,
+    val strategy: KpiStrategyId,
     val hierarchyEdges: List<KpiHierarchyEdge>,
+    val originId: String? = null,
 ) {
 
     var result: KpiCalculationResult = KpiCalculationResult.Empty()
@@ -40,15 +41,16 @@ private constructor(
     }
 
     override fun toString(): String {
-        return "KpiHierarchyNode($kpiId, $kpiStrategyId, $result, $hierarchyEdges)"
+        return "KpiHierarchyNode($typeId, $strategy, $result, $hierarchyEdges)"
     }
 
     companion object {
         fun to(node: KpiHierarchyNode): KpiResultNode {
             return KpiResultNode(
-                kpiId = node.kpiId,
-                strategyType = node.kpiStrategyId,
-                kpiResult = node.result,
+                typeId = node.typeId,
+                strategy = node.strategy,
+                result = node.result,
+                originId = node.originId,
                 children =
                     node.hierarchyEdges.map {
                         KpiResultEdge(
@@ -82,16 +84,17 @@ private constructor(
 
             val children: MutableList<KpiHierarchyEdge> = mutableListOf()
             node.edges.forEach { child ->
-                val rawValues = kpiIdToValues[child.target.kpiId] ?: emptyList()
+                val rawValues = kpiIdToValues[child.target.typeId] ?: emptyList()
                 if (rawValues.isNotEmpty()) {
                     rawValues.forEach { rawValueKpi ->
                         val hierarchyNode =
                             KpiHierarchyNode(
-                                kpiId = child.target.kpiId,
+                                typeId = child.target.typeId,
                                 // we force the kpi strategy to be raw value if we had a
                                 // raw value for the given node.
-                                kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                 hierarchyEdges = emptyList(),
+                                originId = rawValueKpi.originId,
                             )
                         hierarchyNode.result = KpiCalculationResult.Success(rawValueKpi.score)
                         val edge =
@@ -113,9 +116,9 @@ private constructor(
 
             val calcNode =
                 KpiHierarchyNode(
-                    kpiId = node.kpiId,
+                    typeId = node.typeId,
                     hierarchyEdges = children,
-                    kpiStrategyId = node.kpiStrategyId,
+                    strategy = node.strategy,
                 )
 
             return calcNode

@@ -22,8 +22,8 @@ internal fun randomKpiHierarchyNode(): KpiHierarchyNode {
 
     return KpiHierarchyNode.from(
         KpiNode(
-            kpiId = KpiType.entries[rndIds].name,
-            kpiStrategyId = KpiStrategyId.entries[rndStrategies],
+            typeId = KpiType.entries[rndIds].name,
+            strategy = KpiStrategyId.entries[rndStrategies],
             edges = listOf(),
         ),
         emptyList(),
@@ -36,8 +36,8 @@ fun randomNode(edges: List<KpiEdge> = listOf()): KpiNode {
     val rndStrategies = (0..<KpiStrategyId.entries.size).random()
 
     return KpiNode(
-        kpiId = KpiType.entries[rndIds].name,
-        kpiStrategyId = KpiStrategyId.entries[rndStrategies],
+        typeId = KpiType.entries[rndIds].name,
+        strategy = KpiStrategyId.entries[rndStrategies],
         edges = edges,
     )
 }

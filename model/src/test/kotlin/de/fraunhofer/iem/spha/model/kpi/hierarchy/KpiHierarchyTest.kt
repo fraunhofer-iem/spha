@@ -31,7 +31,7 @@ class KpiHierarchyTest {
                 listOf(
                     KpiEdge(
                         KpiNode(
-                            kpiId = KpiType.SECURITY.name,
+                            typeId = KpiType.SECURITY.name,
                             KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                             listOf(),
                         ),
@@ -39,7 +39,7 @@ class KpiHierarchyTest {
                     ),
                     KpiEdge(
                         KpiNode(
-                            kpiId = KpiType.PROCESS_COMPLIANCE.name,
+                            typeId = KpiType.PROCESS_COMPLIANCE.name,
                             KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                             listOf(),
                         ),
@@ -47,7 +47,7 @@ class KpiHierarchyTest {
                     ),
                     KpiEdge(
                         KpiNode(
-                            kpiId = KpiType.INTERNAL_QUALITY.name,
+                            typeId = KpiType.INTERNAL_QUALITY.name,
                             KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                             listOf(),
                         ),
@@ -56,8 +56,8 @@ class KpiHierarchyTest {
                 )
             val root =
                 KpiNode(
-                    kpiId = KpiType.ROOT.name,
-                    kpiStrategyId = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
+                    typeId = KpiType.ROOT.name,
+                    strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                     childNodes,
                 )
             val hierarchy = KpiHierarchy.create(root)
@@ -66,7 +66,7 @@ class KpiHierarchyTest {
             val jsonResult = json.encodeToString(hierarchy)
 
             println(jsonResult)
-            assertEquals(hierarchy.schemaVersion, "1.0.1")
+            assertEquals(hierarchy.schemaVersion, "1.1.0")
         }
     }
 }

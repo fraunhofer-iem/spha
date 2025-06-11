@@ -32,7 +32,7 @@ object HierarchyValidator {
     fun isValid(kpiHierarchy: KpiHierarchy, strict: Boolean = false): Boolean {
         // TODO: check the schema version and build a schema specific validation if necessary
         logger.info { "Started KPI hierarchy validation with strict mode $strict." }
-        val root = kpiHierarchy.rootNode
+        val root = kpiHierarchy.root
 
         // handle empty hierarchies
         if (root.edges.isEmpty()) {
@@ -59,7 +59,7 @@ object HierarchyValidator {
             }
         }
 
-        val isValid = getKpiCalculationStrategy(node.kpiStrategyId).isValid(node, strict)
+        val isValid = getKpiCalculationStrategy(node.strategy).isValid(node, strict)
 
         if (!isValid) {
             return false

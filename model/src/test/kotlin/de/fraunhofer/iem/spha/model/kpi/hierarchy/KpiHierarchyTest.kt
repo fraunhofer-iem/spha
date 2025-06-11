@@ -12,7 +12,6 @@ package de.fraunhofer.iem.spha.model.kpi.hierarchy
 import de.fraunhofer.iem.spha.model.kpi.KpiId
 import de.fraunhofer.iem.spha.model.kpi.KpiStrategyId
 import kotlin.test.assertEquals
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -68,7 +67,7 @@ class KpiHierarchyTest {
             val jsonResult = json.encodeToString(hierarchy)
 
             println(jsonResult)
-            assertEquals(hierarchy.schemaVersion, "1.0.0")
+            assertEquals(hierarchy.schemaVersion, "1.0.1")
         }
     }
 }

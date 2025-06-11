@@ -24,9 +24,8 @@ class KpiHierarchyTest {
         // related to our external data model (the KpiHierarchy), as this is what the library users
         // store and use to call the
         // library with.
-        // TLDR; Whenever this test fails we have a breaking change in how we construct our KPI
-        // hierarchy meaning we potentially
-        // break our clients code.
+        // TLDR; Whenever this test fails, we have a breaking change in how we construct our KPI
+        //  hierarchy, meaning we potentially break our clients' code.
         assertDoesNotThrow {
             val childNodes =
                 listOf(

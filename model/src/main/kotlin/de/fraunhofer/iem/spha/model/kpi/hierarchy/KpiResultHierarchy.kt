@@ -10,7 +10,7 @@
 package de.fraunhofer.iem.spha.model.kpi.hierarchy
 
 import de.fraunhofer.iem.spha.model.kpi.KpiStrategyId
-import java.util.*
+import java.util.UUID
 import kotlinx.serialization.Serializable
 
 @ConsistentCopyVisibility

@@ -14,7 +14,7 @@ import de.fraunhofer.iem.spha.adapter.ErrorType
 import de.fraunhofer.iem.spha.model.adapter.vulnerability.VulnerabilityDto
 import de.fraunhofer.iem.spha.model.kpi.KpiType
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
-import java.util.*
+import java.util.UUID
 
 object CveAdapter {
 

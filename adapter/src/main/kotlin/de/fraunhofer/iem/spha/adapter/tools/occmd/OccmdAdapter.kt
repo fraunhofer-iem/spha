@@ -14,7 +14,7 @@ import de.fraunhofer.iem.spha.model.adapter.occmd.Checks
 import de.fraunhofer.iem.spha.model.adapter.occmd.OccmdDto
 import de.fraunhofer.iem.spha.model.kpi.KpiType
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
-import java.util.*
+import java.util.UUID
 
 object OccmdAdapter {
 

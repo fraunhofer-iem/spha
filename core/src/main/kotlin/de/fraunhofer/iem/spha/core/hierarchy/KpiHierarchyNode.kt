@@ -15,7 +15,7 @@ import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiNode
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiResultEdge
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiResultNode
-import java.util.*
+import java.util.UUID
 
 internal class KpiHierarchyNode
 private constructor(

@@ -12,31 +12,38 @@ package de.fraunhofer.iem.spha.adapter.kpis.cve
 import de.fraunhofer.iem.spha.adapter.AdapterResult
 import de.fraunhofer.iem.spha.adapter.ErrorType
 import de.fraunhofer.iem.spha.model.adapter.vulnerability.VulnerabilityDto
-import de.fraunhofer.iem.spha.model.kpi.KpiId
+import de.fraunhofer.iem.spha.model.kpi.KpiType
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
+import java.util.UUID
 
 object CveAdapter {
 
     fun transformCodeVulnerabilityToKpi(
         data: Collection<VulnerabilityDto>
-    ): Collection<AdapterResult> {
-        return transformDataToKpi(data, KpiId.CODE_VULNERABILITY_SCORE)
+    ): Collection<AdapterResult<VulnerabilityDto>> {
+        return transformDataToKpi(data, KpiType.CODE_VULNERABILITY_SCORE)
     }
 
     fun transformContainerVulnerabilityToKpi(
         data: Collection<VulnerabilityDto>
-    ): Collection<AdapterResult> {
-        return transformDataToKpi(data, KpiId.CONTAINER_VULNERABILITY_SCORE)
+    ): Collection<AdapterResult<VulnerabilityDto>> {
+        return transformDataToKpi(data, KpiType.CONTAINER_VULNERABILITY_SCORE)
     }
 
     private fun transformDataToKpi(
         data: Collection<VulnerabilityDto>,
-        kpiId: KpiId,
-    ): Collection<AdapterResult> {
+        kpiType: KpiType,
+    ): Collection<AdapterResult<VulnerabilityDto>> {
         return data.map {
             return@map if (isValid(it)) {
                 AdapterResult.Success.Kpi(
-                    RawValueKpi(kpiId = kpiId.name, score = 100 - (it.severity * 10).toInt())
+                    RawValueKpi(
+                        typeId = kpiType.name,
+                        score = 100 - (it.severity * 10).toInt(),
+                        originId =
+                            UUID.randomUUID().toString(), // TODO: create better id with more context
+                    ),
+                    origin = it,
                 )
             } else {
                 AdapterResult.Error(ErrorType.DATA_VALIDATION_ERROR)

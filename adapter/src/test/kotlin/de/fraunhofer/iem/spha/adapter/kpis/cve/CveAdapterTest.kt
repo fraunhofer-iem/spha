@@ -32,13 +32,12 @@ class CveAdapterTest {
                 )
             )
         when (val kpi = validKpi.first()) {
-            is AdapterResult.Success -> {
+            is AdapterResult.Success<*> -> {
                 assert(kpi.rawValueKpi.score in (0..100))
             }
 
-            else -> {
-                fail()
-            }
+            // no type parameters needed here
+            else -> fail()
         }
 
         // invalid input

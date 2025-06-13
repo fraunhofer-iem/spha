@@ -12,8 +12,8 @@ package de.fraunhofer.iem.spha.core.strategy
 import de.fraunhofer.iem.spha.core.KpiCalculator
 import de.fraunhofer.iem.spha.core.hierarchy.KpiHierarchyEdge
 import de.fraunhofer.iem.spha.core.hierarchy.KpiHierarchyNode
-import de.fraunhofer.iem.spha.model.kpi.KpiId
 import de.fraunhofer.iem.spha.model.kpi.KpiStrategyId
+import de.fraunhofer.iem.spha.model.kpi.KpiType
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiEdge
@@ -26,14 +26,14 @@ import org.junit.jupiter.api.Test
 internal fun getNodeWithErrorResult(plannedWeight: Double): KpiHierarchyNode {
     val node =
         KpiNode(
-            kpiId = KpiId.NUMBER_OF_COMMITS.name,
-            kpiStrategyId = KpiStrategyId.WEIGHTED_RATIO_STRATEGY,
+            typeId = KpiType.NUMBER_OF_COMMITS.name,
+            strategy = KpiStrategyId.WEIGHTED_RATIO_STRATEGY,
             edges =
                 listOf(
                     KpiEdge(
                         KpiNode(
-                            kpiId = KpiId.NUMBER_OF_SIGNED_COMMITS.name,
-                            kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                            typeId = KpiType.NUMBER_OF_SIGNED_COMMITS.name,
+                            strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                             edges = listOf(),
                         ),
                         weight = plannedWeight,
@@ -44,7 +44,7 @@ internal fun getNodeWithErrorResult(plannedWeight: Double): KpiHierarchyNode {
     val hierarchyNode =
         KpiHierarchyNode.from(
             node,
-            listOf(RawValueKpi(KpiId.NUMBER_OF_SIGNED_COMMITS.name, score = 20)),
+            listOf(RawValueKpi(KpiType.NUMBER_OF_SIGNED_COMMITS.name, score = 20)),
         )
     KpiCalculator.calculateKpi(hierarchyNode)
     return hierarchyNode
@@ -54,22 +54,22 @@ internal fun getNodeIncompleteResult(plannedWeight: Double): KpiHierarchyNode {
 
     val node =
         KpiNode(
-            kpiId = KpiId.SECRETS.name,
-            kpiStrategyId = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
+            typeId = KpiType.SECRETS.name,
+            strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
             edges =
                 listOf(
                     KpiEdge(
                         KpiNode(
-                            kpiId = KpiId.NUMBER_OF_COMMITS.name,
-                            kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                            typeId = KpiType.NUMBER_OF_COMMITS.name,
+                            strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                             edges = listOf(),
                         ),
                         weight = plannedWeight,
                     ),
                     KpiEdge(
                         KpiNode(
-                            kpiId = KpiId.NUMBER_OF_SIGNED_COMMITS.name,
-                            kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                            typeId = KpiType.NUMBER_OF_SIGNED_COMMITS.name,
+                            strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                             edges = listOf(),
                         ),
                         weight = plannedWeight,
@@ -80,7 +80,7 @@ internal fun getNodeIncompleteResult(plannedWeight: Double): KpiHierarchyNode {
     val hierarchyNode =
         KpiHierarchyNode.from(
             node,
-            listOf(RawValueKpi(KpiId.NUMBER_OF_SIGNED_COMMITS.name, score = 20)),
+            listOf(RawValueKpi(KpiType.NUMBER_OF_SIGNED_COMMITS.name, score = 20)),
         )
     return hierarchyNode
 }
@@ -109,15 +109,15 @@ class AbstractKpiCalculationTest {
 
         val nodeCorrectChildren =
             KpiNode(
-                kpiId = KpiId.ROOT.name,
-                kpiStrategyId = KpiStrategyId.WEIGHTED_RATIO_STRATEGY,
+                typeId = KpiType.ROOT.name,
+                strategy = KpiStrategyId.WEIGHTED_RATIO_STRATEGY,
                 edges =
                     listOf(
                         KpiEdge(
                             target =
                                 KpiNode(
-                                    kpiId = KpiId.NUMBER_OF_COMMITS.name,
-                                    kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                    typeId = KpiType.NUMBER_OF_COMMITS.name,
+                                    strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                     edges = listOf(),
                                 ),
                             weight = 0.5,
@@ -125,8 +125,8 @@ class AbstractKpiCalculationTest {
                         KpiEdge(
                             target =
                                 KpiNode(
-                                    kpiId = KpiId.NUMBER_OF_COMMITS.name,
-                                    kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                    typeId = KpiType.NUMBER_OF_COMMITS.name,
+                                    strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                     edges = listOf(),
                                 ),
                             weight = 0.5,
@@ -137,7 +137,7 @@ class AbstractKpiCalculationTest {
         val root =
             KpiHierarchyNode.from(
                 nodeCorrectChildren,
-                listOf(RawValueKpi(KpiId.NUMBER_OF_COMMITS.name, 20)),
+                listOf(RawValueKpi(KpiType.NUMBER_OF_COMMITS.name, 20)),
             )
 
         fun callback(edges: Collection<KpiHierarchyEdge>) {
@@ -149,7 +149,7 @@ class AbstractKpiCalculationTest {
         }
 
         val testStrategy = TestStrategy(callback = ::callback)
-        testStrategy.calculateKpi(root.hierarchyEdges)
+        testStrategy.calculateKpi(root.edges)
     }
 
     @Test
@@ -175,10 +175,10 @@ class AbstractKpiCalculationTest {
         val incompleteResult = KpiCalculator.calculateKpi(incompleteNode, false)
         assert(incompleteResult is KpiCalculationResult.Incomplete)
 
-        assertEquals(0.5, incompleteNode.hierarchyEdges.first().plannedWeight)
-        assertEquals(0.0, incompleteNode.hierarchyEdges.first().actualWeight)
-        assertEquals(0.5, incompleteNode.hierarchyEdges.last().plannedWeight)
-        assertEquals(1.0, incompleteNode.hierarchyEdges.last().actualWeight)
+        assertEquals(0.5, incompleteNode.edges.first().plannedWeight)
+        assertEquals(0.0, incompleteNode.edges.first().actualWeight)
+        assertEquals(0.5, incompleteNode.edges.last().plannedWeight)
+        assertEquals(1.0, incompleteNode.edges.last().actualWeight)
     }
 
     @Test

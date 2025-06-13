@@ -23,8 +23,8 @@ internal object WeightedAverageKPICalculationStrategy : BaseKpiCalculationStrate
         get() = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY
 
     /**
-     * This function calculates the aggregate sum of all given children. If a child is empty it is
-     * removed from the calculation and its corresponding edge weight is distributed evenly between
+     * This function calculates the aggregate sum of all given children. If a child is empty, it is
+     * removed from the calculation and its corresponding-edge weight is distributed evenly between
      * the remaining children. The method returns the KPIs value as well as the updated
      * KPIHierarchyEdgeDtos with the actual used weight.
      */

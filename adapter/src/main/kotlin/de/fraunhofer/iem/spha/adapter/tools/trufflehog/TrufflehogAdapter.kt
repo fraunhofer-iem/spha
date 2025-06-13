@@ -12,7 +12,7 @@ package de.fraunhofer.iem.spha.adapter.tools.trufflehog
 import de.fraunhofer.iem.spha.adapter.AdapterResult
 import de.fraunhofer.iem.spha.model.adapter.trufflehog.TrufflehogDto
 import de.fraunhofer.iem.spha.model.adapter.trufflehog.TrufflehogReportDto
-import de.fraunhofer.iem.spha.model.kpi.KpiId
+import de.fraunhofer.iem.spha.model.kpi.KpiType
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.InputStream
@@ -41,14 +41,21 @@ object TrufflehogAdapter {
         }
     }
 
-    fun transformDataToKpi(data: TrufflehogReportDto): Collection<AdapterResult> {
+    fun transformDataToKpi(
+        data: TrufflehogReportDto
+    ): Collection<AdapterResult<TrufflehogReportDto>> {
         return transformDataToKpi(listOf(data))
     }
 
-    fun transformDataToKpi(data: Collection<TrufflehogReportDto>): Collection<AdapterResult> {
+    fun transformDataToKpi(
+        data: Collection<TrufflehogReportDto>
+    ): Collection<AdapterResult<TrufflehogReportDto>> {
         return data.map {
             val score = if (it.verifiedSecrets > 0) 0 else 100
-            AdapterResult.Success.Kpi(RawValueKpi(score = score, kpiId = KpiId.SECRETS.name))
+            AdapterResult.Success.Kpi(
+                RawValueKpi(score = score, typeId = KpiType.SECRETS.name),
+                origin = it,
+            )
         }
     }
 }

@@ -9,10 +9,9 @@
 
 package de.fraunhofer.iem.spha.model.kpi.hierarchy
 
-import de.fraunhofer.iem.spha.model.kpi.KpiId
 import de.fraunhofer.iem.spha.model.kpi.KpiStrategyId
+import de.fraunhofer.iem.spha.model.kpi.KpiType
 import kotlin.test.assertEquals
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -25,15 +24,14 @@ class KpiHierarchyTest {
         // related to our external data model (the KpiHierarchy), as this is what the library users
         // store and use to call the
         // library with.
-        // TLDR; Whenever this test fails we have a breaking change in how we construct our KPI
-        // hierarchy meaning we potentially
-        // break our clients code.
+        // TLDR; Whenever this test fails, we have a breaking change in how we construct our KPI
+        //  hierarchy, meaning we potentially break our clients' code.
         assertDoesNotThrow {
             val childNodes =
                 listOf(
                     KpiEdge(
                         KpiNode(
-                            kpiId = KpiId.SECURITY.name,
+                            typeId = KpiType.SECURITY.name,
                             KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                             listOf(),
                         ),
@@ -41,7 +39,7 @@ class KpiHierarchyTest {
                     ),
                     KpiEdge(
                         KpiNode(
-                            kpiId = KpiId.PROCESS_COMPLIANCE.name,
+                            typeId = KpiType.PROCESS_COMPLIANCE.name,
                             KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                             listOf(),
                         ),
@@ -49,7 +47,7 @@ class KpiHierarchyTest {
                     ),
                     KpiEdge(
                         KpiNode(
-                            kpiId = KpiId.INTERNAL_QUALITY.name,
+                            typeId = KpiType.INTERNAL_QUALITY.name,
                             KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                             listOf(),
                         ),
@@ -58,8 +56,8 @@ class KpiHierarchyTest {
                 )
             val root =
                 KpiNode(
-                    kpiId = KpiId.ROOT.name,
-                    kpiStrategyId = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
+                    typeId = KpiType.ROOT.name,
+                    strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                     childNodes,
                 )
             val hierarchy = KpiHierarchy.create(root)
@@ -68,7 +66,7 @@ class KpiHierarchyTest {
             val jsonResult = json.encodeToString(hierarchy)
 
             println(jsonResult)
-            assertEquals(hierarchy.schemaVersion, "1.0.0")
+            assertEquals(hierarchy.schemaVersion, "1.1.0")
         }
     }
 }

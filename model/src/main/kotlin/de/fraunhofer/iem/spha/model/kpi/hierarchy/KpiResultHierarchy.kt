@@ -10,6 +10,7 @@
 package de.fraunhofer.iem.spha.model.kpi.hierarchy
 
 import de.fraunhofer.iem.spha.model.kpi.KpiStrategyId
+import java.util.UUID
 import kotlinx.serialization.Serializable
 
 @ConsistentCopyVisibility
@@ -23,10 +24,12 @@ private constructor(val rootNode: KpiResultNode, val schemaVersion: String) {
 
 @Serializable
 data class KpiResultNode(
-    val kpiId: String,
-    val kpiResult: KpiCalculationResult,
-    val strategyType: KpiStrategyId,
+    val typeId: String,
+    val result: KpiCalculationResult,
+    val strategy: KpiStrategyId,
     val children: List<KpiResultEdge>,
+    val id: String = UUID.randomUUID().toString(),
+    val originId: String? = null,
 )
 
 @Serializable

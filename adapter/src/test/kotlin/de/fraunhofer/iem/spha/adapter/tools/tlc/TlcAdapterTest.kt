@@ -21,7 +21,7 @@ import de.fraunhofer.iem.spha.model.adapter.tlc.ProjectDto
 import de.fraunhofer.iem.spha.model.adapter.tlc.RepositoryInfoDto
 import de.fraunhofer.iem.spha.model.adapter.tlc.ScopeToGraph
 import de.fraunhofer.iem.spha.model.adapter.tlc.TlcDto
-import de.fraunhofer.iem.spha.model.kpi.KpiId
+import de.fraunhofer.iem.spha.model.kpi.KpiType
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -145,19 +145,18 @@ class TlcAdapterTest {
 
         val kpi = kpis.first()
 
-        val isSuccess = kpi is AdapterResult.Success
+        val isSuccess = kpi is AdapterResult.Success<TechLagResult>
         assertTrue(isSuccess)
 
-        val isSuccessWithResult = kpi is AdapterResult.Success.KpiTechLag
-        assertTrue(isSuccessWithResult)
+        val rawValueKpi = kpi.rawValueKpi
 
-        val rawValueKpi = (kpi as AdapterResult.Success).rawValueKpi
-
-        assertEquals(KpiId.LIB_DAYS_PROD.name, rawValueKpi.kpiId)
+        assertEquals(KpiType.LIB_DAYS_PROD.name, rawValueKpi.typeId)
         assertEquals(100, rawValueKpi.score)
 
-        val techLag = (kpi as AdapterResult.Success.KpiTechLag)
-        assertEquals(18, techLag.techLag.libyear)
+        when (kpi.origin) {
+            is TechLagResult.Success -> assertEquals(18, kpi.origin.libyear)
+            else -> fail()
+        }
     }
 
     private fun testVersion(

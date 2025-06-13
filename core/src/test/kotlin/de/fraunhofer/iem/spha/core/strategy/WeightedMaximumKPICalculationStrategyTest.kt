@@ -10,8 +10,8 @@
 package de.fraunhofer.iem.spha.core.strategy
 
 import de.fraunhofer.iem.spha.core.hierarchy.KpiHierarchyNode
-import de.fraunhofer.iem.spha.model.kpi.KpiId
 import de.fraunhofer.iem.spha.model.kpi.KpiStrategyId
+import de.fraunhofer.iem.spha.model.kpi.KpiType
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiEdge
@@ -44,15 +44,15 @@ class WeightedMaximumKPICalculationStrategyTest {
         val root =
             KpiHierarchyNode.from(
                 KpiNode(
-                    kpiId = KpiId.ROOT.name,
-                    kpiStrategyId = KpiStrategyId.MAXIMUM_STRATEGY,
+                    typeId = KpiType.ROOT.name,
+                    strategy = KpiStrategyId.MAXIMUM_STRATEGY,
                     edges =
                         listOf(
                             KpiEdge(
                                 target =
                                     KpiNode(
-                                        kpiId = KpiId.NUMBER_OF_SIGNED_COMMITS.name,
-                                        kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                        typeId = KpiType.NUMBER_OF_SIGNED_COMMITS.name,
+                                        strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                         edges = listOf(),
                                     ),
                                 weight = 0.5,
@@ -60,8 +60,8 @@ class WeightedMaximumKPICalculationStrategyTest {
                             KpiEdge(
                                 target =
                                     KpiNode(
-                                        kpiId = KpiId.NUMBER_OF_COMMITS.name,
-                                        kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                        typeId = KpiType.NUMBER_OF_COMMITS.name,
+                                        strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                         edges = listOf(),
                                     ),
                                 weight = 0.5,
@@ -69,15 +69,15 @@ class WeightedMaximumKPICalculationStrategyTest {
                         ),
                 ),
                 listOf(
-                    RawValueKpi(kpiId = KpiId.NUMBER_OF_SIGNED_COMMITS.name, score = 15),
-                    RawValueKpi(kpiId = KpiId.NUMBER_OF_COMMITS.name, score = 20),
+                    RawValueKpi(typeId = KpiType.NUMBER_OF_SIGNED_COMMITS.name, score = 15),
+                    RawValueKpi(typeId = KpiType.NUMBER_OF_COMMITS.name, score = 20),
                 ),
             )
 
         val calcRelaxed =
-            WeightedMaximumKPICalculationStrategy.calculateKpi(root.hierarchyEdges, strict = false)
+            WeightedMaximumKPICalculationStrategy.calculateKpi(root.edges, strict = false)
         val calcStrict =
-            WeightedMaximumKPICalculationStrategy.calculateKpi(root.hierarchyEdges, strict = true)
+            WeightedMaximumKPICalculationStrategy.calculateKpi(root.edges, strict = true)
 
         assert(calcRelaxed is KpiCalculationResult.Success)
         assert(calcStrict is KpiCalculationResult.Success)

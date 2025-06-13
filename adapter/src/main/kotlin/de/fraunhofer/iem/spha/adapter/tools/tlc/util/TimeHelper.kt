@@ -12,7 +12,7 @@ package de.fraunhofer.iem.spha.adapter.tools.tlc.util
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-import java.util.*
+import java.util.Date
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 

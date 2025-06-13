@@ -29,11 +29,13 @@ object OsvAdapter {
         return jsonParser.decodeFromStream<OsvScannerDto>(jsonData)
     }
 
-    fun transformDataToKpi(data: OsvScannerDto): Collection<AdapterResult> {
+    fun transformDataToKpi(data: OsvScannerDto): Collection<AdapterResult<VulnerabilityDto>> {
         return transformDataToKpi(listOf(data))
     }
 
-    fun transformDataToKpi(data: Collection<OsvScannerDto>): Collection<AdapterResult> {
+    fun transformDataToKpi(
+        data: Collection<OsvScannerDto>
+    ): Collection<AdapterResult<VulnerabilityDto>> {
         return CveAdapter.transformCodeVulnerabilityToKpi(
             data.flatMap { results ->
                 results.results.flatMap { result ->

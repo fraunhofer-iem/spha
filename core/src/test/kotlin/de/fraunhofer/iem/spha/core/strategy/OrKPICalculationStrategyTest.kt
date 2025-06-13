@@ -1,8 +1,8 @@
 package de.fraunhofer.iem.spha.core.strategy
 
 import de.fraunhofer.iem.spha.core.hierarchy.KpiHierarchyNode
-import de.fraunhofer.iem.spha.model.kpi.KpiId
 import de.fraunhofer.iem.spha.model.kpi.KpiStrategyId
+import de.fraunhofer.iem.spha.model.kpi.KpiType
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiEdge
@@ -29,15 +29,15 @@ class OrKPICalculationStrategyTest {
         val root =
             KpiHierarchyNode.from(
                 KpiNode(
-                    kpiId = KpiId.ROOT.name,
-                    kpiStrategyId = KpiStrategyId.XOR_STRATEGY,
+                    typeId = KpiType.ROOT.name,
+                    strategy = KpiStrategyId.XOR_STRATEGY,
                     edges =
                         listOf(
                             KpiEdge(
                                 target =
                                     KpiNode(
-                                        kpiId = KpiId.NUMBER_OF_SIGNED_COMMITS.name,
-                                        kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                        typeId = KpiType.NUMBER_OF_SIGNED_COMMITS.name,
+                                        strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                         edges = listOf(),
                                     ),
                                 weight = 0.5,
@@ -45,8 +45,8 @@ class OrKPICalculationStrategyTest {
                             KpiEdge(
                                 target =
                                     KpiNode(
-                                        kpiId = KpiId.NUMBER_OF_COMMITS.name,
-                                        kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                        typeId = KpiType.NUMBER_OF_COMMITS.name,
+                                        strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                         edges = listOf(),
                                     ),
                                 weight = 0.5,
@@ -54,22 +54,16 @@ class OrKPICalculationStrategyTest {
                         ),
                 ),
                 listOf(
-                    RawValueKpi(kpiId = KpiId.NUMBER_OF_SIGNED_COMMITS.name, score = 50),
-                    RawValueKpi(kpiId = KpiId.NUMBER_OF_COMMITS.name, score = 20),
+                    RawValueKpi(typeId = KpiType.NUMBER_OF_SIGNED_COMMITS.name, score = 50),
+                    RawValueKpi(typeId = KpiType.NUMBER_OF_COMMITS.name, score = 20),
                 ),
             )
 
         val calcRelaxed =
-            OrKPICalculationStrategy.calculateKpi(
-                hierarchyEdges = root.hierarchyEdges,
-                strict = false,
-            )
+            OrKPICalculationStrategy.calculateKpi(hierarchyEdges = root.edges, strict = false)
 
         val calcStrict =
-            OrKPICalculationStrategy.calculateKpi(
-                hierarchyEdges = root.hierarchyEdges,
-                strict = true,
-            )
+            OrKPICalculationStrategy.calculateKpi(hierarchyEdges = root.edges, strict = true)
 
         assertEquals(true, calcStrict is KpiCalculationResult.Success)
         assertEquals(true, calcRelaxed is KpiCalculationResult.Success)
@@ -83,15 +77,15 @@ class OrKPICalculationStrategyTest {
         val root =
             KpiHierarchyNode.from(
                 KpiNode(
-                    kpiId = KpiId.ROOT.name,
-                    kpiStrategyId = KpiStrategyId.XOR_STRATEGY,
+                    typeId = KpiType.ROOT.name,
+                    strategy = KpiStrategyId.XOR_STRATEGY,
                     edges =
                         listOf(
                             KpiEdge(
                                 target =
                                     KpiNode(
-                                        kpiId = KpiId.NUMBER_OF_SIGNED_COMMITS.name,
-                                        kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                        typeId = KpiType.NUMBER_OF_SIGNED_COMMITS.name,
+                                        strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                         edges = listOf(),
                                     ),
                                 weight = 0.5,
@@ -99,8 +93,8 @@ class OrKPICalculationStrategyTest {
                             KpiEdge(
                                 target =
                                     KpiNode(
-                                        kpiId = KpiId.NUMBER_OF_COMMITS.name,
-                                        kpiStrategyId = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                        typeId = KpiType.NUMBER_OF_COMMITS.name,
+                                        strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                         edges = listOf(),
                                     ),
                                 weight = 0.5,
@@ -108,22 +102,16 @@ class OrKPICalculationStrategyTest {
                         ),
                 ),
                 listOf(
-                    RawValueKpi(kpiId = KpiId.NUMBER_OF_SIGNED_COMMITS.name, score = 100),
-                    RawValueKpi(kpiId = KpiId.NUMBER_OF_COMMITS.name, score = 20),
+                    RawValueKpi(typeId = KpiType.NUMBER_OF_SIGNED_COMMITS.name, score = 100),
+                    RawValueKpi(typeId = KpiType.NUMBER_OF_COMMITS.name, score = 20),
                 ),
             )
 
         val calcRelaxed =
-            OrKPICalculationStrategy.calculateKpi(
-                hierarchyEdges = root.hierarchyEdges,
-                strict = false,
-            )
+            OrKPICalculationStrategy.calculateKpi(hierarchyEdges = root.edges, strict = false)
 
         val calcStrict =
-            OrKPICalculationStrategy.calculateKpi(
-                hierarchyEdges = root.hierarchyEdges,
-                strict = true,
-            )
+            OrKPICalculationStrategy.calculateKpi(hierarchyEdges = root.edges, strict = true)
 
         assertEquals(true, calcStrict is KpiCalculationResult.Success)
         assertEquals(true, calcRelaxed is KpiCalculationResult.Success)

@@ -12,47 +12,60 @@ package de.fraunhofer.iem.spha.adapter.tools.occmd
 import de.fraunhofer.iem.spha.adapter.AdapterResult
 import de.fraunhofer.iem.spha.model.adapter.occmd.Checks
 import de.fraunhofer.iem.spha.model.adapter.occmd.OccmdDto
-import de.fraunhofer.iem.spha.model.kpi.KpiId
+import de.fraunhofer.iem.spha.model.kpi.KpiType
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
+import java.util.UUID
 
 object OccmdAdapter {
 
-    fun transformDataToKpi(data: Collection<OccmdDto>): Collection<AdapterResult> {
+    fun transformDataToKpi(data: Collection<OccmdDto>): Collection<AdapterResult<Unit>> {
 
         return data.mapNotNull {
             return@mapNotNull when (Checks.fromString(it.check)) {
                 Checks.CheckedInBinaries ->
                     AdapterResult.Success.Kpi(
                         RawValueKpi(
-                            kpiId = KpiId.CHECKED_IN_BINARIES.name,
+                            typeId = KpiType.CHECKED_IN_BINARIES.name,
                             score = (it.score * 100).toInt(),
-                        )
+                            id = UUID.randomUUID().toString(),
+                        ),
+                        origin = Unit,
                     )
 
                 Checks.SastUsageBasic ->
                     AdapterResult.Success.Kpi(
-                        RawValueKpi(kpiId = KpiId.SAST_USAGE.name, score = (it.score * 100).toInt())
+                        RawValueKpi(
+                            typeId = KpiType.SAST_USAGE.name,
+                            score = (it.score * 100).toInt(),
+                        ),
+                        origin = Unit,
                     )
 
                 Checks.Secrets ->
                     AdapterResult.Success.Kpi(
-                        RawValueKpi(kpiId = KpiId.SECRETS.name, score = (it.score * 100).toInt())
+                        RawValueKpi(
+                            typeId = KpiType.SECRETS.name,
+                            score = (it.score * 100).toInt(),
+                        ),
+                        origin = Unit,
                     )
 
                 Checks.CommentsInCode ->
                     AdapterResult.Success.Kpi(
                         RawValueKpi(
-                            kpiId = KpiId.COMMENTS_IN_CODE.name,
+                            typeId = KpiType.COMMENTS_IN_CODE.name,
                             score = (it.score * 100).toInt(),
-                        )
+                        ),
+                        origin = Unit,
                     )
 
                 Checks.DocumentationInfrastructure ->
                     AdapterResult.Success.Kpi(
                         RawValueKpi(
-                            kpiId = KpiId.DOCUMENTATION_INFRASTRUCTURE.name,
+                            typeId = KpiType.DOCUMENTATION_INFRASTRUCTURE.name,
                             score = (it.score * 100).toInt(),
-                        )
+                        ),
+                        origin = Unit,
                     )
 
                 else -> {

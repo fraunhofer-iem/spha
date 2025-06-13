@@ -39,15 +39,20 @@ object TrivyAdapter {
         explicitNulls = false
     }
 
-    fun transformDataToKpi(data: Collection<TrivyDto>): Collection<AdapterResult> {
+    fun transformDataToKpi(
+        data: Collection<TrivyDto>
+    ): Collection<AdapterResult<VulnerabilityDto>> {
         return CveAdapter.transformContainerVulnerabilityToKpi(data.flatMap { it.vulnerabilities })
     }
 
-    fun transformDataToKpi(data: TrivyDto): Collection<AdapterResult> {
+    fun transformDataToKpi(data: TrivyDto): Collection<AdapterResult<VulnerabilityDto>> {
         return transformDataToKpi(listOf(data))
     }
 
-    fun transformTrivyV2ToKpi(data: Collection<TrivyDtoV2>): Collection<AdapterResult> {
+    fun transformTrivyV2ToKpi(
+        data: Collection<TrivyDtoV2>
+    ): Collection<AdapterResult<VulnerabilityDto>> {
+        // TODO: better origin types
         return CveAdapter.transformContainerVulnerabilityToKpi(
             createVulnerabilitiesDto(data.flatMap { it.results.flatMap { it.vulnerabilities } })
         )
@@ -86,7 +91,7 @@ object TrivyAdapter {
 
     /**
      * Transforms a collection of Trivy-specific vulnerabilities into the generalized vulnerability
-     * format. Trivy allows to annotate multiple CVSS scores to a vulnerability entry (e.g, CVSS2 or
+     * format. Trivy allows annotating multiple CVSS scores to a vulnerability entry (e.g., CVSS2 or
      * CVSS3 or even vendor specific). This transformation always selects the highest available
      * score for each vulnerability.
      */
@@ -115,8 +120,8 @@ object TrivyAdapter {
     }
 
     private fun getHighestCvssScore(scores: Collection<CVSSData>): Double {
-        // NB: If no value was coded we simply return 0.0 (no vulnerability)
-        // In practice this should never happen
+        // NB: If no value was coded, we simply return 0.0 (no vulnerability)
+        // In practice, this should never happen
         var v2Score = 0.0
         var v3Score = 0.0
 

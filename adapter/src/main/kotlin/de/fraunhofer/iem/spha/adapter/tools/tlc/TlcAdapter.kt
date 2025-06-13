@@ -17,7 +17,7 @@ import de.fraunhofer.iem.spha.adapter.tools.tlc.util.TechLagHelper.getTechLagFor
 import de.fraunhofer.iem.spha.model.adapter.tlc.TlcConfig
 import de.fraunhofer.iem.spha.model.adapter.tlc.TlcDefaultConfig
 import de.fraunhofer.iem.spha.model.adapter.tlc.TlcDto
-import de.fraunhofer.iem.spha.model.kpi.KpiId
+import de.fraunhofer.iem.spha.model.kpi.KpiType
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 import java.io.InputStream
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -45,7 +45,7 @@ object TlcAdapter {
     fun transformDataToKpi(
         data: Collection<TlcDto>,
         config: TlcConfig = TlcDefaultConfig.get(),
-    ): Collection<AdapterResult> {
+    ): Collection<AdapterResult<TechLagResult>> {
 
         return data.flatMap { tlcDto ->
             tlcDto.projectDtos.flatMap {
@@ -64,14 +64,20 @@ object TlcAdapter {
 
                         val rawValueKpi =
                             if (isProductionScope(ecosystem = project.ecosystem, scope = scope)) {
-                                RawValueKpi(score = libyearScore, kpiId = KpiId.LIB_DAYS_PROD.name)
+                                RawValueKpi(
+                                    score = libyearScore,
+                                    typeId = KpiType.LIB_DAYS_PROD.name,
+                                )
                             } else {
-                                RawValueKpi(score = libyearScore, kpiId = KpiId.LIB_DAYS_DEV.name)
+                                RawValueKpi(
+                                    score = libyearScore,
+                                    typeId = KpiType.LIB_DAYS_DEV.name,
+                                )
                             }
 
-                        return@map AdapterResult.Success.KpiTechLag(
+                        return@map AdapterResult.Success.Kpi(
                             rawValueKpi = rawValueKpi,
-                            techLag = techLag,
+                            origin = techLag,
                         )
                     }
 

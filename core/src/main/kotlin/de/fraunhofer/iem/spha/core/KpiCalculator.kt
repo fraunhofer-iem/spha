@@ -31,7 +31,7 @@ object KpiCalculator {
         logger.info {
             "Running KPI calculation on $hierarchy and $rawValueKpis with strict mode=$strict"
         }
-        val root = KpiHierarchyNode.from(hierarchy.rootNode, rawValueKpis)
+        val root = KpiHierarchyNode.from(hierarchy.root, rawValueKpis)
 
         depthFirstTraversal(root) { it.result = calculateKpi(it, strict) }
 
@@ -44,12 +44,11 @@ object KpiCalculator {
         strict: Boolean = false,
     ): KpiCalculationResult {
         logger.info { "Running KPI calculation on $node" }
-        if (node.kpiStrategyId == KpiStrategyId.RAW_VALUE_STRATEGY) {
+        if (node.strategy == KpiStrategyId.RAW_VALUE_STRATEGY) {
             return node.result
         }
 
-        val result =
-            getKpiCalculationStrategy(node.kpiStrategyId).calculateKpi(node.hierarchyEdges, strict)
+        val result = getKpiCalculationStrategy(node.strategy).calculateKpi(node.edges, strict)
         logger.info { "KPI calculation result $result" }
         return result
     }

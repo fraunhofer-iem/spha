@@ -57,8 +57,8 @@ internal object WeightedRatioKPICalculationStrategy : BaseKpiCalculationStrategy
                 if (biggerValue != 0.0) {
                     smallerValue / biggerValue
                 } else {
-                    // the statement above results in -Infinity
-                    // instead of an ArithmeticException when  dividing by 0.
+                    // the statement above results in minus infinity
+                    // instead of an ArithmeticException when dividing by 0.
 
                     return KpiCalculationResult.Error("Tried division by 0")
                 }
@@ -73,11 +73,11 @@ internal object WeightedRatioKPICalculationStrategy : BaseKpiCalculationStrategy
      * Validates whether the given KPI node is a valid ratio calculation node. If the given node's
      * strategy is not RATIO_STRATEGY, we return true.
      *
-     * If the number of children is not two a warning is generated, regardless of the used mode.
+     * If the number of children is not two, a warning is generated, regardless of the used mode.
      *
      * @param node KPI node to validate.
      * @param strict validation mode, true implies that a valid node must contain exactly two
-     *   children. False implies, that a valid node must contain two or more children.
+     *   children. False implies that a valid node must contain two or more children.
      * @return if the given node is valid.
      */
     override fun internalIsValid(node: KpiNode, strict: Boolean): Boolean {

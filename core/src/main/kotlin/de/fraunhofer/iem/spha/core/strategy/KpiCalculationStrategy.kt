@@ -44,7 +44,7 @@ internal interface KpiCalculationStrategy {
      * Calculates a KpiCalculationResult by applying the KpiCalculation strategy on the given child
      * scores.
      *
-     * @param hierarchyEdges based on whose results this result is calculated.
+     * @param hierarchyEdges based on whose results, this result is calculated.
      * @param strict calculation mode, true implies that the strategy will only take childScores of
      *   type Success into account. False implies that the calculation is also performed on
      *   Incomplete childScores.
@@ -63,7 +63,7 @@ internal interface KpiCalculationStrategy {
      *
      * @param node KPI node to validate.
      * @param strict validation mode, true implies that a valid node must exactly match our
-     *   expectations. False implies, that a node is considered valid if it can be used for further
+     *   expectations. False implies that a node is considered valid if it can be used for further
      *   calculation, but it might result in inconsistent results. E.g., we expect two children but
      *   receive three, not strict mode allows this, but it is not well-defined which of the three
      *   nodes will be used during KPI calculation.
@@ -103,7 +103,7 @@ internal abstract class BaseKpiCalculationStrategy : KpiCalculationStrategy {
                 result is KpiCalculationResult.Success
         ) {
             // Even if the current calculation returns success, we repackage this result into an
-            // Incomplete result, if any of the edges had no result / an incomplete results to
+            // Incomplete result if any of the edges had no result / an incomplete results to
             // propagate
             // this information to the top. Every result depending on incomplete information is also
             // incomplete.
@@ -122,7 +122,7 @@ internal abstract class BaseKpiCalculationStrategy : KpiCalculationStrategy {
      * of 0.0, as they are ignored for further calculation.Their `plannedWeight` is distributed
      * evenly between all edges with valid results attached to them.
      *
-     * @param edges whose weights are updated by this function.
+     * @param edges for which the weights are updated by this function.
      * @param strict mode which defines if incomplete edges should be used or not.
      */
     private fun updateEdgeWeights(edges: Collection<KpiHierarchyEdge>, strict: Boolean) {
@@ -151,7 +151,7 @@ internal abstract class BaseKpiCalculationStrategy : KpiCalculationStrategy {
     ): KpiCalculationResult
 
     final override fun isValid(node: KpiNode, strict: Boolean): Boolean {
-        if (node.kpiStrategyId != kpiStrategyId) {
+        if (node.strategy != kpiStrategyId) {
             return true
         }
 
@@ -166,8 +166,8 @@ internal abstract class BaseKpiCalculationStrategy : KpiCalculationStrategy {
 
     companion object {
         /**
-         * Checks if `result.score` is in a valid range (0..100). If the score is lower 0 or higher
-         * than 100, we return 0 or 100 respectively.
+         * Checks if `result.score` is in a valid range (0..100). If the score is lower than 0 or
+         * higher than 100, we return 0 or 100 respectively.
          *
          * @param result
          */

@@ -48,7 +48,7 @@ class MinimumKPICalculationStrategyTest {
                                         typeId = KpiType.NUMBER_OF_SIGNED_COMMITS.name,
                                         strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                         edges = listOf(),
-                                        reason = "Signed commits reason"
+                                        reason = "Signed commits reason",
                                     ),
                                 weight = 0.5,
                             ),
@@ -58,12 +58,12 @@ class MinimumKPICalculationStrategyTest {
                                         typeId = KpiType.NUMBER_OF_COMMITS.name,
                                         strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                         edges = listOf(),
-                                        reason = null
+                                        reason = null,
                                     ),
                                 weight = 0.5,
                             ),
                         ),
-                    reason = "Root minimum reason"
+                    reason = "Root minimum reason",
                 ),
                 listOf(
                     RawValueKpi(typeId = KpiType.NUMBER_OF_SIGNED_COMMITS.name, score = 15),

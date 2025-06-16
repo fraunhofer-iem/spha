@@ -101,7 +101,7 @@ private constructor(
                                 edges = emptyList(),
                                 originId = rawValueKpi.originId,
                                 id = rawValueKpi.id,
-                                reason = child.target.reason // propagate reason from original node
+                                reason = child.target.reason, // propagate reason from original node
                             )
                         hierarchyNode.result = KpiCalculationResult.Success(rawValueKpi.score)
                         val edge =
@@ -126,7 +126,7 @@ private constructor(
                     typeId = node.typeId,
                     edges = children,
                     strategy = node.strategy,
-                    reason = node.reason
+                    reason = node.reason,
                 )
 
             return calcNode

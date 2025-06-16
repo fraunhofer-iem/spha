@@ -34,7 +34,7 @@ class KpiHierarchyTest {
                             typeId = KpiType.SECURITY.name,
                             KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                             listOf(),
-                            reason = "Security reason"
+                            reason = "Security reason",
                         ),
                         weight = 0.3,
                     ),
@@ -43,7 +43,7 @@ class KpiHierarchyTest {
                             typeId = KpiType.PROCESS_COMPLIANCE.name,
                             KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                             listOf(),
-                            reason = null
+                            reason = null,
                         ),
                         weight = 0.3,
                     ),
@@ -52,7 +52,7 @@ class KpiHierarchyTest {
                             typeId = KpiType.INTERNAL_QUALITY.name,
                             KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                             listOf(),
-                            reason = null
+                            reason = null,
                         ),
                         weight = 0.3,
                     ),
@@ -62,7 +62,7 @@ class KpiHierarchyTest {
                     typeId = KpiType.ROOT.name,
                     strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                     edges = childNodes,
-                    reason = "Root reason"
+                    reason = "Root reason",
                 )
             val hierarchy = KpiHierarchy.create(root)
 

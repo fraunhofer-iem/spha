@@ -30,6 +30,7 @@ data class KpiResultNode(
     val children: List<KpiResultEdge>,
     val id: String = UUID.randomUUID().toString(),
     val originId: String? = null,
+    val reason: String? = null
 )
 
 @Serializable

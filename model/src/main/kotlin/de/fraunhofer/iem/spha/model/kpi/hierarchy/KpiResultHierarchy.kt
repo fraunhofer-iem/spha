@@ -31,6 +31,7 @@ data class KpiResultNode(
     val id: String = UUID.randomUUID().toString(),
     val originId: String? = null,
     val reason: String? = null,
+    val tags: List<String>? = null,
 )
 
 @Serializable

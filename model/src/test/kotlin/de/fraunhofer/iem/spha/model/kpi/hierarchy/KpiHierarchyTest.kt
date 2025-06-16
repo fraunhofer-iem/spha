@@ -35,6 +35,7 @@ class KpiHierarchyTest {
                             KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                             listOf(),
                             reason = "Security reason",
+                            tags = listOf("security", "critical"),
                         ),
                         weight = 0.3,
                     ),
@@ -44,6 +45,7 @@ class KpiHierarchyTest {
                             KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                             listOf(),
                             reason = null,
+                            tags = listOf("compliance"),
                         ),
                         weight = 0.3,
                     ),
@@ -53,6 +55,7 @@ class KpiHierarchyTest {
                             KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                             listOf(),
                             reason = null,
+                            tags = null,
                         ),
                         weight = 0.3,
                     ),
@@ -63,6 +66,7 @@ class KpiHierarchyTest {
                     strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                     edges = childNodes,
                     reason = "Root reason",
+                    tags = listOf("root", "summary"),
                 )
             val hierarchy = KpiHierarchy.create(root)
 
@@ -74,6 +78,11 @@ class KpiHierarchyTest {
             // Check that the reason is present in the serialized output
             assert(jsonResult.contains("Root reason"))
             assert(jsonResult.contains("Security reason"))
+            // Check that tags are present in the serialized output
+            assert(jsonResult.contains("root"))
+            assert(jsonResult.contains("security"))
+            assert(jsonResult.contains("critical"))
+            assert(jsonResult.contains("compliance"))
         }
     }
 }

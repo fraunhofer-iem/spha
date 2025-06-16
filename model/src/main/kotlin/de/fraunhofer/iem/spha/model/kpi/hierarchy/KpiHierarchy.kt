@@ -29,6 +29,7 @@ data class KpiNode(
     val strategy: KpiStrategyId,
     val edges: List<KpiEdge>,
     val reason: String? = null,
+    val tags: List<String>? = null,
 )
 
 @Serializable data class KpiEdge(val target: KpiNode, val weight: Double)

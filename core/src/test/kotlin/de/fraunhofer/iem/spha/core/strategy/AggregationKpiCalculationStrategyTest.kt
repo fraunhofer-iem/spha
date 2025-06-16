@@ -80,6 +80,7 @@ class AggregationKpiCalculationStrategyTest {
         // Check that the reason is present in the node
         assertEquals("Root aggregation reason", root.reason)
         assertEquals("Signed commits reason", root.edges[0].to.reason)
+            assertEquals(null, root.edges[1].to.reason)
 
         val calcRelaxed =
             WeightedAverageKPICalculationStrategy.calculateKpi(root.edges, strict = false)

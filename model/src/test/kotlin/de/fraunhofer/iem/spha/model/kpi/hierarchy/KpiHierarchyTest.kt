@@ -74,6 +74,8 @@ class KpiHierarchyTest {
             // Check that the reason is present in the serialized output
             assert(jsonResult.contains("Root reason"))
             assert(jsonResult.contains("Security reason"))
+            // Ensure that 'reason = null' is not present in the serialized output
+            assert(!jsonResult.contains("\"reason\":null"))
         }
     }
 }

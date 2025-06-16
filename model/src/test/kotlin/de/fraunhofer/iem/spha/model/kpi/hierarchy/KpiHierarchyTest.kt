@@ -55,7 +55,7 @@ class KpiHierarchyTest {
                             KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                             listOf(),
                             reason = null,
-                            tags = null,
+                            tags = emptySet(),
                         ),
                         weight = 0.3,
                     ),

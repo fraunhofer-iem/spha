@@ -25,7 +25,7 @@ private constructor(
     val id: String = UUID.randomUUID().toString(),
     val originId: String? = null,
     val reason: String? = null,
-    val tags: List<String>? = null,
+    val tags: Collection<String> = emptySet(),
 ) {
 
     var result: KpiCalculationResult = KpiCalculationResult.Empty()

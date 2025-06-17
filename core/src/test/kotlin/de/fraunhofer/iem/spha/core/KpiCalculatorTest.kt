@@ -17,7 +17,10 @@ import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiEdge
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiHierarchy
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiNode
+import de.fraunhofer.iem.spha.model.kpi.hierarchy.SCHEMA_VERSIONS
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.fail
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -392,5 +395,70 @@ class KpiCalculatorTest {
         } else {
             fail()
         }
+    }
+
+    @Test
+    fun calculatePreservesPropertiesFromInputData() {
+        val cvssValue = RawValueKpi(
+            typeId = KpiType.CODE_VULNERABILITY_SCORE.name,
+            score = 42,
+            originId = "cvssOrigin"
+        )
+        val sastValue = RawValueKpi(
+            typeId = KpiType.SAST_USAGE.name,
+            score = 42,
+            originId = "sastOrigin"
+        )
+
+        val sastNode = KpiNode(
+            typeId = KpiType.SAST_USAGE.name,
+            strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
+            edges = emptyList(),
+        )
+        val cvssNode = KpiNode(
+            typeId = KpiType.CODE_VULNERABILITY_SCORE.name,
+            strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
+            edges = emptyList(),
+            tags = setOf("cvss", "cve", "cwe"),
+            reason = "CRA relevant"
+        )
+
+        val root = KpiNode(
+            typeId = KpiType.ROOT.name,
+            strategy = KpiStrategyId.MAXIMUM_STRATEGY,
+            edges = listOf(
+                KpiEdge(sastNode, 1.0),
+                KpiEdge(cvssNode, 1.0)
+            )
+        )
+        val hierarchy = KpiHierarchy.create(root)
+        val result = KpiCalculator.calculateKpis(hierarchy, listOf(cvssValue, sastValue).shuffled())
+
+        assertEquals(SCHEMA_VERSIONS.last(), result.schemaVersion)
+
+        // Check Root Node
+        assertEquals(setOf(), result.rootNode.tags)
+        assertNull(result.rootNode.originId)
+        assertNull(result.rootNode.reason)
+        assertEquals(2, result.rootNode.children.count())
+        assertFalse { result.rootNode.id == sastValue.id || result.rootNode.id == cvssValue.id } // Ensures id is not inherited
+
+        // Check CVSS Node
+        val cvssResultNode = result.rootNode.children.first { it.target.typeId ==  KpiType.CODE_VULNERABILITY_SCORE.name }.target
+        assertEquals(0, cvssResultNode.children.count())
+        assertEquals(KpiStrategyId.RAW_VALUE_STRATEGY, cvssResultNode.strategy)
+        assertEquals(cvssValue.id, cvssResultNode.id)
+        assertEquals(setOf(), cvssResultNode.tags)
+        assertEquals("cvssOrigin", cvssResultNode.originId)
+        assertEquals("CRA relevant", cvssResultNode.reason)
+
+        // Check SAST Node
+        val sastResultNode = result.rootNode.children.first { it.target.typeId ==  KpiType.SAST_USAGE.name }.target
+        assertEquals(0, sastResultNode.children.count())
+        assertEquals(KpiStrategyId.RAW_VALUE_STRATEGY, sastResultNode.strategy)
+        assertEquals(sastValue.id, sastResultNode.id)
+        assertEquals(setOf(), sastResultNode.tags)
+        assertEquals("sastOrigin", sastResultNode.originId)
+        assertNull(sastResultNode.reason)
     }
 }

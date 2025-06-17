@@ -23,9 +23,9 @@ private constructor(
     val strategy: KpiStrategyId,
     val edges: List<KpiHierarchyEdge>,
     val id: String = UUID.randomUUID().toString(),
+    val tags: Set<String> = emptySet(),
     val originId: String? = null,
     val reason: String? = null,
-    val tags: Set<String> = emptySet(),
 ) {
 
     var result: KpiCalculationResult = KpiCalculationResult.Empty()
@@ -103,8 +103,7 @@ private constructor(
                                 edges = emptyList(),
                                 originId = rawValueKpi.originId,
                                 id = rawValueKpi.id,
-                                reason = child.target.reason, // propagate reason from original node
-                                tags = child.target.tags, // propagate tags from original node
+                                reason = child.target.reason,
                             )
                         hierarchyNode.result = KpiCalculationResult.Success(rawValueKpi.score)
                         val edge =

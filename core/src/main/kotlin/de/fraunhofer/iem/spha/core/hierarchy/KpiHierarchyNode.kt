@@ -22,10 +22,21 @@ private constructor(
     val typeId: String,
     val strategy: KpiStrategyId,
     val edges: List<KpiHierarchyEdge>,
-    val id: String = UUID.randomUUID().toString(),
     val originId: String? = null,
     val reason: String? = null,
 ) {
+    var id: String = UUID.randomUUID().toString()
+
+    constructor(
+        typeId: String,
+        strategy: KpiStrategyId,
+        edges: List<KpiHierarchyEdge>,
+        id: String,
+        originId: String? = null,
+        reason: String? = null,
+    ) : this(typeId, strategy, edges, originId, reason) {
+        this.id = id
+    }
 
     var result: KpiCalculationResult = KpiCalculationResult.Empty()
 

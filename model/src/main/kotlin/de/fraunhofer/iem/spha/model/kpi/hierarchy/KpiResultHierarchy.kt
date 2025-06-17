@@ -28,10 +28,23 @@ data class KpiResultNode(
     val result: KpiCalculationResult,
     val strategy: KpiStrategyId,
     val children: List<KpiResultEdge>,
-    val id: String = UUID.randomUUID().toString(),
     val originId: String? = null,
     val reason: String? = null,
-)
+) {
+    var id: String = UUID.randomUUID().toString()
+
+    constructor(
+        typeId: String,
+        result: KpiCalculationResult,
+        strategy: KpiStrategyId,
+        children: List<KpiResultEdge>,
+        id: String,
+        originId: String? = null,
+        reason: String? = null,
+    ) : this(typeId, result, strategy, children, originId, reason) {
+        this.id = id
+    }
+}
 
 @Serializable
 data class KpiResultEdge(

@@ -34,6 +34,7 @@ class KpiHierarchyTest {
                             typeId = KpiType.SECURITY.name,
                             KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                             listOf(),
+                            reason = "Security reason",
                         ),
                         weight = 0.3,
                     ),
@@ -42,6 +43,7 @@ class KpiHierarchyTest {
                             typeId = KpiType.PROCESS_COMPLIANCE.name,
                             KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                             listOf(),
+                            reason = null,
                         ),
                         weight = 0.3,
                     ),
@@ -50,6 +52,7 @@ class KpiHierarchyTest {
                             typeId = KpiType.INTERNAL_QUALITY.name,
                             KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                             listOf(),
+                            reason = null,
                         ),
                         weight = 0.3,
                     ),
@@ -58,7 +61,8 @@ class KpiHierarchyTest {
                 KpiNode(
                     typeId = KpiType.ROOT.name,
                     strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
-                    childNodes,
+                    edges = childNodes,
+                    reason = "Root reason",
                 )
             val hierarchy = KpiHierarchy.create(root)
 
@@ -67,6 +71,11 @@ class KpiHierarchyTest {
 
             println(jsonResult)
             assertEquals(hierarchy.schemaVersion, "1.1.0")
+            // Check that the reason is present in the serialized output
+            assert(jsonResult.contains("Root reason"))
+            assert(jsonResult.contains("Security reason"))
+            // Ensure that 'reason = null' is not present in the serialized output
+            assert(!jsonResult.contains("\"reason\":null"))
         }
     }
 }

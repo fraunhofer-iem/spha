@@ -48,6 +48,7 @@ class MinimumKPICalculationStrategyTest {
                                         typeId = KpiType.NUMBER_OF_SIGNED_COMMITS.name,
                                         strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                         edges = listOf(),
+                                        reason = "Signed commits reason",
                                     ),
                                 weight = 0.5,
                             ),
@@ -57,16 +58,22 @@ class MinimumKPICalculationStrategyTest {
                                         typeId = KpiType.NUMBER_OF_COMMITS.name,
                                         strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                         edges = listOf(),
+                                        reason = null,
                                     ),
                                 weight = 0.5,
                             ),
                         ),
+                    reason = "Root minimum reason",
                 ),
                 listOf(
                     RawValueKpi(typeId = KpiType.NUMBER_OF_SIGNED_COMMITS.name, score = 15),
                     RawValueKpi(typeId = KpiType.NUMBER_OF_COMMITS.name, score = 20),
                 ),
             )
+
+        // Check that the reason is present in the node
+        assertEquals("Root minimum reason", root.reason)
+        assertEquals("Signed commits reason", root.edges[0].to.reason)
 
         val calcRelaxed = MinimumKPICalculationStrategy.calculateKpi(root.edges, strict = false)
         val calcStrict = MinimumKPICalculationStrategy.calculateKpi(root.edges, strict = true)

@@ -38,6 +38,7 @@ class XorKPICalculationStrategyTest {
                                     typeId = KpiType.NUMBER_OF_COMMITS.name,
                                     strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                     edges = listOf(),
+                                    reason = "Child reason",
                                 ),
                             weight = 0.5,
                         ),
@@ -47,6 +48,7 @@ class XorKPICalculationStrategyTest {
                                     typeId = KpiType.NUMBER_OF_COMMITS.name,
                                     strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                     edges = listOf(),
+                                    reason = null,
                                 ),
                             weight = 0.5,
                         ),
@@ -56,11 +58,15 @@ class XorKPICalculationStrategyTest {
                                     typeId = KpiType.NUMBER_OF_COMMITS.name,
                                     strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                     edges = listOf(),
+                                    reason = null,
                                 ),
                             weight = 0.5,
                         ),
                     ),
+                reason = "XOR root reason",
             )
+        assertEquals("XOR root reason", nodeManyChildren.reason)
+        assertEquals("Child reason", nodeManyChildren.edges[0].target.reason)
 
         assertEquals(
             false,

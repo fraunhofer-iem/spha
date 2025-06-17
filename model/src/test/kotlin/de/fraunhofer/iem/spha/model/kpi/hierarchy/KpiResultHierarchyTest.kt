@@ -39,7 +39,7 @@ class KpiResultHierarchyTest {
             )
         )
         val resultHierarchy = KpiResultHierarchy.create(root)
-        assertSame(root, resultHierarchy.rootNode)
+        assertSame(root, resultHierarchy.root)
         assertEquals(SCHEMA_VERSIONS.last(), resultHierarchy.schemaVersion)
     }
 

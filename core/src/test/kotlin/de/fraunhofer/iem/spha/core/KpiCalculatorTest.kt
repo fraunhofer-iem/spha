@@ -319,9 +319,7 @@ class KpiCalculatorTest {
                 res.root.edges.find { it.target.typeId == KpiType.SAST_USAGE.name } ?: fail()
             assertEquals(0.0, sastResult.actualWeight)
             val vulnerabilityEdges =
-                res.root.edges.filter {
-                    it.target.typeId == KpiType.CODE_VULNERABILITY_SCORE.name
-                }
+                res.root.edges.filter { it.target.typeId == KpiType.CODE_VULNERABILITY_SCORE.name }
             assertEquals(2, vulnerabilityEdges.size)
             assertEquals(vulnerabilityEdges.first().actualWeight, 0.5)
             assertEquals(vulnerabilityEdges[1].actualWeight, 0.5)

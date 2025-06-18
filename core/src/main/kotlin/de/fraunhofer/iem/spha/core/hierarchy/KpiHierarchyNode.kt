@@ -58,7 +58,7 @@ private constructor(
                 id = node.id,
                 reason = node.reason,
                 tags = node.tags,
-                children =
+                edges =
                     node.edges.map {
                         KpiResultEdge(
                             target = to(it.to),

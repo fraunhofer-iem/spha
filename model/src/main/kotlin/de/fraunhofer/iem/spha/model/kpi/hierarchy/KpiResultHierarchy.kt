@@ -27,7 +27,7 @@ data class KpiResultNode(
     val typeId: String,
     val result: KpiCalculationResult,
     val strategy: KpiStrategyId,
-    val children: List<KpiResultEdge>,
+    val edges: List<KpiResultEdge>,
     val id: String = UUID.randomUUID().toString(),
     val tags: Set<String> = emptySet(),
     val originId: String? = null,

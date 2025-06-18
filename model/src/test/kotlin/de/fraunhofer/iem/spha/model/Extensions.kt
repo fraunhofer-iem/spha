@@ -33,7 +33,7 @@ internal fun KpiResultNode.assertEquals(actualNode: KpiResultNode) {
     assertEquals(this.typeId, actualNode.typeId)
     assertEquals(this.result, actualNode.result)
     assertEquals(this.strategy, actualNode.strategy)
-    assertEquals(this.children, actualNode.children)
+    assertEquals(this.edges, actualNode.edges)
     assertEquals(this.id, actualNode.id)
     assertEquals(this.tags, actualNode.tags)
     assertEquals(this.originId, actualNode.originId)

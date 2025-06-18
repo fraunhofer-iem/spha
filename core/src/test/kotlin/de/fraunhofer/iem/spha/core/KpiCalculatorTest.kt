@@ -316,10 +316,10 @@ class KpiCalculatorTest {
         if (result is KpiCalculationResult.Incomplete) {
             assertEquals(85, result.score)
             val sastResult =
-                res.root.children.find { it.target.typeId == KpiType.SAST_USAGE.name } ?: fail()
+                res.root.edges.find { it.target.typeId == KpiType.SAST_USAGE.name } ?: fail()
             assertEquals(0.0, sastResult.actualWeight)
             val vulnerabilityEdges =
-                res.root.children.filter {
+                res.root.edges.filter {
                     it.target.typeId == KpiType.CODE_VULNERABILITY_SCORE.name
                 }
             assertEquals(2, vulnerabilityEdges.size)
@@ -384,10 +384,10 @@ class KpiCalculatorTest {
         if (result is KpiCalculationResult.Incomplete) {
             assertEquals(90, result.score)
             val sastResult =
-                res.root.children.find { it.target.typeId == KpiType.SAST_USAGE.name } ?: fail()
+                res.root.edges.find { it.target.typeId == KpiType.SAST_USAGE.name } ?: fail()
             assertEquals(0.0, sastResult.actualWeight)
             val vulnerabilityEdges =
-                res.root.children.filter { it.target.typeId == KpiType.MAXIMAL_VULNERABILITY.name }
+                res.root.edges.filter { it.target.typeId == KpiType.MAXIMAL_VULNERABILITY.name }
             assertEquals(vulnerabilityEdges.first().actualWeight, 1.0)
             assertEquals(vulnerabilityEdges.first().plannedWeight, 0.5)
         } else {
@@ -436,17 +436,17 @@ class KpiCalculatorTest {
         assertEquals(setOf(), result.root.tags)
         assertNull(result.root.originId)
         assertNull(result.root.reason)
-        assertEquals(2, result.root.children.count())
+        assertEquals(2, result.root.edges.count())
         assertFalse {
             result.root.id == sastValue.id || result.root.id == cvssValue.id
         } // Ensures id is not inherited
 
         // Check CVSS Node
         val cvssResultNode =
-            result.root.children
+            result.root.edges
                 .first { it.target.typeId == KpiType.CODE_VULNERABILITY_SCORE.name }
                 .target
-        assertEquals(0, cvssResultNode.children.count())
+        assertEquals(0, cvssResultNode.edges.count())
         assertEquals(KpiStrategyId.RAW_VALUE_STRATEGY, cvssResultNode.strategy)
         assertEquals(cvssValue.id, cvssResultNode.id)
         assertEquals(setOf(), cvssResultNode.tags)
@@ -455,8 +455,8 @@ class KpiCalculatorTest {
 
         // Check SAST Node
         val sastResultNode =
-            result.root.children.first { it.target.typeId == KpiType.SAST_USAGE.name }.target
-        assertEquals(0, sastResultNode.children.count())
+            result.root.edges.first { it.target.typeId == KpiType.SAST_USAGE.name }.target
+        assertEquals(0, sastResultNode.edges.count())
         assertEquals(KpiStrategyId.RAW_VALUE_STRATEGY, sastResultNode.strategy)
         assertEquals(sastValue.id, sastResultNode.id)
         assertEquals(setOf(), sastResultNode.tags)

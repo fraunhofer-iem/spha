@@ -26,7 +26,7 @@ class JsonKpiResultHierarchyTest {
                 typeId = "someId",
                 result = KpiCalculationResult.Success(42),
                 strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
-                children = listOf(),
+                edges = listOf(),
             )
         val edge = KpiResultEdge(actualWeight = 0.5, plannedWeight = 1.0, target = node)
         val newEdge =
@@ -60,7 +60,7 @@ class JsonKpiResultHierarchyTest {
                 result = KpiCalculationResult.Success(100),
                 strategy = KpiStrategyId.MAXIMUM_STRATEGY,
                 id = "rootId", // Stable ID here
-                children =
+                edges =
                     listOf(
                         KpiResultEdge(
                             plannedWeight = 1.0,
@@ -70,7 +70,7 @@ class JsonKpiResultHierarchyTest {
                                     typeId = KpiType.CODE_VULNERABILITY_SCORE.name,
                                     result = KpiCalculationResult.Success(100),
                                     strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
-                                    children = emptyList(),
+                                    edges = emptyList(),
                                     id = "cveId", // Stable ID here
                                     tags = setOf("A", "B", "a", "b", "A"),
                                     originId = "someOrigin",
@@ -88,7 +88,7 @@ class JsonKpiResultHierarchyTest {
         // This implicitly asserts that KpiResultNode and KpiResultEdge get serialized to the
         // expected JSON too
         val expected =
-            "{\"root\":{\"typeId\":\"ROOT\",\"result\":{\"type\":\"de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success\",\"score\":100},\"strategy\":\"MAXIMUM_STRATEGY\",\"children\":[{\"target\":{\"typeId\":\"CODE_VULNERABILITY_SCORE\",\"result\":{\"type\":\"de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success\",\"score\":100},\"strategy\":\"RAW_VALUE_STRATEGY\",\"children\":[],\"id\":\"cveId\",\"tags\":[\"A\",\"B\",\"a\",\"b\"],\"originId\":\"someOrigin\",\"reason\":\"CRA relevant\"},\"plannedWeight\":1.0,\"actualWeight\":0.5}],\"id\":\"rootId\"},\"schemaVersion\":\"1.1.0\"}"
+            "{\"root\":{\"typeId\":\"ROOT\",\"result\":{\"type\":\"de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success\",\"score\":100},\"strategy\":\"MAXIMUM_STRATEGY\",\"edges\":[{\"target\":{\"typeId\":\"CODE_VULNERABILITY_SCORE\",\"result\":{\"type\":\"de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success\",\"score\":100},\"strategy\":\"RAW_VALUE_STRATEGY\",\"edges\":[],\"id\":\"cveId\",\"tags\":[\"A\",\"B\",\"a\",\"b\"],\"originId\":\"someOrigin\",\"reason\":\"CRA relevant\"},\"plannedWeight\":1.0,\"actualWeight\":0.5}],\"id\":\"rootId\"},\"schemaVersion\":\"1.1.0\"}"
 
         kotlin.test.assertEquals(expected, jsonResult)
     }
@@ -101,13 +101,13 @@ class JsonKpiResultHierarchyTest {
                     typeId = "someId",
                     result = KpiCalculationResult.Success(42),
                     strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
-                    children = listOf(),
+                    edges = listOf(),
                 ),
                 KpiResultNode(
                     typeId = "someId",
                     result = KpiCalculationResult.Error("someError"),
                     strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
-                    children = listOf(),
+                    edges = listOf(),
                     id = "someId",
                     tags = setOf("A", "B", "a", "b", "A"),
                     originId = "someOrigin",
@@ -117,14 +117,14 @@ class JsonKpiResultHierarchyTest {
                     typeId = "someId",
                     result = KpiCalculationResult.Incomplete(42, "someIncompleteReason"),
                     strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
-                    children = listOf(),
+                    edges = listOf(),
                     id = "someId",
                 ),
                 KpiResultNode(
                     typeId = "someId",
                     result = KpiCalculationResult.Empty(),
                     strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
-                    children = listOf(),
+                    edges = listOf(),
                     id = "someId",
                 ),
             )

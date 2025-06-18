@@ -26,7 +26,7 @@ class KpiResultHierarchyTest {
                 typeId = KpiType.ROOT.name,
                 result = KpiCalculationResult.Error("failed"),
                 strategy = KpiStrategyId.MAXIMUM_STRATEGY,
-                children =
+                edges =
                     listOf(
                         KpiResultEdge(
                             plannedWeight = 1.0,
@@ -36,7 +36,7 @@ class KpiResultHierarchyTest {
                                     typeId = KpiType.CODE_VULNERABILITY_SCORE.name,
                                     result = KpiCalculationResult.Success(42),
                                     strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
-                                    children = listOf(),
+                                    edges = listOf(),
                                 ),
                         )
                     ),
@@ -53,7 +53,7 @@ class KpiResultHierarchyTest {
                 typeId = KpiType.ROOT.name,
                 result = KpiCalculationResult.Success(42),
                 strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
-                children = listOf(),
+                edges = listOf(),
             )
         assertEquals(setOf(), resultNode.tags)
         assertNull(resultNode.reason)
@@ -67,7 +67,7 @@ class KpiResultHierarchyTest {
                 typeId = KpiType.ROOT.name,
                 result = KpiCalculationResult.Success(42),
                 strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
-                children = listOf(),
+                edges = listOf(),
             )
         val resultEdge = KpiResultEdge(plannedWeight = 0.5, actualWeight = 1.0, target = resultNode)
 
@@ -83,7 +83,7 @@ class KpiResultHierarchyTest {
                 typeId = KpiType.ROOT.name,
                 result = KpiCalculationResult.Success(42),
                 strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
-                children = listOf(),
+                edges = listOf(),
                 id = "someKpiId",
                 originId = "someOrigin",
                 tags = setOf("tag1", "tag2"),

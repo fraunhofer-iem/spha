@@ -16,7 +16,7 @@ import kotlin.test.assertNull
 
 class RawValueKpiTest {
     @Test
-    fun ctorSetsProperties(){
+    fun ctorSetsProperties() {
         val rawValueKpi = RawValueKpi("someType", 42, "someKpiId", "someOrigin")
         assertEquals("someType", rawValueKpi.typeId)
         assertEquals(42, rawValueKpi.score)
@@ -25,7 +25,7 @@ class RawValueKpiTest {
     }
 
     @Test
-    fun ctorDefaultProperties(){
+    fun ctorDefaultProperties() {
         val rawValueKpi = RawValueKpi("someType", 123)
         assertNotNull(rawValueKpi.id)
         assertNull(rawValueKpi.originId)

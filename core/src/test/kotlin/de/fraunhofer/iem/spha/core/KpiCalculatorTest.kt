@@ -78,11 +78,11 @@ class KpiCalculatorTest {
                                                         edges = emptyList(),
                                                     ),
                                                 weight = 1.0,
-                                            ),
+                                            )
                                         ),
                                 ),
                             weight = 1.0,
-                        ),
+                        )
                     ),
             )
         val hierarchy = KpiHierarchy.create(root)
@@ -141,7 +141,7 @@ class KpiCalculatorTest {
                                         ),
                                 ),
                             weight = 1.0,
-                        ),
+                        )
                     ),
             )
         val hierarchy = KpiHierarchy.create(root)
@@ -217,7 +217,7 @@ class KpiCalculatorTest {
                                                         edges = emptyList(),
                                                     ),
                                                 weight = 0.5,
-                                            ),
+                                            )
                                         ),
                                 ),
                             weight = 0.5,
@@ -259,7 +259,7 @@ class KpiCalculatorTest {
                                     edges = listOf(),
                                 ),
                             weight = 1.0,
-                        ),
+                        )
                     ),
             )
         val hierarchy = KpiHierarchy.create(root)
@@ -360,7 +360,7 @@ class KpiCalculatorTest {
                                                         edges = listOf(),
                                                     ),
                                                 weight = 1.0,
-                                            ),
+                                            )
                                         ),
                                 ),
                             weight = 0.5,
@@ -387,9 +387,7 @@ class KpiCalculatorTest {
                 res.root.children.find { it.target.typeId == KpiType.SAST_USAGE.name } ?: fail()
             assertEquals(0.0, sastResult.actualWeight)
             val vulnerabilityEdges =
-                res.root.children.filter {
-                    it.target.typeId == KpiType.MAXIMAL_VULNERABILITY.name
-                }
+                res.root.children.filter { it.target.typeId == KpiType.MAXIMAL_VULNERABILITY.name }
             assertEquals(vulnerabilityEdges.first().actualWeight, 1.0)
             assertEquals(vulnerabilityEdges.first().plannedWeight, 0.5)
         } else {
@@ -399,38 +397,36 @@ class KpiCalculatorTest {
 
     @Test
     fun calculatePreservesPropertiesFromInputData() {
-        val cvssValue = RawValueKpi(
-            typeId = KpiType.CODE_VULNERABILITY_SCORE.name,
-            score = 42,
-            originId = "cvssOrigin",
-        )
-        val sastValue = RawValueKpi(
-            typeId = KpiType.SAST_USAGE.name,
-            score = 42,
-            originId = "sastOrigin",
-        )
+        val cvssValue =
+            RawValueKpi(
+                typeId = KpiType.CODE_VULNERABILITY_SCORE.name,
+                score = 42,
+                originId = "cvssOrigin",
+            )
+        val sastValue =
+            RawValueKpi(typeId = KpiType.SAST_USAGE.name, score = 42, originId = "sastOrigin")
 
-        val sastNode = KpiNode(
-            typeId = KpiType.SAST_USAGE.name,
-            strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
-            edges = emptyList(),
-        )
-        val cvssNode = KpiNode(
-            typeId = KpiType.CODE_VULNERABILITY_SCORE.name,
-            strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
-            edges = emptyList(),
-            tags = setOf("cvss", "cve", "cwe"),
-            reason = "CRA relevant",
-        )
+        val sastNode =
+            KpiNode(
+                typeId = KpiType.SAST_USAGE.name,
+                strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
+                edges = emptyList(),
+            )
+        val cvssNode =
+            KpiNode(
+                typeId = KpiType.CODE_VULNERABILITY_SCORE.name,
+                strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
+                edges = emptyList(),
+                tags = setOf("cvss", "cve", "cwe"),
+                reason = "CRA relevant",
+            )
 
-        val root = KpiNode(
-            typeId = KpiType.ROOT.name,
-            strategy = KpiStrategyId.MAXIMUM_STRATEGY,
-            edges = listOf(
-                KpiEdge(sastNode, 1.0),
-                KpiEdge(cvssNode, 1.0),
-            ),
-        )
+        val root =
+            KpiNode(
+                typeId = KpiType.ROOT.name,
+                strategy = KpiStrategyId.MAXIMUM_STRATEGY,
+                edges = listOf(KpiEdge(sastNode, 1.0), KpiEdge(cvssNode, 1.0)),
+            )
         val hierarchy = KpiHierarchy.create(root)
         val result = KpiCalculator.calculateKpis(hierarchy, listOf(cvssValue, sastValue).shuffled())
 
@@ -441,11 +437,15 @@ class KpiCalculatorTest {
         assertNull(result.root.originId)
         assertNull(result.root.reason)
         assertEquals(2, result.root.children.count())
-        assertFalse { result.root.id == sastValue.id || result.root.id == cvssValue.id } // Ensures id is not inherited
+        assertFalse {
+            result.root.id == sastValue.id || result.root.id == cvssValue.id
+        } // Ensures id is not inherited
 
         // Check CVSS Node
         val cvssResultNode =
-            result.root.children.first { it.target.typeId == KpiType.CODE_VULNERABILITY_SCORE.name }.target
+            result.root.children
+                .first { it.target.typeId == KpiType.CODE_VULNERABILITY_SCORE.name }
+                .target
         assertEquals(0, cvssResultNode.children.count())
         assertEquals(KpiStrategyId.RAW_VALUE_STRATEGY, cvssResultNode.strategy)
         assertEquals(cvssValue.id, cvssResultNode.id)

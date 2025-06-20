@@ -16,7 +16,7 @@ import kotlinx.serialization.Serializable
 @ConsistentCopyVisibility
 @Serializable
 data class KpiResultHierarchy
-private constructor(val rootNode: KpiResultNode, val schemaVersion: String) {
+private constructor(val root: KpiResultNode, val schemaVersion: String) {
     companion object {
         fun create(rootNode: KpiResultNode) = KpiResultHierarchy(rootNode, SCHEMA_VERSIONS.last())
     }
@@ -27,8 +27,9 @@ data class KpiResultNode(
     val typeId: String,
     val result: KpiCalculationResult,
     val strategy: KpiStrategyId,
-    val children: List<KpiResultEdge>,
+    val edges: List<KpiResultEdge>,
     val id: String = UUID.randomUUID().toString(),
+    val tags: Set<String> = emptySet(),
     val originId: String? = null,
     val reason: String? = null,
 )

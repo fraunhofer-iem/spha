@@ -28,6 +28,7 @@ data class KpiNode(
     val typeId: String,
     val strategy: KpiStrategyId,
     val edges: List<KpiEdge>,
+    val tags: Set<String> = emptySet(),
     val reason: String? = null,
 )
 

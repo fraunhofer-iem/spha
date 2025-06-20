@@ -12,4 +12,7 @@ plugins {
     alias(libs.plugins.serialization)
 }
 
-dependencies { implementation(libs.kotlin.serialization.json) }
+dependencies {
+    implementation(libs.kotlin.serialization.json)
+    testImplementation(libs.test.junit5.params)
+}

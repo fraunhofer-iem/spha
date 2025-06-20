@@ -12,6 +12,7 @@ package de.fraunhofer.iem.spha.model.kpi
 import de.fraunhofer.iem.spha.model.assertEquals
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlinx.serialization.json.Json
@@ -45,7 +46,7 @@ class RawValueKpiTest {
         // IDs.
         val expectedRandomId = kpis[0].id
         val expected =
-            "[{\"typeId\":\"someTypeId\",\"score\":42,\"id\":\"$expectedRandomId\"},{\"typeId\":\"someTypeId\",\"score\":42,\"id\":\"someId\",\"originId\":\"someOrigin\"}]"
+            "[{\"typeId\":\"someTypeId\",\"score\":42,\"id\":\"$expectedRandomId\"},{\"typeId\":\"someTypeId\",\"score\":42,\"originId\":\"someOrigin\",\"id\":\"someId\"}]"
 
         assertEquals(expected, result)
     }
@@ -57,7 +58,7 @@ class RawValueKpiTest {
 
         rawValue.assertEquals(newRawValueKpi)
     }
-    
+
     @Test
     fun testDefaultConstructor() {
         // When using the default constructor, a random UUID should be generated

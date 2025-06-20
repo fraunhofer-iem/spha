@@ -23,14 +23,14 @@ class KpiResultNodeTest {
                 typeId = "test",
                 result = KpiCalculationResult.Success(100),
                 strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
-                children = emptyList(),
+                edges = emptyList(),
             )
         val node2 =
             KpiResultNode(
                 typeId = "test",
                 result = KpiCalculationResult.Success(100),
                 strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
-                children = emptyList(),
+                edges = emptyList(),
             )
 
         // Verify that the IDs are different
@@ -40,7 +40,7 @@ class KpiResultNodeTest {
         assertEquals("test", node1.typeId)
         assertEquals(KpiCalculationResult.Success(100), node1.result)
         assertEquals(KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY, node1.strategy)
-        assertEquals(emptyList(), node1.children)
+        assertEquals(emptyList(), node1.edges)
         assertEquals(null, node1.originId)
         assertEquals(null, node1.reason)
     }
@@ -54,7 +54,7 @@ class KpiResultNodeTest {
                 typeId = "test",
                 result = KpiCalculationResult.Success(100),
                 strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
-                children = emptyList(),
+                edges = emptyList(),
                 id = customId,
                 originId = "origin-123",
                 reason = "test reason",
@@ -67,7 +67,7 @@ class KpiResultNodeTest {
         assertEquals("test", node.typeId)
         assertEquals(KpiCalculationResult.Success(100), node.result)
         assertEquals(KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY, node.strategy)
-        assertEquals(emptyList(), node.children)
+        assertEquals(emptyList(), node.edges)
         assertEquals("origin-123", node.originId)
         assertEquals("test reason", node.reason)
     }
@@ -81,7 +81,7 @@ class KpiResultNodeTest {
                 typeId = "test",
                 result = KpiCalculationResult.Success(100),
                 strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
-                children = emptyList(),
+                edges = emptyList(),
                 originId = "origin-123",
                 reason = "test reason",
             )
@@ -90,7 +90,7 @@ class KpiResultNodeTest {
                 typeId = "test",
                 result = KpiCalculationResult.Success(100),
                 strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
-                children = emptyList(),
+                edges = emptyList(),
                 originId = "origin-123",
                 reason = "test reason",
             )
@@ -112,7 +112,7 @@ class KpiResultNodeTest {
                 typeId = "test",
                 result = KpiCalculationResult.Success(100),
                 strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
-                children = emptyList(),
+                edges = emptyList(),
                 id = "same-id",
                 originId = "origin-123",
                 reason = "test reason",
@@ -122,7 +122,7 @@ class KpiResultNodeTest {
                 typeId = "test",
                 result = KpiCalculationResult.Success(100),
                 strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
-                children = emptyList(),
+                edges = emptyList(),
                 id = "same-id",
                 originId = "origin-123",
                 reason = "test reason",

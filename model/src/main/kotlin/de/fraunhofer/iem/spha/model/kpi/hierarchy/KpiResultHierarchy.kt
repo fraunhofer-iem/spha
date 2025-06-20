@@ -28,7 +28,6 @@ data class KpiResultNode(
     val result: KpiCalculationResult,
     val strategy: KpiStrategyId,
     val edges: List<KpiResultEdge>,
-    val id: String,
     val tags: Set<String> = emptySet(),
     val originId: String? = null,
     val reason: String? = null,
@@ -39,11 +38,20 @@ data class KpiResultNode(
         typeId: String,
         result: KpiCalculationResult,
         strategy: KpiStrategyId,
-        children: List<KpiResultEdge>,
+        edges: List<KpiResultEdge>,
         id: String,
+        tags: Set<String> = emptySet(),
         originId: String? = null,
         reason: String? = null,
-    ) : this(typeId, result, strategy, children, originId, reason) {
+    ) : this(
+        typeId = typeId,
+        result = result,
+        strategy = strategy,
+        edges = edges,
+        tags = tags,
+        originId = originId,
+        reason = reason,
+    ) {
         this.id = id
     }
 }

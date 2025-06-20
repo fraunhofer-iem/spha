@@ -22,7 +22,6 @@ private constructor(
     val typeId: String,
     val strategy: KpiStrategyId,
     val edges: List<KpiHierarchyEdge>,
-    val id: String,
     val tags: Set<String> = emptySet(),
     val originId: String? = null,
     val reason: String? = null,
@@ -34,9 +33,10 @@ private constructor(
         strategy: KpiStrategyId,
         edges: List<KpiHierarchyEdge>,
         id: String,
+        tags: Set<String> = emptySet(),
         originId: String? = null,
         reason: String? = null,
-    ) : this(typeId, strategy, edges, originId, reason) {
+    ) : this(typeId, strategy, edges, tags, originId, reason) {
         this.id = id
     }
 
@@ -101,7 +101,7 @@ private constructor(
             typeIdToRawValue: Map<String, List<RawValueKpi>>,
         ): KpiHierarchyNode {
 
-            val children: MutableList<KpiHierarchyEdge> = mutableListOf()
+            val edges: MutableList<KpiHierarchyEdge> = mutableListOf()
             node.edges.forEach { child ->
                 val rawValues = typeIdToRawValue[child.target.typeId] ?: emptyList()
                 if (rawValues.isNotEmpty()) {
@@ -123,10 +123,10 @@ private constructor(
                                 to = hierarchyNode,
                                 plannedWeight = child.weight / rawValues.count(),
                             )
-                        children.add(edge)
+                        edges.add(edge)
                     }
                 } else {
-                    children.add(
+                    edges.add(
                         KpiHierarchyEdge(
                             to = from(child.target, typeIdToRawValue),
                             plannedWeight = child.weight,
@@ -138,7 +138,7 @@ private constructor(
             val calcNode =
                 KpiHierarchyNode(
                     typeId = node.typeId,
-                    edges = children,
+                    edges = edges,
                     strategy = node.strategy,
                     reason = node.reason,
                     tags = node.tags,

@@ -12,7 +12,6 @@ package de.fraunhofer.iem.spha.model.kpi.hierarchy
 import de.fraunhofer.iem.spha.model.assertEquals
 import de.fraunhofer.iem.spha.model.kpi.KpiStrategyId
 import de.fraunhofer.iem.spha.model.kpi.KpiType
-import kotlin.time.ExperimentalTime
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -53,7 +52,6 @@ class JsonKpiResultHierarchyTest {
     // library with.
     // TLDR; Whenever this test fails, we have a breaking change in how we construct our KPI
     //  hierarchy, meaning we potentially break our clients' code.
-    @OptIn(ExperimentalTime::class)
     @Test
     fun serializeResultHierarchyToExpectedJson() {
         val root =

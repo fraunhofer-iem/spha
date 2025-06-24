@@ -81,8 +81,7 @@ class JsonKpiResultHierarchyTest {
             )
 
         val hierarchy = KpiResultHierarchy.create(root)
-        // Set a fixed timestamp for deterministic testing
-        hierarchy.timestamp = "2025-06-24T11:18:32.774067Z"
+
         val jsonResult = Json.Default.encodeToString(hierarchy)
 
         println(jsonResult)
@@ -91,7 +90,7 @@ class JsonKpiResultHierarchyTest {
         // This implicitly asserts that KpiResultNode and KpiResultEdge get serialized to the
         // expected JSON too
         val expected =
-            "{\"root\":{\"typeId\":\"ROOT\",\"result\":{\"type\":\"de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success\",\"score\":100},\"strategy\":\"MAXIMUM_STRATEGY\",\"edges\":[{\"target\":{\"typeId\":\"CODE_VULNERABILITY_SCORE\",\"result\":{\"type\":\"de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success\",\"score\":100},\"strategy\":\"RAW_VALUE_STRATEGY\",\"edges\":[],\"tags\":[\"A\",\"B\",\"a\",\"b\"],\"originId\":\"someOrigin\",\"reason\":\"CRA relevant\",\"id\":\"cveId\"},\"plannedWeight\":1.0,\"actualWeight\":0.5}],\"id\":\"rootId\"},\"schemaVersion\":\"1.1.0\",\"timestamp\":\"2025-06-24T11:18:32.774067Z\"}"
+            "{\"root\":{\"typeId\":\"ROOT\",\"result\":{\"type\":\"de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success\",\"score\":100},\"strategy\":\"MAXIMUM_STRATEGY\",\"edges\":[{\"target\":{\"typeId\":\"CODE_VULNERABILITY_SCORE\",\"result\":{\"type\":\"de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success\",\"score\":100},\"strategy\":\"RAW_VALUE_STRATEGY\",\"edges\":[],\"tags\":[\"A\",\"B\",\"a\",\"b\"],\"originId\":\"someOrigin\",\"reason\":\"CRA relevant\",\"id\":\"cveId\"},\"plannedWeight\":1.0,\"actualWeight\":0.5}],\"id\":\"rootId\"},\"schemaVersion\":\"1.1.0\",\"timestamp\":\"${hierarchy.timestamp}\"}"
 
         kotlin.test.assertEquals(expected, jsonResult)
     }

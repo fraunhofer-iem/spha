@@ -43,11 +43,6 @@ fun isNonStable(version: String): Boolean {
 }
 
 // https://github.com/ben-manes/gradle-versions-plugin
-tasks.withType<DependencyUpdatesTask> {
-    rejectVersionIf {
-        isNonStable(candidate.version)
-    }
-}
-
+tasks.withType<DependencyUpdatesTask> { rejectVersionIf { isNonStable(candidate.version) } }
 
 logger.lifecycle("Building SPHA version $version.")

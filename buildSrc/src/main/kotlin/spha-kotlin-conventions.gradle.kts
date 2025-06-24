@@ -37,7 +37,6 @@ dependencies {
 java {
     // Adds sources and javadoc to build artifacts. This is relevant for publishing
     withSourcesJar()
-    withJavadocJar()
     toolchain { languageVersion = JavaLanguageVersion.of(21) }
 }
 
@@ -52,6 +51,14 @@ configurations.all {
 ktfmt {
     // KotlinLang style - 4 space indentation - From kotlinlang.org/docs/coding-conventions.html
     kotlinLangStyle()
+}
+
+plugins.withId("org.jetbrains.dokka") {
+    plugins.withId("maven-publish") {
+        tasks
+            .matching { it.name == "generateMetadataFileForMavenPublication" }
+            .configureEach { dependsOn(tasks.matching { it.name == "dokkaJavadocJar" }) }
+    }
 }
 
 // testing
@@ -74,4 +81,7 @@ tasks.register("jacocoReport") {
 }
 
 // javadoc
-tasks.named<Jar>("javadocJar") { from(tasks.named("dokkaGeneratePublicationJavadoc")) }
+tasks.register<Jar>("javadocJar") {
+    archiveClassifier.set("javadoc")
+    from(tasks.named("dokkaGeneratePublicationJavadoc"))
+}

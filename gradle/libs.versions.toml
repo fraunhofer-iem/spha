@@ -10,6 +10,7 @@ semver = "3.0.0"
 kotlinDate = "0.6.2"
 ktfmtPlugin = "0.22.0"
 dokkatooPlugin = "2.0.0"
+publishPlugin = "0.33.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -25,6 +26,7 @@ test-junit5-params = { module = "org.junit.jupiter:junit-jupiter-params", versio
 test-mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 plugin-dokkatoo = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokkatooPlugin" }
 plugin-dokkatoo-javadoc = { module = "org.jetbrains.dokka-javadoc:org.jetbrains.dokka-javadoc.gradle.plugin", version.ref = "dokkatooPlugin" }
+plugin-publish = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "publishPlugin" }
 
 [plugins]
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

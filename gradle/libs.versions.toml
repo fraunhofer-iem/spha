@@ -1,7 +1,7 @@
 [versions]
-kotlin = "2.1.21"
+kotlin = "2.2.0"
 kotlinxSerialization = "1.8.1"
-kotlinPlugin = "2.1.21"
+kotlinPlugin = "2.2.0"
 kotlinLogging = "7.0.7"
 slf4jApi = "2.0.17"
 junit = "5.13.1"

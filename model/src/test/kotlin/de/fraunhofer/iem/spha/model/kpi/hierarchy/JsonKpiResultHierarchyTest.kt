@@ -12,6 +12,7 @@ package de.fraunhofer.iem.spha.model.kpi.hierarchy
 import de.fraunhofer.iem.spha.model.assertEquals
 import de.fraunhofer.iem.spha.model.kpi.KpiStrategyId
 import de.fraunhofer.iem.spha.model.kpi.KpiType
+import kotlin.time.ExperimentalTime
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -52,6 +53,7 @@ class JsonKpiResultHierarchyTest {
     // library with.
     // TLDR; Whenever this test fails, we have a breaking change in how we construct our KPI
     //  hierarchy, meaning we potentially break our clients' code.
+    @OptIn(ExperimentalTime::class)
     @Test
     fun serializeResultHierarchyToExpectedJson() {
         val root =
@@ -80,7 +82,10 @@ class JsonKpiResultHierarchyTest {
                     ),
             )
 
-        val jsonResult = Json.Default.encodeToString(KpiResultHierarchy.create(root))
+        val hierarchy = KpiResultHierarchy.create(root)
+        // Set a fixed timestamp for deterministic testing
+        hierarchy.timestamp = "2025-06-24T11:18:32.774067Z"
+        val jsonResult = Json.Default.encodeToString(hierarchy)
 
         println(jsonResult)
 
@@ -88,7 +93,7 @@ class JsonKpiResultHierarchyTest {
         // This implicitly asserts that KpiResultNode and KpiResultEdge get serialized to the
         // expected JSON too
         val expected =
-            "{\"root\":{\"typeId\":\"ROOT\",\"result\":{\"type\":\"de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success\",\"score\":100},\"strategy\":\"MAXIMUM_STRATEGY\",\"edges\":[{\"target\":{\"typeId\":\"CODE_VULNERABILITY_SCORE\",\"result\":{\"type\":\"de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success\",\"score\":100},\"strategy\":\"RAW_VALUE_STRATEGY\",\"edges\":[],\"tags\":[\"A\",\"B\",\"a\",\"b\"],\"originId\":\"someOrigin\",\"reason\":\"CRA relevant\",\"id\":\"cveId\"},\"plannedWeight\":1.0,\"actualWeight\":0.5}],\"id\":\"rootId\"},\"schemaVersion\":\"1.1.0\"}"
+            "{\"root\":{\"typeId\":\"ROOT\",\"result\":{\"type\":\"de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success\",\"score\":100},\"strategy\":\"MAXIMUM_STRATEGY\",\"edges\":[{\"target\":{\"typeId\":\"CODE_VULNERABILITY_SCORE\",\"result\":{\"type\":\"de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success\",\"score\":100},\"strategy\":\"RAW_VALUE_STRATEGY\",\"edges\":[],\"tags\":[\"A\",\"B\",\"a\",\"b\"],\"originId\":\"someOrigin\",\"reason\":\"CRA relevant\",\"id\":\"cveId\"},\"plannedWeight\":1.0,\"actualWeight\":0.5}],\"id\":\"rootId\"},\"schemaVersion\":\"1.1.0\",\"timestamp\":\"2025-06-24T11:18:32.774067Z\"}"
 
         kotlin.test.assertEquals(expected, jsonResult)
     }

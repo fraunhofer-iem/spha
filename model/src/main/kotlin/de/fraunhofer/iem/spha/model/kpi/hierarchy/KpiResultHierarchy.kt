@@ -11,12 +11,16 @@ package de.fraunhofer.iem.spha.model.kpi.hierarchy
 
 import de.fraunhofer.iem.spha.model.kpi.KpiStrategyId
 import java.util.UUID
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import kotlinx.serialization.Serializable
 
 @ConsistentCopyVisibility
 @Serializable
 data class KpiResultHierarchy
 private constructor(val root: KpiResultNode, val schemaVersion: String) {
+    @OptIn(ExperimentalTime::class) var timestamp: String = Clock.System.now().toString()
+
     companion object {
         fun create(rootNode: KpiResultNode) = KpiResultHierarchy(rootNode, SCHEMA_VERSIONS.last())
     }

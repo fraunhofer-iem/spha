@@ -26,4 +26,5 @@ dependencies {
     implementation(libs.plugin.dokkatoo.javadoc)
     implementation(libs.plugin.kotlin)
     implementation(libs.plugin.ktfmt)
+    implementation(libs.plugin.publish)
 }

@@ -14,6 +14,7 @@ group = "de.fraunhofer.iem"
 mavenPublishing {
     publishToMavenCentral()
     signAllPublications()
+    coordinates("de.fraunhofer.iem", "spha-${project.name}")
     pom {
         name = "spha-${project.name}"
         description = "SPHA is a collection of libraries to work with hierarchical KPI models."

@@ -26,7 +26,9 @@ private constructor(
     val originId: String? = null,
     val reason: String? = null,
 ) {
-    var id: String = UUID.randomUUID().toString()
+    private var _id: String = UUID.randomUUID().toString()
+    val id: String
+        get() = _id
 
     constructor(
         typeId: String,
@@ -37,7 +39,7 @@ private constructor(
         originId: String? = null,
         reason: String? = null,
     ) : this(typeId, strategy, edges, tags, originId, reason) {
-        this.id = id
+        this._id = id
     }
 
     var result: KpiCalculationResult = KpiCalculationResult.Empty()

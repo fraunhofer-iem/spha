@@ -10,7 +10,7 @@
 package de.fraunhofer.iem.spha.adapter.tools.tlc
 
 import de.fraunhofer.iem.spha.adapter.AdapterResult
-import de.fraunhofer.iem.spha.model.adapter.tlc.TlcDefaultConfig
+import de.fraunhofer.iem.spha.model.adapter.TlcDefaultConfig
 import java.nio.file.Files
 import kotlin.io.path.Path
 import kotlin.test.Test

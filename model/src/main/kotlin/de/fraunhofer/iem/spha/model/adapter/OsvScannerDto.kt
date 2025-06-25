@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Fraunhofer IEM. All rights reserved.
+ * Copyright (c) 2024-2025 Fraunhofer IEM. All rights reserved.
  *
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  *
@@ -7,14 +7,15 @@
  * License-Filename: LICENSE
  */
 
-package de.fraunhofer.iem.spha.model.adapter.osv
+package de.fraunhofer.iem.spha.model.adapter
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonArray
 
 @Serializable
-data class OsvScannerDto(@SerialName("results") val results: List<OsvScannerResultDto>)
+data class OsvScannerDto(@SerialName("results") val results: List<OsvScannerResultDto>) :
+    ToolResult
 
 @Serializable
 data class OsvScannerResultDto(
@@ -31,7 +32,7 @@ data class PackageSource(
 @Serializable
 data class OsvPackageWrapperDto(
     @SerialName("package") val osvPackage: OsvPackageDto,
-    // vulnerabilities are of type OsvVulnerabilityDto and follow the official osv vulnerability
+    // Vulnerabilities are of type OsvVulnerabilityDto and follow the official osv vulnerability
     // standard. However, currently we don't use the information provided in OsvVulnerabilityDto,
     // thus we parse vulnerabilities to a JsonArray and provide OsvVulnerabilityDto for further
     // parsing. This makes our implementation more robust against changes in the vulnerability

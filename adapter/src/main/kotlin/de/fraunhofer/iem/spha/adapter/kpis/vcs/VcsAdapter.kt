@@ -11,7 +11,7 @@ package de.fraunhofer.iem.spha.adapter.kpis.vcs
 
 import de.fraunhofer.iem.spha.adapter.AdapterResult
 import de.fraunhofer.iem.spha.adapter.ErrorType
-import de.fraunhofer.iem.spha.model.adapter.vcs.RepositoryDetailsDto
+import de.fraunhofer.iem.spha.model.adapter.RepositoryDetailsDto
 import de.fraunhofer.iem.spha.model.kpi.KpiType
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 

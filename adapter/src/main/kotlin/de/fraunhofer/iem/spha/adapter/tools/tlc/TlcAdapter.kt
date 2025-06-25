@@ -14,9 +14,9 @@ import de.fraunhofer.iem.spha.adapter.ErrorType
 import de.fraunhofer.iem.spha.adapter.tools.tlc.model.Project
 import de.fraunhofer.iem.spha.adapter.tools.tlc.model.Version
 import de.fraunhofer.iem.spha.adapter.tools.tlc.util.TechLagHelper.getTechLagForGraph
-import de.fraunhofer.iem.spha.model.adapter.tlc.TlcConfig
-import de.fraunhofer.iem.spha.model.adapter.tlc.TlcDefaultConfig
-import de.fraunhofer.iem.spha.model.adapter.tlc.TlcDto
+import de.fraunhofer.iem.spha.model.adapter.TlcConfig
+import de.fraunhofer.iem.spha.model.adapter.TlcDefaultConfig
+import de.fraunhofer.iem.spha.model.adapter.TlcDto
 import de.fraunhofer.iem.spha.model.kpi.KpiType
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 import java.io.InputStream

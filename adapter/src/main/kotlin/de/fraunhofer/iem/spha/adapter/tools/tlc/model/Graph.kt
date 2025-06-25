@@ -9,8 +9,8 @@
 
 package de.fraunhofer.iem.spha.adapter.tools.tlc.model
 
-import de.fraunhofer.iem.spha.model.adapter.tlc.DependencyGraphDto
-import de.fraunhofer.iem.spha.model.adapter.tlc.DependencyNodeDto
+import de.fraunhofer.iem.spha.model.adapter.DependencyGraphDto
+import de.fraunhofer.iem.spha.model.adapter.DependencyNodeDto
 
 internal enum class Version {
     Patch,

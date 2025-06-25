@@ -9,9 +9,6 @@
 
 package de.fraunhofer.iem.spha.model.adapter
 
-import de.fraunhofer.iem.spha.model.adapter.tlc.Range
-import de.fraunhofer.iem.spha.model.adapter.tlc.RangeThreshold
-import de.fraunhofer.iem.spha.model.adapter.tlc.TlcConfig
 import kotlin.test.Test
 import org.junit.jupiter.api.assertThrows
 

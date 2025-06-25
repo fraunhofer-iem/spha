@@ -10,8 +10,8 @@
 package de.fraunhofer.iem.spha.adapter.tools.trufflehog
 
 import de.fraunhofer.iem.spha.adapter.AdapterResult
-import de.fraunhofer.iem.spha.model.adapter.trufflehog.TrufflehogDto
-import de.fraunhofer.iem.spha.model.adapter.trufflehog.TrufflehogReportDto
+import de.fraunhofer.iem.spha.model.adapter.TrufflehogDto
+import de.fraunhofer.iem.spha.model.adapter.TrufflehogReportDto
 import de.fraunhofer.iem.spha.model.kpi.KpiType
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 import io.github.oshai.kotlinlogging.KotlinLogging

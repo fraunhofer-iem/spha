@@ -7,7 +7,7 @@
  * License-Filename: LICENSE
  */
 
-package de.fraunhofer.iem.spha.model.adapter.tlc
+package de.fraunhofer.iem.spha.model.adapter
 
 import kotlinx.serialization.Serializable
 

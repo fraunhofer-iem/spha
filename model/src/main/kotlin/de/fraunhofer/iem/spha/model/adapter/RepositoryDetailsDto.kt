@@ -7,11 +7,11 @@
  * License-Filename: LICENSE
  */
 
-package de.fraunhofer.iem.spha.model.adapter.vulnerability
+package de.fraunhofer.iem.spha.model.adapter
 
-data class VulnerabilityDto(
-    val cveIdentifier: String,
-    val packageName: String,
-    val version: String,
-    val severity: Double,
+data class RepositoryDetailsDto(
+    val projectId: Long,
+    val numberOfCommits: Int,
+    val numberOfSignedCommits: Int,
+    val isDefaultBranchProtected: Boolean,
 )

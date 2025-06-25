@@ -11,8 +11,8 @@ package de.fraunhofer.iem.spha.adapter.tools.osv
 
 import de.fraunhofer.iem.spha.adapter.AdapterResult
 import de.fraunhofer.iem.spha.adapter.kpis.cve.CveAdapter
-import de.fraunhofer.iem.spha.model.adapter.osv.OsvScannerDto
-import de.fraunhofer.iem.spha.model.adapter.vulnerability.VulnerabilityDto
+import de.fraunhofer.iem.spha.model.adapter.OsvScannerDto
+import de.fraunhofer.iem.spha.model.adapter.VulnerabilityDto
 import java.io.InputStream
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json

@@ -11,11 +11,11 @@ package de.fraunhofer.iem.spha.adapter.tools.trivy
 
 import de.fraunhofer.iem.spha.adapter.AdapterResult
 import de.fraunhofer.iem.spha.adapter.kpis.cve.CveAdapter
-import de.fraunhofer.iem.spha.model.adapter.trivy.Result
-import de.fraunhofer.iem.spha.model.adapter.trivy.TrivyDto
-import de.fraunhofer.iem.spha.model.adapter.trivy.TrivyDtoV2
-import de.fraunhofer.iem.spha.model.adapter.trivy.TrivyVulnerabilityDto
-import de.fraunhofer.iem.spha.model.adapter.vulnerability.VulnerabilityDto
+import de.fraunhofer.iem.spha.model.adapter.Result
+import de.fraunhofer.iem.spha.model.adapter.TrivyDto
+import de.fraunhofer.iem.spha.model.adapter.TrivyDtoV2
+import de.fraunhofer.iem.spha.model.adapter.TrivyVulnerabilityDto
+import de.fraunhofer.iem.spha.model.adapter.VulnerabilityDto
 import io.mockk.mockkObject
 import io.mockk.verify
 import java.nio.file.Files

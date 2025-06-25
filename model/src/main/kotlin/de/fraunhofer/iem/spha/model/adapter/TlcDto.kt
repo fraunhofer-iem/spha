@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Fraunhofer IEM. All rights reserved.
+ * Copyright (c) 2024-2025 Fraunhofer IEM. All rights reserved.
  *
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  *
@@ -7,7 +7,7 @@
  * License-Filename: LICENSE
  */
 
-package de.fraunhofer.iem.spha.model.adapter.tlc
+package de.fraunhofer.iem.spha.model.adapter
 
 import kotlinx.serialization.Serializable
 
@@ -16,7 +16,7 @@ data class TlcDto(
     val repositoryInfo: RepositoryInfoDto,
     val environmentInfo: EnvironmentInfoDto,
     val projectDtos: List<ProjectDto>,
-)
+) : ToolResult
 
 @Serializable
 data class RepositoryInfoDto(

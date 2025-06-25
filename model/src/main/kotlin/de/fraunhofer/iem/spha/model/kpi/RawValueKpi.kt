@@ -10,6 +10,7 @@
 package de.fraunhofer.iem.spha.model.kpi
 
 import java.util.UUID
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -22,7 +23,9 @@ data class RawValueKpi(
     val originId: String? = null,
 ) {
     // Used to uniquely identify the given instance
-    var id: String = UUID.randomUUID().toString()
+    @SerialName("id") private var _id: String = UUID.randomUUID().toString()
+    val id: String
+        get() = _id
 
     constructor(
         typeId: String,
@@ -30,6 +33,6 @@ data class RawValueKpi(
         id: String,
         originId: String? = null,
     ) : this(typeId, score, originId) {
-        this.id = id
+        this._id = id
     }
 }

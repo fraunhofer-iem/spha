@@ -11,12 +11,17 @@ package de.fraunhofer.iem.spha.model.kpi.hierarchy
 
 import de.fraunhofer.iem.spha.model.kpi.KpiStrategyId
 import java.util.UUID
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @ConsistentCopyVisibility
 @Serializable
 data class KpiResultHierarchy
 private constructor(val root: KpiResultNode, val schemaVersion: String) {
+    @OptIn(ExperimentalTime::class) val timestamp: String = Clock.System.now().toString()
+
     companion object {
         fun create(rootNode: KpiResultNode) = KpiResultHierarchy(rootNode, SCHEMA_VERSIONS.last())
     }
@@ -32,7 +37,9 @@ data class KpiResultNode(
     val originId: String? = null,
     val reason: String? = null,
 ) {
-    var id: String = UUID.randomUUID().toString()
+    @SerialName("id") private var _id: String = UUID.randomUUID().toString()
+    val id: String
+        get() = _id
 
     constructor(
         typeId: String,
@@ -52,7 +59,7 @@ data class KpiResultNode(
         originId = originId,
         reason = reason,
     ) {
-        this.id = id
+        this._id = id
     }
 }
 

@@ -21,10 +21,6 @@ import de.fraunhofer.iem.spha.model.adapter.TlcDefaultConfig
 import de.fraunhofer.iem.spha.model.adapter.TlcDto
 import de.fraunhofer.iem.spha.model.kpi.KpiType
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
-import java.io.InputStream
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromStream
 
 sealed class TechLagResult {
     data class Success(val libyear: Long) : TechLagResult()
@@ -32,23 +28,11 @@ sealed class TechLagResult {
     data class Empty(val reason: String) : TechLagResult()
 }
 
-object TlcAdapter : KpiAdapter<TlcDto, ProjectDto> {
+object TlcAdapter : KpiAdapter<TlcDto, ProjectDto>() {
 
-    private val jsonParser = Json {
-        ignoreUnknownKeys = true
-        explicitNulls = false
-    }
+    var config: TlcConfig = TlcDefaultConfig.get()
 
-    @OptIn(ExperimentalSerializationApi::class)
-    fun dtoFromJson(jsonData: InputStream): TlcDto {
-        return jsonParser.decodeFromStream<TlcDto>(jsonData)
-    }
-
-    override fun transformDataToKpi(
-        data: Collection<TlcDto>
-    ): Collection<AdapterResult<ProjectDto>> {
-
-        val config: TlcConfig = TlcDefaultConfig.get()
+    override fun transformDataToKpi(vararg data: TlcDto): Collection<AdapterResult<ProjectDto>> {
 
         return data.flatMap { tlcDto ->
             tlcDto.projectDtos.flatMap { projectDto ->
@@ -88,10 +72,6 @@ object TlcAdapter : KpiAdapter<TlcDto, ProjectDto> {
                 }
             }
         }
-    }
-
-    override fun transformDataToKpi(data: TlcDto): Collection<AdapterResult<ProjectDto>> {
-        return transformDataToKpi(listOf(data))
     }
 
     private fun getLibyearScore(libyear: Long, config: TlcConfig): Int {

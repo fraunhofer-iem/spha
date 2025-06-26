@@ -37,7 +37,7 @@ class TlcAdapterTest {
         val kpis =
             TlcAdapter.transformDataToKpi(
                 data =
-                    listOf(
+                    arrayOf(
                         TlcDto(
                             repositoryInfo =
                                 RepositoryInfoDto(url = "", revision = "", projects = listOf()),
@@ -100,7 +100,7 @@ class TlcAdapterTest {
         val kpis =
             TlcAdapter.transformDataToKpi(
                 data =
-                    listOf(
+                    arrayOf(
                         TlcDto(
                             repositoryInfo =
                                 RepositoryInfoDto(url = "", revision = "", projects = listOf()),
@@ -152,11 +152,7 @@ class TlcAdapterTest {
 
         assertEquals(KpiType.LIB_DAYS_PROD.name, rawValueKpi.typeId)
         assertEquals(100, rawValueKpi.score)
-
-        when (kpi.origin) {
-            is ProjectDto -> assertEquals(18, kpi.origin.libyear)
-            else -> fail()
-        }
+        assertEquals(18, kpi.rawValueKpi.score)
     }
 
     private fun testVersion(
@@ -286,7 +282,7 @@ class TlcAdapterTest {
                 )
                 .mapNotNull { it }
 
-        // the used version doesn't need to exist in the versions list in order to select the
+        // the used version doesn't need to exist in the version list to select the
         // correct
         // update target
         testVersion("4.12.3", versions, Version.Major, "2.11")

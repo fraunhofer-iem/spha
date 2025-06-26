@@ -14,4 +14,4 @@ data class RepositoryDetailsDto(
     val numberOfCommits: Int,
     val numberOfSignedCommits: Int,
     val isDefaultBranchProtected: Boolean,
-)
+) : Origin, ToolResult

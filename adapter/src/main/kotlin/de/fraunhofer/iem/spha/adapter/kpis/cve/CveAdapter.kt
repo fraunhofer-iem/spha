@@ -9,50 +9,30 @@
 
 package de.fraunhofer.iem.spha.adapter.kpis.cve
 
-import de.fraunhofer.iem.spha.adapter.AdapterResult
-import de.fraunhofer.iem.spha.adapter.ErrorType
-import de.fraunhofer.iem.spha.model.adapter.VulnerabilityDto
 import de.fraunhofer.iem.spha.model.kpi.KpiType
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 import java.util.UUID
 
-object CveAdapter {
+/**
+ * Creates a RawValueKpi for a given vulnerability score and typeId.
+ *
+ * @param score The vulnerability severity score (0.0 to 10.0)
+ * @param typeId The type identifier for the KPI
+ * @param originId Optional identifier connecting this KPI to its origin
+ * @return A RawValueKpi with the calculated score
+ */
+fun createVulnerabilityKpi(
+    score: Double,
+    typeId: KpiType,
+    originId: String? = UUID.randomUUID().toString(),
+): RawValueKpi? {
 
-    fun transformCodeVulnerabilityToKpi(
-        data: Collection<VulnerabilityDto>
-    ): Collection<AdapterResult<VulnerabilityDto>> {
-        return transformDataToKpi(data, KpiType.CODE_VULNERABILITY_SCORE)
+    if (score !in 0.0..10.0) {
+        return null
     }
 
-    fun transformContainerVulnerabilityToKpi(
-        data: Collection<VulnerabilityDto>
-    ): Collection<AdapterResult<VulnerabilityDto>> {
-        return transformDataToKpi(data, KpiType.CONTAINER_VULNERABILITY_SCORE)
-    }
-
-    private fun transformDataToKpi(
-        data: Collection<VulnerabilityDto>,
-        kpiType: KpiType,
-    ): Collection<AdapterResult<VulnerabilityDto>> {
-        return data.map {
-            return@map if (isValid(it)) {
-                AdapterResult.Success.Kpi(
-                    RawValueKpi(
-                        typeId = kpiType.name,
-                        score = 100 - (it.severity * 10).toInt(),
-                        originId = UUID.randomUUID().toString(),
-                    ),
-                    origin = it,
-                )
-            } else {
-                AdapterResult.Error(ErrorType.DATA_VALIDATION_ERROR)
-            }
-        }
-    }
-
-    private fun isValid(data: VulnerabilityDto): Boolean {
-        return (data.severity in 0.0..10.0 &&
-            data.packageName.isNotBlank() &&
-            data.cveIdentifier.isNotBlank())
-    }
+    // Convert vulnerability score (0-10) to KPI score (0-100)
+    // Higher vulnerability severity means a lower KPI score
+    val kpiScore = 100 - (score * 10).toInt()
+    return RawValueKpi(typeId = typeId.name, score = kpiScore, originId = originId)
 }

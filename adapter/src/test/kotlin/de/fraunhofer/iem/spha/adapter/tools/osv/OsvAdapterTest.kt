@@ -10,6 +10,7 @@
 package de.fraunhofer.iem.spha.adapter.tools.osv
 
 import de.fraunhofer.iem.spha.adapter.AdapterResult
+import de.fraunhofer.iem.spha.model.adapter.OsvScannerDto
 import java.nio.file.Files
 import kotlin.io.path.Path
 import kotlin.test.Test
@@ -29,14 +30,16 @@ class OsvAdapterTest {
             ]
     )
     fun testInvalidJson(input: String) {
-        input.byteInputStream().use { assertThrows<Exception> { OsvAdapter.dtoFromJson(it) } }
+        input.byteInputStream().use {
+            assertThrows<Exception> { OsvAdapter.dtoFromJson(it, OsvScannerDto.serializer()) }
+        }
     }
 
     @ParameterizedTest
     @ValueSource(strings = ["{\"results\": []}"])
     fun testEmptyDto(input: String) {
         input.byteInputStream().use {
-            val dto = OsvAdapter.dtoFromJson(it)
+            val dto = OsvAdapter.dtoFromJson(it, OsvScannerDto.serializer())
             assertEquals(0, dto.results.count())
         }
     }
@@ -44,7 +47,7 @@ class OsvAdapterTest {
     @Test
     fun testResultDto() {
         Files.newInputStream(Path("src/test/resources/osv-scanner.json")).use {
-            val dto = assertDoesNotThrow { OsvAdapter.dtoFromJson(it) }
+            val dto = assertDoesNotThrow { OsvAdapter.dtoFromJson(it, OsvScannerDto.serializer()) }
 
             val kpis = assertDoesNotThrow { OsvAdapter.transformDataToKpi(dto) }
 

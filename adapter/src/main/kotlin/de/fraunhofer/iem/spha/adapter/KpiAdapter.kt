@@ -12,15 +12,32 @@ package de.fraunhofer.iem.spha.adapter
 import de.fraunhofer.iem.spha.model.adapter.Origin
 import de.fraunhofer.iem.spha.model.adapter.ToolResult
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
+import io.github.oshai.kotlinlogging.KotlinLogging
+import java.io.InputStream
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromStream
 
 enum class ErrorType {
     DATA_VALIDATION_ERROR
 }
 
-interface KpiAdapter<T : ToolResult, O : Origin> {
-    fun transformDataToKpi(data: Collection<T>): Collection<AdapterResult<O>>
+abstract class KpiAdapter<T : ToolResult, O : Origin> {
 
-    fun transformDataToKpi(data: T): Collection<AdapterResult<O>>
+    protected val jsonParser = Json {
+        ignoreUnknownKeys = true
+        explicitNulls = false
+    }
+
+    protected val logger = KotlinLogging.logger {}
+
+    abstract fun transformDataToKpi(vararg data: T): Collection<AdapterResult<O>>
+
+    @OptIn(ExperimentalSerializationApi::class)
+    fun dtoFromJson(jsonData: InputStream, deserializer: KSerializer<T>): T {
+        return jsonParser.decodeFromStream(deserializer, jsonData)
+    }
 }
 
 sealed class AdapterResult<out T : Origin> {

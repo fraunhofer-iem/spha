@@ -11,6 +11,7 @@ kotlinDate = "0.6.2"
 ktfmtPlugin = "0.22.0"
 dokkatooPlugin = "2.0.0"
 publishPlugin = "0.33.0"
+aeSecurity = "0.139.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -19,6 +20,7 @@ kotlin-loggin = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "
 kotlinx-date = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinDate" }
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4jApi" }
 slf4j-logger = { module = "org.slf4j:slf4j-simple", version.ref = "slf4jApi" }
+aeSecurity = { module = "org.metaeffekt.core:ae-security", version.ref = "aeSecurity" }
 plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinPlugin" }
 plugin-ktfmt = { module = "com.ncorti.ktfmt.gradle:plugin", version.ref = "ktfmtPlugin" }
 semver = { module = "io.github.z4kn4fein:semver", version.ref = "semver" }

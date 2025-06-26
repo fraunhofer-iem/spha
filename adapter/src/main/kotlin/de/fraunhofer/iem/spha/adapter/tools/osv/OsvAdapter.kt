@@ -16,6 +16,7 @@ import de.fraunhofer.iem.spha.adapter.kpis.cve.createVulnerabilityKpi
 import de.fraunhofer.iem.spha.model.adapter.OsvScannerDto
 import de.fraunhofer.iem.spha.model.adapter.OsvVulnerabilityDto
 import de.fraunhofer.iem.spha.model.kpi.KpiType
+import org.metaeffekt.core.security.cvss.CvssVector
 
 object OsvAdapter : KpiAdapter<OsvScannerDto, OsvVulnerabilityDto>() {
 
@@ -27,7 +28,15 @@ object OsvAdapter : KpiAdapter<OsvScannerDto, OsvVulnerabilityDto>() {
             .flatMap { it.packages }
             .flatMap { pkg ->
                 pkg.vulnerabilities.map { osvVuln ->
-                    val score = osvVuln.severity.score.toDoubleOrNull()
+                    // If severity is null or empty, return an error
+                    val severityList =
+                        osvVuln.severity?.map { CvssVector.parseVector(it.score).baseScore }
+                    if (severityList.isNullOrEmpty()) {
+                        return@map AdapterResult.Error(ErrorType.DATA_VALIDATION_ERROR)
+                    }
+
+                    val score = severityList.maxOrNull()
+
                     if (score == null) {
                         return@map AdapterResult.Error(ErrorType.DATA_VALIDATION_ERROR)
                     }

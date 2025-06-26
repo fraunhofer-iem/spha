@@ -40,8 +40,7 @@ object CveAdapter {
                     RawValueKpi(
                         typeId = kpiType.name,
                         score = 100 - (it.severity * 10).toInt(),
-                        originId =
-                            UUID.randomUUID().toString(), // TODO: create better id with more context
+                        originId = UUID.randomUUID().toString(),
                     ),
                     origin = it,
                 )

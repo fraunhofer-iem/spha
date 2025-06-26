@@ -10,6 +10,7 @@
 package de.fraunhofer.iem.spha.adapter.tools.trufflehog
 
 import de.fraunhofer.iem.spha.adapter.AdapterResult
+import de.fraunhofer.iem.spha.adapter.KpiAdapter
 import de.fraunhofer.iem.spha.model.adapter.TrufflehogDto
 import de.fraunhofer.iem.spha.model.adapter.TrufflehogReportDto
 import de.fraunhofer.iem.spha.model.kpi.KpiType
@@ -21,7 +22,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.decodeFromStream
 
-object TrufflehogAdapter {
+object TrufflehogAdapter : KpiAdapter<TrufflehogReportDto, TrufflehogReportDto> {
     private val logger = KotlinLogging.logger {}
     private val jsonParser = Json {
         ignoreUnknownKeys = true
@@ -41,13 +42,13 @@ object TrufflehogAdapter {
         }
     }
 
-    fun transformDataToKpi(
+    override fun transformDataToKpi(
         data: TrufflehogReportDto
     ): Collection<AdapterResult<TrufflehogReportDto>> {
         return transformDataToKpi(listOf(data))
     }
 
-    fun transformDataToKpi(
+    override fun transformDataToKpi(
         data: Collection<TrufflehogReportDto>
     ): Collection<AdapterResult<TrufflehogReportDto>> {
         return data.map {

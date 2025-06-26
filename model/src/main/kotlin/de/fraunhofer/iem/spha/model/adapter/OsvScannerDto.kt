@@ -11,7 +11,6 @@ package de.fraunhofer.iem.spha.model.adapter
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonArray
 
 @Serializable
 data class OsvScannerDto(@SerialName("results") val results: List<OsvScannerResultDto>) :
@@ -32,12 +31,7 @@ data class PackageSource(
 @Serializable
 data class OsvPackageWrapperDto(
     @SerialName("package") val osvPackage: OsvPackageDto,
-    // Vulnerabilities are of type OsvVulnerabilityDto and follow the official osv vulnerability
-    // standard. However, currently we don't use the information provided in OsvVulnerabilityDto,
-    // thus we parse vulnerabilities to a JsonArray and provide OsvVulnerabilityDto for further
-    // parsing. This makes our implementation more robust against changes in the vulnerability
-    // format, as we only directly depend on the format of the osv scanner.
-    @SerialName("vulnerabilities") val vulnerabilities: JsonArray,
+    @SerialName("vulnerabilities") val vulnerabilities: List<OsvVulnerabilityDto>,
     @SerialName("groups") val groups: List<GroupDto>,
 )
 

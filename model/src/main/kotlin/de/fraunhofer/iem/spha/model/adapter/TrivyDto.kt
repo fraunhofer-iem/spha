@@ -13,8 +13,6 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
 
-data class TrivyDto(val vulnerabilities: Collection<VulnerabilityDto>)
-
 @Serializable
 data class TrivyDtoV1(
     @SerialName("Vulnerabilities") val vulnerabilities: List<TrivyVulnerabilityDto> = listOf()
@@ -51,7 +49,7 @@ data class TrivyVulnerabilityDto(
      * | 9.0-10.0         | Critical |
      */
     @SerialName("Severity") val severity: String,
-)
+) : Origin
 
 @Serializable
 data class CVSSData(

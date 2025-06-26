@@ -11,9 +11,11 @@ package de.fraunhofer.iem.spha.adapter.tools.tlc
 
 import de.fraunhofer.iem.spha.adapter.AdapterResult
 import de.fraunhofer.iem.spha.adapter.ErrorType
+import de.fraunhofer.iem.spha.adapter.KpiAdapter
 import de.fraunhofer.iem.spha.adapter.tools.tlc.model.Project
 import de.fraunhofer.iem.spha.adapter.tools.tlc.model.Version
 import de.fraunhofer.iem.spha.adapter.tools.tlc.util.TechLagHelper.getTechLagForGraph
+import de.fraunhofer.iem.spha.model.adapter.ProjectDto
 import de.fraunhofer.iem.spha.model.adapter.TlcConfig
 import de.fraunhofer.iem.spha.model.adapter.TlcDefaultConfig
 import de.fraunhofer.iem.spha.model.adapter.TlcDto
@@ -30,7 +32,7 @@ sealed class TechLagResult {
     data class Empty(val reason: String) : TechLagResult()
 }
 
-object TlcAdapter {
+object TlcAdapter : KpiAdapter<TlcDto, ProjectDto> {
 
     private val jsonParser = Json {
         ignoreUnknownKeys = true
@@ -42,14 +44,15 @@ object TlcAdapter {
         return jsonParser.decodeFromStream<TlcDto>(jsonData)
     }
 
-    fun transformDataToKpi(
-        data: Collection<TlcDto>,
-        config: TlcConfig = TlcDefaultConfig.get(),
-    ): Collection<AdapterResult<TechLagResult>> {
+    override fun transformDataToKpi(
+        data: Collection<TlcDto>
+    ): Collection<AdapterResult<ProjectDto>> {
+
+        val config: TlcConfig = TlcDefaultConfig.get()
 
         return data.flatMap { tlcDto ->
-            tlcDto.projectDtos.flatMap {
-                val project = Project.from(it)
+            tlcDto.projectDtos.flatMap { projectDto ->
+                val project = Project.from(projectDto)
                 project.graph.map { (scope, graph) ->
                     val techLag =
                         getTechLagForGraph(
@@ -77,7 +80,7 @@ object TlcAdapter {
 
                         return@map AdapterResult.Success.Kpi(
                             rawValueKpi = rawValueKpi,
-                            origin = techLag,
+                            origin = projectDto,
                         )
                     }
 
@@ -85,6 +88,10 @@ object TlcAdapter {
                 }
             }
         }
+    }
+
+    override fun transformDataToKpi(data: TlcDto): Collection<AdapterResult<ProjectDto>> {
+        return transformDataToKpi(listOf(data))
     }
 
     private fun getLibyearScore(libyear: Long, config: TlcConfig): Int {

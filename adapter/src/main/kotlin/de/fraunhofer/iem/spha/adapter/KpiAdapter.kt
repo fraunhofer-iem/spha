@@ -9,19 +9,29 @@
 
 package de.fraunhofer.iem.spha.adapter
 
+import de.fraunhofer.iem.spha.model.adapter.Origin
+import de.fraunhofer.iem.spha.model.adapter.ToolResult
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 
 enum class ErrorType {
     DATA_VALIDATION_ERROR
 }
 
-sealed class AdapterResult<out T> {
+interface KpiAdapter<T : ToolResult, O : Origin> {
+    fun transformDataToKpi(data: Collection<T>): Collection<AdapterResult<O>>
+
+    fun transformDataToKpi(data: T): Collection<AdapterResult<O>>
+}
+
+sealed class AdapterResult<out T : Origin> {
     /**
-     * @param origin describes the data from that the RawValueKpi was created. If, for some reason,
-     *   no origin data is available T should be set to Unit.
+     * @param origin describes the data that the RawValueKpi was created from. If, for some reason,
+     *   no origin data is available, T should be set to Unit.
      */
-    sealed class Success<T>(val rawValueKpi: RawValueKpi, val origin: T) : AdapterResult<T>() {
-        class Kpi<T>(rawValueKpi: RawValueKpi, origin: T) : Success<T>(rawValueKpi, origin)
+    sealed class Success<T : Origin>(val rawValueKpi: RawValueKpi, val origin: T) :
+        AdapterResult<T>() {
+        class Kpi<T : Origin>(rawValueKpi: RawValueKpi, origin: T) :
+            Success<T>(rawValueKpi, origin)
 
         override fun toString(): String {
             return "[Adapter Result Success]: $rawValueKpi"

@@ -145,7 +145,7 @@ class TlcAdapterTest {
 
         val kpi = kpis.first()
 
-        val isSuccess = kpi is AdapterResult.Success<TechLagResult>
+        val isSuccess = kpi is AdapterResult.Success<ProjectDto>
         assertTrue(isSuccess)
 
         val rawValueKpi = kpi.rawValueKpi
@@ -154,7 +154,7 @@ class TlcAdapterTest {
         assertEquals(100, rawValueKpi.score)
 
         when (kpi.origin) {
-            is TechLagResult.Success -> assertEquals(18, kpi.origin.libyear)
+            is ProjectDto -> assertEquals(18, kpi.origin.libyear)
             else -> fail()
         }
     }

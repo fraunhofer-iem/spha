@@ -11,8 +11,8 @@ package de.fraunhofer.iem.spha.adapter.tools.trivy
 
 import de.fraunhofer.iem.spha.adapter.AdapterResult
 import de.fraunhofer.iem.spha.adapter.ErrorType
-import de.fraunhofer.iem.spha.model.adapter.TrivyResult
 import de.fraunhofer.iem.spha.model.adapter.TrivyDtoV2
+import de.fraunhofer.iem.spha.model.adapter.TrivyResult
 import de.fraunhofer.iem.spha.model.adapter.TrivyVulnerabilityDto
 import java.nio.file.Files
 import kotlin.io.path.Path

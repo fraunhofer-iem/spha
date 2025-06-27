@@ -34,6 +34,7 @@ object TlcAdapter : KpiAdapter<TlcDto, ProjectDto>() {
 
     override fun transformDataToKpi(vararg data: TlcDto): Collection<AdapterResult<ProjectDto>> {
 
+        // TODO: update return type to also contain the calculated libyears
         return data.flatMap { tlcDto ->
             tlcDto.projectDtos.flatMap { projectDto ->
                 val project = Project.from(projectDto)

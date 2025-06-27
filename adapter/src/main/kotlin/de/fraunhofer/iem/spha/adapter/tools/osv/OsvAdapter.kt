@@ -30,7 +30,7 @@ object OsvAdapter : KpiAdapter<OsvScannerDto, OsvVulnerabilityDto>() {
                 pkg.vulnerabilities.map { osvVuln ->
                     // If severity is null or empty, return an error
                     val severityList =
-                        osvVuln.severity?.map { CvssVector.parseVector(it.score).baseScore }
+                        osvVuln.severity?.mapNotNull { CvssVector.parseVector(it.score)?.baseScore }
                     if (severityList.isNullOrEmpty()) {
                         return@map AdapterResult.Error(ErrorType.DATA_VALIDATION_ERROR)
                     }

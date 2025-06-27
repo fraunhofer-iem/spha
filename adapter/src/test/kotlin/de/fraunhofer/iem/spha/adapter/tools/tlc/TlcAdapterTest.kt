@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Fraunhofer IEM. All rights reserved.
+ * Copyright (c) 2024-2025 Fraunhofer IEM. All rights reserved.
  *
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  *
@@ -153,7 +153,7 @@ class TlcAdapterTest {
 
         assertEquals(KpiType.LIB_DAYS_PROD.name, rawValueKpi.typeId)
         assertEquals(100, rawValueKpi.score)
-        assertEquals(18, kpi.rawValueKpi.score)
+        assertEquals(18, kpi.origin.libyears)
     }
 
     private fun testVersion(

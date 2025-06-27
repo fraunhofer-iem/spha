@@ -22,8 +22,8 @@ data class TrufflehogReportDto(
     val msg: String?,
     val chunks: Int?,
     val bytes: Int?,
-    @SerialName("verified_secrets") val verifiedSecrets: Int,
-    @SerialName("unverified_secrets") val unverifiedSecrets: Int,
+    @SerialName("verified_secrets") val verifiedSecrets: Int?,
+    @SerialName("unverified_secrets") val unverifiedSecrets: Int?,
     @SerialName("scan_duration") val scanDuration: String?,
     @SerialName("trufflehog_version") val trufflehogVersion: String?,
 ) : Origin

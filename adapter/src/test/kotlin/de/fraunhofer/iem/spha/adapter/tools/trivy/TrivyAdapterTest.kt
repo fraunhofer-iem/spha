@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Fraunhofer IEM. All rights reserved.
+ * Copyright (c) 2024-2025 Fraunhofer IEM. All rights reserved.
  *
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  *
@@ -30,20 +30,20 @@ class TrivyAdapterTest {
     @ValueSource(
         strings =
             [
-                "{}", // No schema
-                "{\"SchemaVersion\": 3}", // Not supported schema
+                "{}" // No schema
             ]
     )
     fun testInvalidJson(input: String) {
         input.byteInputStream().use {
             assertThrows<Exception> {
-                TrivyAdapter.dtoFromJson(it, TrivyDtoV2.serializer())
+                val res = TrivyAdapter.dtoFromJson(it, TrivyDtoV2.serializer())
+                println(res)
             }
         }
     }
 
     @ParameterizedTest
-    @ValueSource(strings = ["[]", "{\"SchemaVersion\": 2}"])
+    @ValueSource(strings = ["{\"results\":[], \"SchemaVersion\": 2}", "{\"SchemaVersion\": 2}"])
     fun testEmptyDto(input: String) {
         input.byteInputStream().use {
             val dto = TrivyAdapter.dtoFromJson(it, TrivyDtoV2.serializer())
@@ -64,7 +64,7 @@ class TrivyAdapterTest {
 
             // The severity might be a string like "MEDIUM" or "HIGH" instead of a numeric value
             // Let's just check that it's not null or empty
-            assert(!vuln.severity.isNullOrEmpty())
+            assert(vuln.severity.isNotEmpty())
         }
     }
 

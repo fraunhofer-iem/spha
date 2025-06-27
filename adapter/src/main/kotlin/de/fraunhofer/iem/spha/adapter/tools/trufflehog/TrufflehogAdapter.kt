@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Fraunhofer IEM. All rights reserved.
+ * Copyright (c) 2024-2025 Fraunhofer IEM. All rights reserved.
  *
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  *
@@ -23,8 +23,12 @@ object TrufflehogAdapter : KpiAdapter<TrufflehogDto, TrufflehogReportDto>() {
     ): Collection<AdapterResult<TrufflehogReportDto>> {
         return data
             .flatMap { it.results }
-            .map {
-                val score = if (it.verifiedSecrets > 0) 0 else 100
+            .mapNotNull {
+                val verifiedSecrets = it.verifiedSecrets
+                if (verifiedSecrets == null) {
+                    return@mapNotNull null
+                }
+                val score = if (verifiedSecrets > 0) 0 else 100
                 AdapterResult.Success.Kpi(
                     RawValueKpi(score = score, typeId = KpiType.SECRETS.name),
                     origin = it,

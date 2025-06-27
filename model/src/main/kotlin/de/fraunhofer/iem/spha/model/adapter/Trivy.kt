@@ -14,11 +14,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
 
 @Serializable
-data class TrivyDtoV1(
-    @SerialName("Vulnerabilities") val vulnerabilities: List<TrivyVulnerabilityDto> = listOf()
-) : ToolResult
-
-@Serializable
 data class TrivyDtoV2(
     @SerialName("Results") val results: List<Result> = listOf(),
     @SerialName("SchemaVersion") val schemaVersion: Int,

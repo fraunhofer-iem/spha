@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Fraunhofer IEM. All rights reserved.
+ * Copyright (c) 2024-2025 Fraunhofer IEM. All rights reserved.
  *
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  *
@@ -12,7 +12,7 @@ package de.fraunhofer.iem.spha.adapter.tools.osv
 import de.fraunhofer.iem.spha.adapter.AdapterResult
 import de.fraunhofer.iem.spha.adapter.ErrorType
 import de.fraunhofer.iem.spha.adapter.KpiAdapter
-import de.fraunhofer.iem.spha.adapter.kpis.cve.createVulnerabilityKpi
+import de.fraunhofer.iem.spha.adapter.kpis.cve.transformVulnerabilityToKpi
 import de.fraunhofer.iem.spha.model.adapter.OsvScannerDto
 import de.fraunhofer.iem.spha.model.adapter.OsvVulnerabilityDto
 import de.fraunhofer.iem.spha.model.kpi.KpiType
@@ -41,7 +41,7 @@ object OsvAdapter : KpiAdapter<OsvScannerDto, OsvVulnerabilityDto>() {
                         return@map AdapterResult.Error(ErrorType.DATA_VALIDATION_ERROR)
                     }
                     val rawValueKpi =
-                        createVulnerabilityKpi(score, KpiType.CODE_VULNERABILITY_SCORE)
+                        transformVulnerabilityToKpi(score, KpiType.CODE_VULNERABILITY_SCORE)
                     if (rawValueKpi == null) {
                         return@map AdapterResult.Error(ErrorType.DATA_VALIDATION_ERROR)
                     }

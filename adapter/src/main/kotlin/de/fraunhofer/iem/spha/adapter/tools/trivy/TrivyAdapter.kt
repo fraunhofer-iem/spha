@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Fraunhofer IEM. All rights reserved.
+ * Copyright (c) 2024-2025 Fraunhofer IEM. All rights reserved.
  *
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  *
@@ -12,7 +12,7 @@ package de.fraunhofer.iem.spha.adapter.tools.trivy
 import de.fraunhofer.iem.spha.adapter.AdapterResult
 import de.fraunhofer.iem.spha.adapter.ErrorType
 import de.fraunhofer.iem.spha.adapter.KpiAdapter
-import de.fraunhofer.iem.spha.adapter.kpis.cve.createVulnerabilityKpi
+import de.fraunhofer.iem.spha.adapter.kpis.cve.transformVulnerabilityToKpi
 import de.fraunhofer.iem.spha.model.adapter.CVSSData
 import de.fraunhofer.iem.spha.model.adapter.TrivyDtoV2
 import de.fraunhofer.iem.spha.model.adapter.TrivyVulnerabilityDto
@@ -34,7 +34,7 @@ object TrivyAdapter : KpiAdapter<TrivyDtoV2, TrivyVulnerabilityDto>() {
                     return@map AdapterResult.Error(ErrorType.DATA_VALIDATION_ERROR)
                 }
                 val rawValueKpi =
-                    createVulnerabilityKpi(score, KpiType.CONTAINER_VULNERABILITY_SCORE)
+                    transformVulnerabilityToKpi(score, KpiType.CONTAINER_VULNERABILITY_SCORE)
                 if (rawValueKpi == null) {
                     return@map AdapterResult.Error(ErrorType.DATA_VALIDATION_ERROR)
                 }

@@ -10,6 +10,7 @@
 package de.fraunhofer.iem.spha.adapter.tools.trivy
 
 import de.fraunhofer.iem.spha.adapter.AdapterResult
+import de.fraunhofer.iem.spha.adapter.ErrorType
 import de.fraunhofer.iem.spha.model.adapter.Result
 import de.fraunhofer.iem.spha.model.adapter.TrivyDtoV2
 import de.fraunhofer.iem.spha.model.adapter.TrivyVulnerabilityDto
@@ -17,6 +18,8 @@ import java.nio.file.Files
 import kotlin.io.path.Path
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -70,7 +73,6 @@ class TrivyAdapterTest {
 
     @Test
     fun trivyV2DtoToRawValue() {
-
         val trivyV2Dto =
             TrivyDtoV2(
                 results =
@@ -124,5 +126,413 @@ class TrivyAdapterTest {
             // If it's an error, we'll just check that it's an AdapterResult.Error
             assert(result is AdapterResult.Error)
         }
+    }
+
+    @Test
+    fun testNullCvssData() {
+        // Create a test DTO with null CVSS data
+        val trivyV2Dto =
+            TrivyDtoV2(
+                results =
+                    listOf(
+                        Result(
+                            vulnerabilities =
+                                listOf(
+                                    TrivyVulnerabilityDto(
+                                        cvss = null,
+                                        vulnerabilityID = "NULL-CVSS-ID",
+                                        installedVersion = "1.0.0",
+                                        pkgName = "test-package",
+                                        severity = "MEDIUM",
+                                    )
+                                )
+                        )
+                    ),
+                schemaVersion = 2,
+            )
+
+        val adapterResults = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+
+        assertEquals(1, adapterResults.size)
+        val result = adapterResults.first()
+        assertTrue(result is AdapterResult.Error)
+        assertEquals(ErrorType.DATA_VALIDATION_ERROR, result.type)
+    }
+
+    @Test
+    fun testEmptyCvssData() {
+        // Create a test DTO with empty CVSS data
+        val trivyV2Dto =
+            TrivyDtoV2(
+                results =
+                    listOf(
+                        Result(
+                            vulnerabilities =
+                                listOf(
+                                    TrivyVulnerabilityDto(
+                                        cvss = JsonObject(emptyMap()),
+                                        vulnerabilityID = "EMPTY-CVSS-ID",
+                                        installedVersion = "1.0.0",
+                                        pkgName = "test-package",
+                                        severity = "MEDIUM",
+                                    )
+                                )
+                        )
+                    ),
+                schemaVersion = 2,
+            )
+
+        val adapterResults = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+
+        assertEquals(1, adapterResults.size)
+        val result = adapterResults.first()
+        assertTrue(result is AdapterResult.Success)
+        assertEquals(100, (result as AdapterResult.Success.Kpi).rawValueKpi.score)
+    }
+
+    @Test
+    fun testOnlyV2Score() {
+        // Create a test DTO with only V2 score
+        val trivyV2Dto =
+            TrivyDtoV2(
+                results =
+                    listOf(
+                        Result(
+                            vulnerabilities =
+                                listOf(
+                                    TrivyVulnerabilityDto(
+                                        cvss =
+                                            JsonObject(
+                                                content =
+                                                    mapOf(
+                                                        Pair(
+                                                            "nvd",
+                                                            JsonObject(
+                                                                content =
+                                                                    mapOf(
+                                                                        Pair(
+                                                                            "V2Score",
+                                                                            JsonPrimitive(7.5),
+                                                                        )
+                                                                    )
+                                                            ),
+                                                        )
+                                                    )
+                                            ),
+                                        vulnerabilityID = "V2-ONLY-ID",
+                                        installedVersion = "1.0.0",
+                                        pkgName = "test-package",
+                                        severity = "HIGH",
+                                    )
+                                )
+                        )
+                    ),
+                schemaVersion = 2,
+            )
+
+        val adapterResults = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+
+        assertEquals(1, adapterResults.size)
+        val result = adapterResults.first()
+        assertTrue(result is AdapterResult.Success)
+        assertEquals(25, (result as AdapterResult.Success.Kpi).rawValueKpi.score)
+    }
+
+    @Test
+    fun testOnlyV3Score() {
+        // Create a test DTO with only V3 score
+        val trivyV2Dto =
+            TrivyDtoV2(
+                results =
+                    listOf(
+                        Result(
+                            vulnerabilities =
+                                listOf(
+                                    TrivyVulnerabilityDto(
+                                        cvss =
+                                            JsonObject(
+                                                content =
+                                                    mapOf(
+                                                        Pair(
+                                                            "nvd",
+                                                            JsonObject(
+                                                                content =
+                                                                    mapOf(
+                                                                        Pair(
+                                                                            "V3Score",
+                                                                            JsonPrimitive(8.5),
+                                                                        )
+                                                                    )
+                                                            ),
+                                                        )
+                                                    )
+                                            ),
+                                        vulnerabilityID = "V3-ONLY-ID",
+                                        installedVersion = "1.0.0",
+                                        pkgName = "test-package",
+                                        severity = "HIGH",
+                                    )
+                                )
+                        )
+                    ),
+                schemaVersion = 2,
+            )
+
+        val adapterResults = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+
+        assertEquals(1, adapterResults.size)
+        val result = adapterResults.first()
+        assertTrue(result is AdapterResult.Success)
+        assertEquals(15, (result as AdapterResult.Success.Kpi).rawValueKpi.score)
+    }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    @Test
+    fun testNullV2AndV3Scores() {
+        // Create a test DTO with null V2 and V3 scores
+        val trivyV2Dto =
+            TrivyDtoV2(
+                results =
+                    listOf(
+                        Result(
+                            vulnerabilities =
+                                listOf(
+                                    TrivyVulnerabilityDto(
+                                        cvss =
+                                            JsonObject(
+                                                content =
+                                                    mapOf(
+                                                        Pair(
+                                                            "nvd",
+                                                            JsonObject(
+                                                                content =
+                                                                    mapOf(
+                                                                        Pair(
+                                                                            "V2Score",
+                                                                            JsonPrimitive(null),
+                                                                        ),
+                                                                        Pair(
+                                                                            "V3Score",
+                                                                            JsonPrimitive(null),
+                                                                        ),
+                                                                    )
+                                                            ),
+                                                        )
+                                                    )
+                                            ),
+                                        vulnerabilityID = "NULL-SCORES-ID",
+                                        installedVersion = "1.0.0",
+                                        pkgName = "test-package",
+                                        severity = "MEDIUM",
+                                    )
+                                )
+                        )
+                    ),
+                schemaVersion = 2,
+            )
+
+        val adapterResults = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+
+        assertEquals(1, adapterResults.size)
+        val result = adapterResults.first()
+        assertTrue(result is AdapterResult.Success)
+        assertEquals(100, (result as AdapterResult.Success.Kpi).rawValueKpi.score)
+    }
+
+    @Test
+    fun testMultipleCvssSources() {
+        // Create a test DTO with multiple CVSS data sources
+        val trivyV2Dto =
+            TrivyDtoV2(
+                results =
+                    listOf(
+                        Result(
+                            vulnerabilities =
+                                listOf(
+                                    TrivyVulnerabilityDto(
+                                        cvss =
+                                            JsonObject(
+                                                content =
+                                                    mapOf(
+                                                        Pair(
+                                                            "nvd",
+                                                            JsonObject(
+                                                                content =
+                                                                    mapOf(
+                                                                        Pair(
+                                                                            "V2Score",
+                                                                            JsonPrimitive(5.0),
+                                                                        ),
+                                                                        Pair(
+                                                                            "V3Score",
+                                                                            JsonPrimitive(6.0),
+                                                                        ),
+                                                                    )
+                                                            ),
+                                                        ),
+                                                        Pair(
+                                                            "redhat",
+                                                            JsonObject(
+                                                                content =
+                                                                    mapOf(
+                                                                        Pair(
+                                                                            "V2Score",
+                                                                            JsonPrimitive(7.0),
+                                                                        ),
+                                                                        Pair(
+                                                                            "V3Score",
+                                                                            JsonPrimitive(8.0),
+                                                                        ),
+                                                                    )
+                                                            ),
+                                                        ),
+                                                    )
+                                            ),
+                                        vulnerabilityID = "MULTI-SOURCE-ID",
+                                        installedVersion = "1.0.0",
+                                        pkgName = "test-package",
+                                        severity = "HIGH",
+                                    )
+                                )
+                        )
+                    ),
+                schemaVersion = 2,
+            )
+
+        val adapterResults = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+
+        assertEquals(1, adapterResults.size)
+        val result = adapterResults.first()
+        assertTrue(result is AdapterResult.Success)
+        assertEquals(20, (result as AdapterResult.Success.Kpi).rawValueKpi.score)
+    }
+
+    @Test
+    fun testOutOfRangeScore() {
+        // Create a test DTO with a score that's out of range for transformVulnerabilityToKpi
+        val trivyV2Dto =
+            TrivyDtoV2(
+                results =
+                    listOf(
+                        Result(
+                            vulnerabilities =
+                                listOf(
+                                    TrivyVulnerabilityDto(
+                                        cvss =
+                                            JsonObject(
+                                                content =
+                                                    mapOf(
+                                                        Pair(
+                                                            "nvd",
+                                                            JsonObject(
+                                                                content =
+                                                                    mapOf(
+                                                                        Pair(
+                                                                            "V2Score",
+                                                                            JsonPrimitive(11.0),
+                                                                        )
+                                                                    )
+                                                            ),
+                                                        )
+                                                    )
+                                            ),
+                                        vulnerabilityID = "OUT-OF-RANGE-ID",
+                                        installedVersion = "1.0.0",
+                                        pkgName = "test-package",
+                                        severity = "CRITICAL",
+                                    )
+                                )
+                        )
+                    ),
+                schemaVersion = 2,
+            )
+
+        val adapterResults = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+
+        assertEquals(1, adapterResults.size)
+        val result = adapterResults.first()
+        assertTrue(result is AdapterResult.Error)
+        assertEquals(ErrorType.DATA_VALIDATION_ERROR, result.type)
+    }
+
+    @Test
+    fun testMultipleVulnerabilities() {
+        // Create a test DTO with multiple vulnerabilities
+        val trivyV2Dto =
+            TrivyDtoV2(
+                results =
+                    listOf(
+                        Result(
+                            vulnerabilities =
+                                listOf(
+                                    TrivyVulnerabilityDto(
+                                        cvss =
+                                            JsonObject(
+                                                content =
+                                                    mapOf(
+                                                        Pair(
+                                                            "nvd",
+                                                            JsonObject(
+                                                                content =
+                                                                    mapOf(
+                                                                        Pair(
+                                                                            "V2Score",
+                                                                            JsonPrimitive(5.0),
+                                                                        )
+                                                                    )
+                                                            ),
+                                                        )
+                                                    )
+                                            ),
+                                        vulnerabilityID = "VULN-1",
+                                        installedVersion = "1.0.0",
+                                        pkgName = "package-1",
+                                        severity = "MEDIUM",
+                                    ),
+                                    TrivyVulnerabilityDto(
+                                        cvss =
+                                            JsonObject(
+                                                content =
+                                                    mapOf(
+                                                        Pair(
+                                                            "nvd",
+                                                            JsonObject(
+                                                                content =
+                                                                    mapOf(
+                                                                        Pair(
+                                                                            "V3Score",
+                                                                            JsonPrimitive(8.0),
+                                                                        )
+                                                                    )
+                                                            ),
+                                                        )
+                                                    )
+                                            ),
+                                        vulnerabilityID = "VULN-2",
+                                        installedVersion = "2.0.0",
+                                        pkgName = "package-2",
+                                        severity = "HIGH",
+                                    ),
+                                )
+                        )
+                    ),
+                schemaVersion = 2,
+            )
+
+        val adapterResults = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+
+        assertEquals(2, adapterResults.size)
+
+        // Check first vulnerability
+        val result1 = adapterResults.first()
+        assertTrue(result1 is AdapterResult.Success)
+        assertEquals(50, (result1 as AdapterResult.Success.Kpi).rawValueKpi.score)
+        assertEquals("VULN-1", result1.origin.vulnerabilityID)
+
+        // Check second vulnerability
+        val result2 = adapterResults.last()
+        assertTrue(result2 is AdapterResult.Success)
+        assertEquals(20, (result2 as AdapterResult.Success.Kpi).rawValueKpi.score)
+        assertEquals("VULN-2", result2.origin.vulnerabilityID)
     }
 }

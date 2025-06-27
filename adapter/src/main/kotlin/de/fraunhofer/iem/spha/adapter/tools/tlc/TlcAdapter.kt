@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Fraunhofer IEM. All rights reserved.
+ * Copyright (c) 2024-2025 Fraunhofer IEM. All rights reserved.
  *
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  *
@@ -34,7 +34,6 @@ object TlcAdapter : KpiAdapter<TlcDto, TlcOriginDto>() {
 
     override fun transformDataToKpi(vararg data: TlcDto): Collection<AdapterResult<TlcOriginDto>> {
 
-        // TODO: update return type to also contain the calculated libyears
         return data.flatMap { tlcDto ->
             tlcDto.projectDtos.flatMap { projectDto ->
                 val project = Project.from(projectDto)

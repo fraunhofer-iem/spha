@@ -14,9 +14,9 @@ import de.fraunhofer.iem.spha.adapter.tools.tlc.model.Artifact
 import de.fraunhofer.iem.spha.adapter.tools.tlc.model.ArtifactVersion
 import de.fraunhofer.iem.spha.adapter.tools.tlc.model.Graph
 import de.fraunhofer.iem.spha.adapter.tools.tlc.model.Version
-import de.fraunhofer.iem.spha.model.adapter.tlc.DependencyEdge
-import de.fraunhofer.iem.spha.model.adapter.tlc.DependencyGraphDto
-import de.fraunhofer.iem.spha.model.adapter.tlc.DependencyNodeDto
+import de.fraunhofer.iem.spha.model.adapter.DependencyEdge
+import de.fraunhofer.iem.spha.model.adapter.DependencyGraphDto
+import de.fraunhofer.iem.spha.model.adapter.DependencyNodeDto
 import kotlin.test.assertEquals
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit

@@ -9,9 +9,9 @@
 
 package de.fraunhofer.iem.spha.adapter.tools.tlc.model
 
-import de.fraunhofer.iem.spha.model.adapter.tlc.DependencyEdge
-import de.fraunhofer.iem.spha.model.adapter.tlc.DependencyGraphDto
-import de.fraunhofer.iem.spha.model.adapter.tlc.DependencyNodeDto
+import de.fraunhofer.iem.spha.model.adapter.DependencyEdge
+import de.fraunhofer.iem.spha.model.adapter.DependencyGraphDto
+import de.fraunhofer.iem.spha.model.adapter.DependencyNodeDto
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow

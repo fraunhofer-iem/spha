@@ -10,6 +10,7 @@
 package de.fraunhofer.iem.spha.adapter.tools.trufflehog
 
 import de.fraunhofer.iem.spha.adapter.AdapterResult
+import de.fraunhofer.iem.spha.model.adapter.TrufflehogDto
 import java.nio.file.Files
 import kotlin.io.path.Path
 import kotlin.test.Test
@@ -30,7 +31,9 @@ class TrufflehogAdapterTest {
     )
     fun testInvalidJson(input: String) {
         input.byteInputStream().use {
-            assertThrows<Exception> { TrufflehogAdapter.dtoFromJson(it) }
+            assertThrows<Exception> {
+                TrufflehogAdapter.dtoFromJson(it, TrufflehogDto.serializer())
+            }
         }
     }
 
@@ -38,15 +41,17 @@ class TrufflehogAdapterTest {
     @ValueSource(strings = ["{\"results\": []}"])
     fun testEmptyDto(input: String) {
         input.byteInputStream().use {
-            val dto = TrufflehogAdapter.dtoFromJson(it)
-            assertEquals(0, dto.count())
+            val dto = TrufflehogAdapter.dtoFromJson(it, TrufflehogDto.serializer())
+            assertEquals(0, dto.results.count())
         }
     }
 
     @Test
     fun testResultDto() {
         Files.newInputStream(Path("src/test/resources/trufflehog-no-result.json")).use {
-            val dto = assertDoesNotThrow { TrufflehogAdapter.dtoFromJson(it) }
+            val dto = assertDoesNotThrow {
+                TrufflehogAdapter.dtoFromJson(it, TrufflehogDto.serializer())
+            }
 
             val kpis = assertDoesNotThrow { TrufflehogAdapter.transformDataToKpi(dto) }
 
@@ -61,7 +66,9 @@ class TrufflehogAdapterTest {
     @Test
     fun testResultResultDto() {
         Files.newInputStream(Path("src/test/resources/trufflehog.json")).use {
-            val dto = assertDoesNotThrow { TrufflehogAdapter.dtoFromJson(it) }
+            val dto = assertDoesNotThrow {
+                TrufflehogAdapter.dtoFromJson(it, TrufflehogDto.serializer())
+            }
 
             val kpis = assertDoesNotThrow { TrufflehogAdapter.transformDataToKpi(dto) }
 

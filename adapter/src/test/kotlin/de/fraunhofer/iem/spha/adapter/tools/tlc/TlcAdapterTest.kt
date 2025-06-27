@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Fraunhofer IEM. All rights reserved.
+ * Copyright (c) 2024-2025 Fraunhofer IEM. All rights reserved.
  *
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  *
@@ -12,15 +12,16 @@ package de.fraunhofer.iem.spha.adapter.tools.tlc
 import de.fraunhofer.iem.spha.adapter.AdapterResult
 import de.fraunhofer.iem.spha.adapter.tools.tlc.model.ArtifactVersion
 import de.fraunhofer.iem.spha.adapter.tools.tlc.model.Version
-import de.fraunhofer.iem.spha.model.adapter.tlc.ArtifactDto
-import de.fraunhofer.iem.spha.model.adapter.tlc.ArtifactVersionDto
-import de.fraunhofer.iem.spha.model.adapter.tlc.DependencyGraphDto
-import de.fraunhofer.iem.spha.model.adapter.tlc.DependencyNodeDto
-import de.fraunhofer.iem.spha.model.adapter.tlc.EnvironmentInfoDto
-import de.fraunhofer.iem.spha.model.adapter.tlc.ProjectDto
-import de.fraunhofer.iem.spha.model.adapter.tlc.RepositoryInfoDto
-import de.fraunhofer.iem.spha.model.adapter.tlc.ScopeToGraph
-import de.fraunhofer.iem.spha.model.adapter.tlc.TlcDto
+import de.fraunhofer.iem.spha.model.adapter.ArtifactDto
+import de.fraunhofer.iem.spha.model.adapter.ArtifactVersionDto
+import de.fraunhofer.iem.spha.model.adapter.DependencyGraphDto
+import de.fraunhofer.iem.spha.model.adapter.DependencyNodeDto
+import de.fraunhofer.iem.spha.model.adapter.EnvironmentInfoDto
+import de.fraunhofer.iem.spha.model.adapter.ProjectDto
+import de.fraunhofer.iem.spha.model.adapter.RepositoryInfoDto
+import de.fraunhofer.iem.spha.model.adapter.ScopeToGraph
+import de.fraunhofer.iem.spha.model.adapter.TlcDto
+import de.fraunhofer.iem.spha.model.adapter.TlcOriginDto
 import de.fraunhofer.iem.spha.model.kpi.KpiType
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -37,7 +38,7 @@ class TlcAdapterTest {
         val kpis =
             TlcAdapter.transformDataToKpi(
                 data =
-                    listOf(
+                    arrayOf(
                         TlcDto(
                             repositoryInfo =
                                 RepositoryInfoDto(url = "", revision = "", projects = listOf()),
@@ -100,7 +101,7 @@ class TlcAdapterTest {
         val kpis =
             TlcAdapter.transformDataToKpi(
                 data =
-                    listOf(
+                    arrayOf(
                         TlcDto(
                             repositoryInfo =
                                 RepositoryInfoDto(url = "", revision = "", projects = listOf()),
@@ -145,18 +146,14 @@ class TlcAdapterTest {
 
         val kpi = kpis.first()
 
-        val isSuccess = kpi is AdapterResult.Success<TechLagResult>
+        val isSuccess = kpi is AdapterResult.Success<TlcOriginDto>
         assertTrue(isSuccess)
 
         val rawValueKpi = kpi.rawValueKpi
 
         assertEquals(KpiType.LIB_DAYS_PROD.name, rawValueKpi.typeId)
         assertEquals(100, rawValueKpi.score)
-
-        when (kpi.origin) {
-            is TechLagResult.Success -> assertEquals(18, kpi.origin.libyear)
-            else -> fail()
-        }
+        assertEquals(18, kpi.origin.libyears)
     }
 
     private fun testVersion(
@@ -286,7 +283,7 @@ class TlcAdapterTest {
                 )
                 .mapNotNull { it }
 
-        // the used version doesn't need to exist in the versions list in order to select the
+        // the used version doesn't need to exist in the version list to select the
         // correct
         // update target
         testVersion("4.12.3", versions, Version.Major, "2.11")

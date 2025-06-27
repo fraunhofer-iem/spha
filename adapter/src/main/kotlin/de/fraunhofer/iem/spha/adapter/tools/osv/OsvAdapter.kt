@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Fraunhofer IEM. All rights reserved.
+ * Copyright (c) 2024-2025 Fraunhofer IEM. All rights reserved.
  *
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  *
@@ -10,52 +10,43 @@
 package de.fraunhofer.iem.spha.adapter.tools.osv
 
 import de.fraunhofer.iem.spha.adapter.AdapterResult
-import de.fraunhofer.iem.spha.adapter.kpis.cve.CveAdapter
-import de.fraunhofer.iem.spha.model.adapter.osv.OsvScannerDto
-import de.fraunhofer.iem.spha.model.adapter.vulnerability.VulnerabilityDto
-import java.io.InputStream
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromStream
+import de.fraunhofer.iem.spha.adapter.ErrorType
+import de.fraunhofer.iem.spha.adapter.KpiAdapter
+import de.fraunhofer.iem.spha.adapter.kpis.cve.transformVulnerabilityToKpi
+import de.fraunhofer.iem.spha.model.adapter.OsvScannerDto
+import de.fraunhofer.iem.spha.model.adapter.OsvVulnerabilityDto
+import de.fraunhofer.iem.spha.model.kpi.KpiType
+import org.metaeffekt.core.security.cvss.CvssVector
 
-object OsvAdapter {
-    private val jsonParser = Json {
-        ignoreUnknownKeys = true
-        explicitNulls = false
-    }
+object OsvAdapter : KpiAdapter<OsvScannerDto, OsvVulnerabilityDto>() {
 
-    @OptIn(ExperimentalSerializationApi::class)
-    fun dtoFromJson(jsonData: InputStream): OsvScannerDto {
-        return jsonParser.decodeFromStream<OsvScannerDto>(jsonData)
-    }
-
-    fun transformDataToKpi(data: OsvScannerDto): Collection<AdapterResult<VulnerabilityDto>> {
-        return transformDataToKpi(listOf(data))
-    }
-
-    fun transformDataToKpi(
-        data: Collection<OsvScannerDto>
-    ): Collection<AdapterResult<VulnerabilityDto>> {
-        return CveAdapter.transformCodeVulnerabilityToKpi(
-            data.flatMap { results ->
-                results.results.flatMap { result ->
-                    result.packages.flatMap { pkg ->
-                        pkg.groups.mapNotNull { group ->
-                            val severity = group.maxSeverity.toDoubleOrNull()
-                            if (severity == null) {
-                                null
-                            } else {
-                                VulnerabilityDto(
-                                    cveIdentifier = group.ids.first(),
-                                    packageName = pkg.osvPackage.name,
-                                    severity = severity,
-                                    version = pkg.osvPackage.version,
-                                )
-                            }
-                        }
+    override fun transformDataToKpi(
+        vararg data: OsvScannerDto
+    ): Collection<AdapterResult<OsvVulnerabilityDto>> {
+        return data
+            .flatMap { it.results }
+            .flatMap { it.packages }
+            .flatMap { pkg ->
+                pkg.vulnerabilities.map { osvVuln ->
+                    // If severity is null or empty, return an error
+                    val severityList =
+                        osvVuln.severity?.mapNotNull { CvssVector.parseVector(it.score)?.baseScore }
+                    if (severityList.isNullOrEmpty()) {
+                        return@map AdapterResult.Error(ErrorType.DATA_VALIDATION_ERROR)
                     }
+
+                    val score = severityList.maxOrNull()
+
+                    if (score == null) {
+                        return@map AdapterResult.Error(ErrorType.DATA_VALIDATION_ERROR)
+                    }
+                    val rawValueKpi =
+                        transformVulnerabilityToKpi(score, KpiType.CODE_VULNERABILITY_SCORE)
+                    if (rawValueKpi == null) {
+                        return@map AdapterResult.Error(ErrorType.DATA_VALIDATION_ERROR)
+                    }
+                    return@map AdapterResult.Success.Kpi(rawValueKpi, osvVuln)
                 }
             }
-        )
     }
 }

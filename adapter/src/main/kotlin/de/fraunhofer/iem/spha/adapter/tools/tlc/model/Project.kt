@@ -9,7 +9,7 @@
 
 package de.fraunhofer.iem.spha.adapter.tools.tlc.model
 
-import de.fraunhofer.iem.spha.model.adapter.tlc.ProjectDto
+import de.fraunhofer.iem.spha.model.adapter.ProjectDto
 
 internal data class Project(
     val artifacts: List<Artifact> = listOf(), // Stores all components and their related metadata

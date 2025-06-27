@@ -15,6 +15,7 @@ plugins {
 dependencies {
     implementation(project(":model"))
     implementation(libs.semver)
+    implementation(libs.aeSecurity)
     implementation(libs.kotlin.serialization.json)
 
     testImplementation(libs.test.junit5.params)

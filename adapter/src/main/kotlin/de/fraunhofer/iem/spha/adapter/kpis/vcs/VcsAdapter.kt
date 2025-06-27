@@ -11,15 +11,15 @@ package de.fraunhofer.iem.spha.adapter.kpis.vcs
 
 import de.fraunhofer.iem.spha.adapter.AdapterResult
 import de.fraunhofer.iem.spha.adapter.KpiAdapter
-import de.fraunhofer.iem.spha.model.adapter.RepositoryDetailsDto
+import de.fraunhofer.iem.spha.model.adapter.RepositoryDetails
 import de.fraunhofer.iem.spha.model.kpi.KpiType
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 
-object VcsAdapter : KpiAdapter<RepositoryDetailsDto, RepositoryDetailsDto>() {
+object VcsAdapter : KpiAdapter<RepositoryDetails, RepositoryDetails>() {
 
     override fun transformDataToKpi(
-        vararg data: RepositoryDetailsDto
-    ): Collection<AdapterResult<RepositoryDetailsDto>> {
+        vararg data: RepositoryDetails
+    ): Collection<AdapterResult<RepositoryDetails>> {
 
         return data.flatMap { repoDetailsDto ->
             return@flatMap listOf(

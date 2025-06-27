@@ -9,7 +9,7 @@
 
 package de.fraunhofer.iem.spha.model.adapter
 
-data class RepositoryDetailsDto(
+data class RepositoryDetails(
     val projectId: Long,
     val numberOfCommits: Int,
     val numberOfSignedCommits: Int,

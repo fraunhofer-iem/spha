@@ -21,6 +21,7 @@ import de.fraunhofer.iem.spha.model.adapter.ProjectDto
 import de.fraunhofer.iem.spha.model.adapter.RepositoryInfoDto
 import de.fraunhofer.iem.spha.model.adapter.ScopeToGraph
 import de.fraunhofer.iem.spha.model.adapter.TlcDto
+import de.fraunhofer.iem.spha.model.adapter.TlcOriginDto
 import de.fraunhofer.iem.spha.model.kpi.KpiType
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -145,7 +146,7 @@ class TlcAdapterTest {
 
         val kpi = kpis.first()
 
-        val isSuccess = kpi is AdapterResult.Success<ProjectDto>
+        val isSuccess = kpi is AdapterResult.Success<TlcOriginDto>
         assertTrue(isSuccess)
 
         val rawValueKpi = kpi.rawValueKpi

@@ -15,10 +15,10 @@ import de.fraunhofer.iem.spha.adapter.KpiAdapter
 import de.fraunhofer.iem.spha.adapter.tools.tlc.model.Project
 import de.fraunhofer.iem.spha.adapter.tools.tlc.model.Version
 import de.fraunhofer.iem.spha.adapter.tools.tlc.util.TechLagHelper.getTechLagForGraph
-import de.fraunhofer.iem.spha.model.adapter.ProjectDto
 import de.fraunhofer.iem.spha.model.adapter.TlcConfig
 import de.fraunhofer.iem.spha.model.adapter.TlcDefaultConfig
 import de.fraunhofer.iem.spha.model.adapter.TlcDto
+import de.fraunhofer.iem.spha.model.adapter.TlcOriginDto
 import de.fraunhofer.iem.spha.model.kpi.KpiType
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 
@@ -28,11 +28,11 @@ sealed class TechLagResult {
     data class Empty(val reason: String) : TechLagResult()
 }
 
-object TlcAdapter : KpiAdapter<TlcDto, ProjectDto>() {
+object TlcAdapter : KpiAdapter<TlcDto, TlcOriginDto>() {
 
     var config: TlcConfig = TlcDefaultConfig.get()
 
-    override fun transformDataToKpi(vararg data: TlcDto): Collection<AdapterResult<ProjectDto>> {
+    override fun transformDataToKpi(vararg data: TlcDto): Collection<AdapterResult<TlcOriginDto>> {
 
         // TODO: update return type to also contain the calculated libyears
         return data.flatMap { tlcDto ->
@@ -65,7 +65,7 @@ object TlcAdapter : KpiAdapter<TlcDto, ProjectDto>() {
 
                         return@map AdapterResult.Success.Kpi(
                             rawValueKpi = rawValueKpi,
-                            origin = projectDto,
+                            origin = TlcOriginDto(projectDto, techLag.libyear),
                         )
                     }
 

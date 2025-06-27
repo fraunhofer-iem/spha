@@ -18,6 +18,8 @@ data class TlcDto(
     val projectDtos: List<ProjectDto>,
 ) : ToolResult
 
+@Serializable data class TlcOriginDto(val project: ProjectDto, val libyears: Long) : Origin
+
 @Serializable
 data class RepositoryInfoDto(
     val url: String,
@@ -47,7 +49,7 @@ data class ProjectDto(
     val version: String = "",
     val artifactId: String = "",
     val groupId: String = "",
-) : Origin
+)
 
 @Serializable
 data class ArtifactDto(

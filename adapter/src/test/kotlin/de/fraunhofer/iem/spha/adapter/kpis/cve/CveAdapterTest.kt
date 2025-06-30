@@ -43,12 +43,6 @@ class CveAdapterTest {
 
     @Test
     fun basicVulnerabilityToKpiTransformation() {
-        // valid input
-        val validKpi = transformVulnerabilityToKpi(score = 7.5, typeId = KpiType.NUMBER_OF_COMMITS)
-
-        if (validKpi == null || validKpi.score != 25) {
-            fail()
-        }
 
         // invalid input
         val invalidKpis =

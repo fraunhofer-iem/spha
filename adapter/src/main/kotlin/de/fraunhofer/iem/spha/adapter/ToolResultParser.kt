@@ -9,6 +9,7 @@
 
 package de.fraunhofer.iem.spha.adapter
 
+import de.fraunhofer.iem.spha.adapter.ToolProcessorImpl.Companion.getAllToolProcessors
 import de.fraunhofer.iem.spha.adapter.tools.osv.OsvAdapter
 import de.fraunhofer.iem.spha.adapter.tools.tlc.TlcAdapter
 import de.fraunhofer.iem.spha.adapter.tools.trivy.TrivyAdapter
@@ -68,31 +69,38 @@ private class ToolProcessorImpl<T : ToolResult>(
             null
         }
     }
+
+    companion object {
+        private val jsonParser = Json {
+            isLenient = true
+            ignoreUnknownKeys = true
+        }
+
+        // List of all supported tool processors. Adding a new tool is a single-line change here.
+        fun getAllToolProcessors(): List<ToolProcessor> {
+            return listOf(
+                ToolProcessorImpl(OsvScannerDto.serializer(), jsonParser) {
+                    OsvAdapter.transformDataToKpi(it)
+                },
+                ToolProcessorImpl(TrivyDtoV2.serializer(), jsonParser) {
+                    TrivyAdapter.transformDataToKpi(it)
+                },
+                ToolProcessorImpl(TrufflehogDto.serializer(), jsonParser) {
+                    TrufflehogAdapter.transformDataToKpi(it)
+                },
+                ToolProcessorImpl(TlcDto.serializer(), jsonParser) {
+                    TlcAdapter.transformDataToKpi(it)
+                },
+            )
+        }
+    }
 }
 
 object ToolResultParser {
 
     private val logger = KotlinLogging.logger {}
 
-    private val jsonParser = Json {
-        isLenient = true
-        ignoreUnknownKeys = true
-    }
-
-    // List of all supported tool processors. Adding a new tool is a single-line change here.
-    private val processors: List<ToolProcessor> =
-        listOf(
-            ToolProcessorImpl(OsvScannerDto.serializer(), jsonParser) {
-                OsvAdapter.transformDataToKpi(it)
-            },
-            ToolProcessorImpl(TrivyDtoV2.serializer(), jsonParser) {
-                TrivyAdapter.transformDataToKpi(it)
-            },
-            ToolProcessorImpl(TrufflehogDto.serializer(), jsonParser) {
-                TrufflehogAdapter.transformDataToKpi(it)
-            },
-            ToolProcessorImpl(TlcDto.serializer(), jsonParser) { TlcAdapter.transformDataToKpi(it) },
-        )
+    private val processors: List<ToolProcessor> = getAllToolProcessors()
 
     private fun getJsonFiles(directoryPath: String): List<File> {
         val directory = File(directoryPath)
@@ -162,7 +170,7 @@ object ToolResultParser {
                     }
                 }
             } catch (e: Exception) {
-                logger.error { "Error reading file '${file.name}': ${e.message}" }
+                logger.error { "Unexpected error processing file '${file.name}': ${e.message}" }
             }
         }
         return adapterResults

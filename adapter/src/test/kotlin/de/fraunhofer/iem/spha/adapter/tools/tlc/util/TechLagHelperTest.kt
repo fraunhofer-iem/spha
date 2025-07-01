@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Fraunhofer IEM. All rights reserved.
+ * Copyright (c) 2024-2025 Fraunhofer IEM. All rights reserved.
  *
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  *
@@ -18,7 +18,8 @@ import de.fraunhofer.iem.spha.model.adapter.DependencyEdge
 import de.fraunhofer.iem.spha.model.adapter.DependencyGraphDto
 import de.fraunhofer.iem.spha.model.adapter.DependencyNodeDto
 import kotlin.test.assertEquals
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
@@ -32,6 +33,7 @@ class TechLagHelperTest {
         }
     }
 
+    @OptIn(ExperimentalTime::class)
     private fun generateVersions(count: Int): List<ArtifactVersion> {
 
         var startDate = Clock.System.now()

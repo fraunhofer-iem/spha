@@ -27,6 +27,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.test.fail
+import kotlin.time.ExperimentalTime
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
@@ -61,6 +62,7 @@ class TlcAdapterTest {
         assertEquals(0, kpis.size)
     }
 
+    @OptIn(ExperimentalTime::class)
     @Test
     fun transformSingleNodeToKpi() {
 
@@ -176,6 +178,7 @@ class TlcAdapterTest {
         assertEquals(expectedVersion, target.versionNumber)
     }
 
+    @OptIn(ExperimentalTime::class)
     @Test
     fun getTargetVersion() {
         val usedVersionDate =
@@ -242,6 +245,7 @@ class TlcAdapterTest {
         testVersion("0.3.11", versions, Version.Patch, "0.3.10")
     }
 
+    @OptIn(ExperimentalTime::class)
     @Test
     fun getTargetVersionUnknown() {
         val usedVersionDate =

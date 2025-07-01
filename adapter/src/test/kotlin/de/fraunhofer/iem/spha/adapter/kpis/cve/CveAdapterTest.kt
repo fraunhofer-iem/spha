@@ -47,8 +47,7 @@ class CveAdapterTest {
         // invalid input
         val invalidKpis =
             listOf(
-                transformVulnerabilityToKpi(score = -7.5, typeId = KpiType.NUMBER_OF_COMMITS),
-                transformVulnerabilityToKpi(score = 11.5, typeId = KpiType.NUMBER_OF_COMMITS),
+                transformVulnerabilityToKpi(score = -0.1, typeId = KpiType.NUMBER_OF_COMMITS),
                 transformVulnerabilityToKpi(score = 10.1, typeId = KpiType.NUMBER_OF_COMMITS),
             )
 

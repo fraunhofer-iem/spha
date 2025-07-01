@@ -52,7 +52,7 @@ data class OsvPackageDto(
 @Serializable
 data class OsvVulnerabilityDto(
     @SerialName("affected") val affected: List<Affected>,
-    @SerialName("severity") val severity: List<Severity>? = null,
+    @SerialName("severity") val severity: List<Severity> = emptyList(),
     @SerialName("details") val details: String,
     @SerialName("id") val id: String,
     @SerialName("modified") val modified: String,

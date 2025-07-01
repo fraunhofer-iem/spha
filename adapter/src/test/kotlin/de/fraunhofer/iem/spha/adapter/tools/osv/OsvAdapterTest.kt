@@ -86,7 +86,7 @@ class OsvAdapterTest {
         val osvVulnerabilityDto =
             OsvVulnerabilityDto(
                 affected = emptyList(),
-                severity = null, // Null severity
+                severity = emptyList(),
                 details = "Test details",
                 id = "TEST-ID",
                 modified = "2023-01-01",

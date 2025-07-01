@@ -9,7 +9,7 @@
 
 package de.fraunhofer.iem.spha.adapter.tools.tlc.model
 
-import de.fraunhofer.iem.spha.model.adapter.tlc.ProjectDto
+import de.fraunhofer.iem.spha.model.adapter.ProjectDto
 import kotlin.test.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 

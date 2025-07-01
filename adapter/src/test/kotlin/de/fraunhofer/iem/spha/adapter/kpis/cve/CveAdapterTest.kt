@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Fraunhofer IEM. All rights reserved.
+ * Copyright (c) 2024-2025 Fraunhofer IEM. All rights reserved.
  *
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  *
@@ -9,77 +9,51 @@
 
 package de.fraunhofer.iem.spha.adapter.kpis.cve
 
-import de.fraunhofer.iem.spha.adapter.AdapterResult
-import de.fraunhofer.iem.spha.adapter.ErrorType
-import de.fraunhofer.iem.spha.model.adapter.vulnerability.VulnerabilityDto
+import de.fraunhofer.iem.spha.model.kpi.KpiType
+import kotlin.test.assertEquals
 import kotlin.test.fail
 import org.junit.jupiter.api.Test
 
 class CveAdapterTest {
 
     @Test
-    fun basicVulnerabilityToKpiTransformation() {
-        // valid input
-        val validKpi =
-            CveAdapter.transformCodeVulnerabilityToKpi(
-                listOf(
-                    VulnerabilityDto(
-                        cveIdentifier = "not blank",
-                        packageName = "not blank",
-                        severity = 0.1,
-                        version = "0.0.1",
-                    )
-                )
-            )
-        when (val kpi = validKpi.first()) {
-            is AdapterResult.Success<*> -> {
-                assert(kpi.rawValueKpi.score in (0..100))
-            }
+    fun testCreateKpi() {
+        // Test with different severity scores
+        val kpi1 = transformVulnerabilityToKpi(score = 0.0, typeId = KpiType.NUMBER_OF_COMMITS)
+        assertEquals(100, kpi1?.score)
+        assertEquals(KpiType.NUMBER_OF_COMMITS.name, kpi1?.typeId)
 
-            // no type parameters needed here
-            else -> fail()
-        }
+        val kpi2 = transformVulnerabilityToKpi(score = 5.0, typeId = KpiType.NUMBER_OF_COMMITS)
+        assertEquals(50, kpi2?.score)
+
+        val kpi3 = transformVulnerabilityToKpi(score = 10.0, typeId = KpiType.NUMBER_OF_COMMITS)
+        assertEquals(0, kpi3?.score)
+
+        // Test with originId
+        val originId = "test-origin-id"
+        val kpi4 =
+            transformVulnerabilityToKpi(
+                score = 7.5,
+                typeId = KpiType.NUMBER_OF_COMMITS,
+                originId = originId,
+            )
+        assertEquals(25, kpi4?.score)
+        assertEquals(originId, kpi4?.originId)
+    }
+
+    @Test
+    fun basicVulnerabilityToKpiTransformation() {
 
         // invalid input
         val invalidKpis =
-            CveAdapter.transformCodeVulnerabilityToKpi(
-                listOf(
-                    VulnerabilityDto(
-                        cveIdentifier = "not blank",
-                        packageName = "",
-                        severity = 0.1,
-                        version = "0.0.1",
-                    ),
-                    VulnerabilityDto(
-                        cveIdentifier = "",
-                        packageName = "not blank",
-                        severity = 0.1,
-                        version = "0.0.1",
-                    ),
-                    VulnerabilityDto(
-                        cveIdentifier = "not blank",
-                        packageName = "not blank",
-                        severity = -0.1,
-                        version = "0.0.1",
-                    ),
-                    VulnerabilityDto(
-                        cveIdentifier = "not blank",
-                        packageName = "not blank",
-                        severity = 10.1,
-                        version = "0.0.1",
-                    ),
-                )
+            listOf(
+                transformVulnerabilityToKpi(score = -0.1, typeId = KpiType.NUMBER_OF_COMMITS),
+                transformVulnerabilityToKpi(score = 10.1, typeId = KpiType.NUMBER_OF_COMMITS),
             )
 
         invalidKpis.forEach { invalidKpi ->
-            when (invalidKpi) {
-                is AdapterResult.Error -> {
-                    assert(invalidKpi.type == ErrorType.DATA_VALIDATION_ERROR)
-                }
-
-                is AdapterResult.Success -> {
-                    fail()
-                }
+            if (invalidKpi != null) {
+                fail()
             }
         }
     }

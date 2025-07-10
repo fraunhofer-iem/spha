@@ -417,6 +417,7 @@ class KpiCalculatorTest {
                 edges = emptyList(),
                 tags = setOf("cvss", "cve", "cwe"),
                 reason = "CRA relevant",
+                thresholds = mapOf("warning" to 50, "critical" to 90)
             )
 
         val root =
@@ -450,6 +451,7 @@ class KpiCalculatorTest {
         assertEquals(setOf(), cvssResultNode.tags)
         assertEquals("cvssOrigin", cvssResultNode.originId)
         assertEquals("CRA relevant", cvssResultNode.reason)
+        assertEquals(mapOf("warning" to 50, "critical" to 90), cvssResultNode.thresholds)
 
         // Check SAST Node
         val sastResultNode =

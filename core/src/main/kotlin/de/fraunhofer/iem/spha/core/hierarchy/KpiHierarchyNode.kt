@@ -25,6 +25,7 @@ private constructor(
     val tags: Set<String> = emptySet(),
     val originId: String? = null,
     val reason: String? = null,
+    val thresholds: Map<String, Int> = emptyMap(),
 ) {
     private var _id: String = UUID.randomUUID().toString()
     val id: String
@@ -38,7 +39,8 @@ private constructor(
         tags: Set<String> = emptySet(),
         originId: String? = null,
         reason: String? = null,
-    ) : this(typeId, strategy, edges, tags, originId, reason) {
+        thresholds: Map<String, Int> = emptyMap(),
+    ) : this(typeId, strategy, edges, tags, originId, reason, thresholds) {
         this._id = id
     }
 
@@ -72,6 +74,7 @@ private constructor(
                 id = node.id,
                 reason = node.reason,
                 tags = node.tags,
+                thresholds = node.thresholds,
                 edges =
                     node.edges.map {
                         KpiResultEdge(
@@ -118,6 +121,7 @@ private constructor(
                                 originId = rawValueKpi.originId,
                                 id = rawValueKpi.id,
                                 reason = child.target.reason,
+                                thresholds = child.target.thresholds,
                             )
                         hierarchyNode.result = KpiCalculationResult.Success(rawValueKpi.score)
                         val edge =
@@ -144,6 +148,7 @@ private constructor(
                     strategy = node.strategy,
                     reason = node.reason,
                     tags = node.tags,
+                    thresholds = node.thresholds,
                 )
 
             return calcNode

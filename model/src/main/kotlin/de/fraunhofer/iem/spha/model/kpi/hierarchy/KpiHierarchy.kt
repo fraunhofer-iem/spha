@@ -30,6 +30,7 @@ data class KpiNode(
     val edges: List<KpiEdge>,
     val tags: Set<String> = emptySet(),
     val reason: String? = null,
+    val thresholds: Map<String, Int> = emptyMap(),
 )
 
 @Serializable data class KpiEdge(val target: KpiNode, val weight: Double)

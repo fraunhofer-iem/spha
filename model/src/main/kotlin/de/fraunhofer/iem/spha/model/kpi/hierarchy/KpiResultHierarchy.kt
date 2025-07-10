@@ -36,7 +36,7 @@ data class KpiResultNode(
     val tags: Set<String> = emptySet(),
     val originId: String? = null,
     val reason: String? = null,
-    val thresholds: Map<String, Int> = emptyMap(),
+    val thresholds: List<Threshold> = emptyList(),
 ) {
     @SerialName("id") private var _id: String = UUID.randomUUID().toString()
     val id: String
@@ -51,7 +51,7 @@ data class KpiResultNode(
         tags: Set<String> = emptySet(),
         originId: String? = null,
         reason: String? = null,
-        thresholds: Map<String, Int> = emptyMap(),
+        thresholds: List<Threshold> = emptyList(),
     ) : this(
         typeId = typeId,
         result = result,

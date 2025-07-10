@@ -417,7 +417,7 @@ class KpiCalculatorTest {
                 edges = emptyList(),
                 tags = setOf("cvss", "cve", "cwe"),
                 reason = "CRA relevant",
-                thresholds = mapOf("warning" to 50, "critical" to 90)
+                thresholds = mapOf("warning" to 50, "critical" to 90),
             )
 
         val root =

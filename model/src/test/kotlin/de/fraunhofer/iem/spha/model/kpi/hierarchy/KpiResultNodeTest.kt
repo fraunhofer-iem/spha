@@ -24,7 +24,7 @@ class KpiResultNodeTest {
                 result = KpiCalculationResult.Success(100),
                 strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                 edges = emptyList(),
-                thresholds = mapOf()
+                thresholds = mapOf(),
             )
         val node2 =
             KpiResultNode(
@@ -32,7 +32,7 @@ class KpiResultNodeTest {
                 result = KpiCalculationResult.Success(100),
                 strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                 edges = emptyList(),
-                thresholds = mapOf()
+                thresholds = mapOf(),
             )
 
         // Verify that the IDs are different
@@ -61,7 +61,7 @@ class KpiResultNodeTest {
                 id = customId,
                 originId = "origin-123",
                 reason = "test reason",
-                thresholds = mapOf("warning" to 50, "critical" to 90)
+                thresholds = mapOf("warning" to 50, "critical" to 90),
             )
 
         // Verify that the custom ID is used
@@ -121,7 +121,7 @@ class KpiResultNodeTest {
                 id = "same-id",
                 originId = "origin-123",
                 reason = "test reason",
-                thresholds = mapOf("warning" to 50, "critical" to 90)
+                thresholds = mapOf("warning" to 50, "critical" to 90),
             )
         val node2 =
             KpiResultNode(
@@ -132,7 +132,7 @@ class KpiResultNodeTest {
                 id = "same-id",
                 originId = "origin-123",
                 reason = "test reason",
-                thresholds = mapOf("warning" to 50, "critical" to 90)
+                thresholds = mapOf("warning" to 50, "critical" to 90),
             )
 
         // IDs should be the same

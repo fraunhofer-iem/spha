@@ -75,7 +75,7 @@ class JsonKpiHierarchyTest {
                                     edges = emptyList(),
                                     tags = setOf("cvss", "cve", "cwe"),
                                     reason = "CRA relevant",
-                                    thresholds = mapOf("warning" to 50, "critical" to 90)
+                                    thresholds = mapOf("warning" to 50, "critical" to 90),
                                 ),
                         )
                     ),
@@ -99,7 +99,7 @@ class JsonKpiHierarchyTest {
                     typeId = "someId",
                     strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                     edges = listOf(),
-                    thresholds = mapOf()
+                    thresholds = mapOf(),
                 ),
                 KpiNode(
                     typeId = "someId",
@@ -107,7 +107,7 @@ class JsonKpiHierarchyTest {
                     edges = listOf(),
                     tags = setOf("A", "B", "a", "b", "A"),
                     reason = "someReason",
-                    thresholds = mapOf("warning" to 50, "critical" to 90)
+                    thresholds = mapOf("warning" to 50, "critical" to 90),
                 ),
             )
     }

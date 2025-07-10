@@ -75,7 +75,7 @@ class JsonKpiResultHierarchyTest {
                                     tags = setOf("A", "B", "a", "b", "A"),
                                     originId = "someOrigin",
                                     reason = "CRA relevant",
-                                    thresholds = mapOf("warning" to 50, "critical" to 90)
+                                    thresholds = mapOf("warning" to 50, "critical" to 90),
                                 ),
                         )
                     ),
@@ -105,7 +105,7 @@ class JsonKpiResultHierarchyTest {
                     result = KpiCalculationResult.Success(42),
                     strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                     edges = listOf(),
-                    thresholds = mapOf()
+                    thresholds = mapOf(),
                 ),
                 KpiResultNode(
                     typeId = "someId",
@@ -116,7 +116,7 @@ class JsonKpiResultHierarchyTest {
                     tags = setOf("A", "B", "a", "b", "A"),
                     originId = "someOrigin",
                     reason = "someReason",
-                    thresholds = mapOf("warning" to 50, "critical" to 90)
+                    thresholds = mapOf("warning" to 50, "critical" to 90),
                 ),
                 KpiResultNode(
                     typeId = "someId",

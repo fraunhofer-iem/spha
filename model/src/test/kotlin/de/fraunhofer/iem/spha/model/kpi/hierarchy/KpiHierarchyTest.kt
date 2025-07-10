@@ -75,7 +75,7 @@ class KpiHierarchyTest {
                 edges = listOf(),
                 tags = setOf("A", "B", "a", "b", "A"),
                 reason = "someReason",
-                thresholds = mapOf("warning" to 50, "critical" to 90)
+                thresholds = mapOf("warning" to 50, "critical" to 90),
             )
         assertEquals("ROOT", resultNode.typeId)
         assertEquals(KpiStrategyId.RAW_VALUE_STRATEGY, resultNode.strategy)

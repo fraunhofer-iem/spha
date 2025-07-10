@@ -19,7 +19,7 @@ import de.fraunhofer.iem.spha.model.adapter.OsvScannerDto
 import de.fraunhofer.iem.spha.model.adapter.TlcDto
 import de.fraunhofer.iem.spha.model.adapter.ToolResult
 import de.fraunhofer.iem.spha.model.adapter.TrivyDtoV2
-import de.fraunhofer.iem.spha.model.adapter.TrufflehogDto
+import de.fraunhofer.iem.spha.model.adapter.TrufflehogReportDto
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.File
 import kotlinx.serialization.KSerializer
@@ -85,7 +85,7 @@ private class ToolProcessorImpl<T : ToolResult>(
                 ToolProcessorImpl(TrivyDtoV2.serializer(), jsonParser) {
                     TrivyAdapter.transformDataToKpi(it)
                 },
-                ToolProcessorImpl(TrufflehogDto.serializer(), jsonParser) {
+                ToolProcessorImpl(TrufflehogReportDto.serializer(), jsonParser) {
                     TrufflehogAdapter.transformDataToKpi(it)
                 },
                 ToolProcessorImpl(TlcDto.serializer(), jsonParser) {

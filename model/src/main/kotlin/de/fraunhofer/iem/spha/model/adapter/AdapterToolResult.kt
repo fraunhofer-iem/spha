@@ -9,6 +9,8 @@
 
 package de.fraunhofer.iem.spha.model.adapter
 
+import kotlinx.serialization.Serializable
+
 /**
  * Represents a sealed interface serving as a marker for various origin-related data types. It is
  * designed to model and group different implementations that signify the origin of specific data or
@@ -17,4 +19,4 @@ package de.fraunhofer.iem.spha.model.adapter
  * Implementations of this interface may vary based on their usage. For instance, they could
  * represent the origin of analysis results or details from different tools.
  */
-sealed interface Origin
+@Serializable sealed interface Origin

@@ -20,6 +20,13 @@ object DefaultHierarchy {
                 typeId = KpiType.SECRETS.name,
                 strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                 edges = listOf(),
+                metaInfo =
+                    MetaInfo(
+                        displayName = "Secrets",
+                        description =
+                            "Measures the presence of secrets or sensitive information in the codebase",
+                        tags = setOf("security", "sensitive-data"),
+                    ),
             )
 
         val documentationInfrastructure =
@@ -27,6 +34,13 @@ object DefaultHierarchy {
                 typeId = KpiType.DOCUMENTATION_INFRASTRUCTURE.name,
                 strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                 edges = listOf(),
+                metaInfo =
+                    MetaInfo(
+                        displayName = "Documentation Infrastructure",
+                        description =
+                            "Measures the quality and completeness of project documentation infrastructure",
+                        tags = setOf("documentation", "infrastructure"),
+                    ),
             )
 
         val commentsInCode =
@@ -34,6 +48,13 @@ object DefaultHierarchy {
                 typeId = KpiType.COMMENTS_IN_CODE.name,
                 strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                 edges = listOf(),
+                metaInfo =
+                    MetaInfo(
+                        displayName = "Comments in Code",
+                        description =
+                            "Measures the quality and quantity of comments in the codebase",
+                        tags = setOf("documentation", "code-quality"),
+                    ),
             )
 
         val numberOfCommits =
@@ -41,6 +62,12 @@ object DefaultHierarchy {
                 typeId = KpiType.NUMBER_OF_COMMITS.name,
                 strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                 edges = listOf(),
+                metaInfo =
+                    MetaInfo(
+                        displayName = "Number of Commits",
+                        description = "Measures the total number of commits in the repository",
+                        tags = setOf("version-control", "activity"),
+                    ),
             )
 
         val numberOfSignedCommits =
@@ -48,6 +75,13 @@ object DefaultHierarchy {
                 typeId = KpiType.NUMBER_OF_SIGNED_COMMITS.name,
                 strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                 edges = listOf(),
+                metaInfo =
+                    MetaInfo(
+                        displayName = "Number of Signed Commits",
+                        description =
+                            "Measures the number of commits that are cryptographically signed",
+                        tags = setOf("version-control", "security", "authentication"),
+                    ),
             )
 
         val isDefaultBranchProtected =
@@ -55,6 +89,13 @@ object DefaultHierarchy {
                 typeId = KpiType.IS_DEFAULT_BRANCH_PROTECTED.name,
                 strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                 edges = listOf(),
+                metaInfo =
+                    MetaInfo(
+                        displayName = "Is Default Branch Protected?",
+                        description =
+                            "Indicates whether the default branch has protection rules enabled",
+                        tags = setOf("version-control", "security", "branch-protection"),
+                    ),
             )
 
         val checkedInBinaries =
@@ -62,6 +103,12 @@ object DefaultHierarchy {
                 typeId = KpiType.CHECKED_IN_BINARIES.name,
                 strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                 edges = listOf(),
+                metaInfo =
+                    MetaInfo(
+                        displayName = "Checked In Binaries",
+                        description = "Measures the presence of binary files in the repository",
+                        tags = setOf("version-control", "best-practices"),
+                    ),
             )
 
         val signedCommitsRatio =
@@ -73,6 +120,12 @@ object DefaultHierarchy {
                         KpiEdge(target = numberOfCommits, weight = 1.0),
                         KpiEdge(target = numberOfSignedCommits, weight = 1.0),
                     ),
+                metaInfo =
+                    MetaInfo(
+                        displayName = "Signed Commits Ratio",
+                        description = "Measures the ratio of signed commits to total commits",
+                        tags = setOf("version-control", "security", "authentication"),
+                    ),
             )
 
         val documentation =
@@ -83,6 +136,12 @@ object DefaultHierarchy {
                     listOf(
                         KpiEdge(target = documentationInfrastructure, weight = 0.6),
                         KpiEdge(target = commentsInCode, weight = 0.4),
+                    ),
+                metaInfo =
+                    MetaInfo(
+                        displayName = "Documentation",
+                        description = "Measures the overall quality of project documentation",
+                        tags = setOf("documentation", "quality"),
                     ),
             )
 
@@ -97,6 +156,12 @@ object DefaultHierarchy {
                         KpiEdge(target = isDefaultBranchProtected, weight = 0.3),
                         KpiEdge(target = documentation, weight = 0.3),
                     ),
+                metaInfo =
+                    MetaInfo(
+                        displayName = "Process Compliance",
+                        description = "Measures compliance with development process best practices",
+                        tags = setOf("process", "compliance", "best-practices"),
+                    ),
             )
 
         val processTransparency =
@@ -104,6 +169,12 @@ object DefaultHierarchy {
                 typeId = KpiType.PROCESS_TRANSPARENCY.name,
                 strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                 edges = listOf(KpiEdge(target = signedCommitsRatio, weight = 1.0)),
+                metaInfo =
+                    MetaInfo(
+                        displayName = "Process Transparency",
+                        description = "Measures the transparency of the development process",
+                        tags = setOf("process", "transparency"),
+                    ),
             )
 
         val codeVulnerabilities =
@@ -111,6 +182,12 @@ object DefaultHierarchy {
                 typeId = KpiType.CODE_VULNERABILITY_SCORE.name,
                 strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                 edges = listOf(),
+                metaInfo =
+                    MetaInfo(
+                        displayName = "Code Vulnerabilities",
+                        description = "Measures the presence of vulnerabilities in the code",
+                        tags = setOf("security", "vulnerabilities", "code"),
+                    ),
             )
 
         val maxDepVulnerability =
@@ -118,6 +195,12 @@ object DefaultHierarchy {
                 typeId = KpiType.MAXIMAL_VULNERABILITY.name,
                 strategy = KpiStrategyId.MINIMUM_STRATEGY,
                 edges = listOf(KpiEdge(target = codeVulnerabilities, weight = 1.0)),
+                metaInfo =
+                    MetaInfo(
+                        displayName = "Maximal Dependency Vulnerability",
+                        description = "Measures the most severe vulnerability in dependencies",
+                        tags = setOf("security", "vulnerabilities", "dependencies"),
+                    ),
             )
 
         val containerVulnerabilities =
@@ -125,6 +208,12 @@ object DefaultHierarchy {
                 typeId = KpiType.CONTAINER_VULNERABILITY_SCORE.name,
                 strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                 edges = listOf(),
+                metaInfo =
+                    MetaInfo(
+                        displayName = "Container Vulnerabilities",
+                        description = "Measures the presence of vulnerabilities in containers",
+                        tags = setOf("security", "vulnerabilities", "containers"),
+                    ),
             )
 
         val maxContainerVulnerability =
@@ -132,6 +221,12 @@ object DefaultHierarchy {
                 typeId = KpiType.MAXIMAL_VULNERABILITY.name,
                 strategy = KpiStrategyId.MAXIMUM_STRATEGY,
                 edges = listOf(KpiEdge(target = containerVulnerabilities, weight = 1.0)),
+                metaInfo =
+                    MetaInfo(
+                        displayName = "Maximal Container Vulnerability",
+                        description = "Measures the most severe vulnerability in containers",
+                        tags = setOf("security", "vulnerabilities", "containers"),
+                    ),
             )
 
         val security =
@@ -145,6 +240,12 @@ object DefaultHierarchy {
                         KpiEdge(target = maxContainerVulnerability, weight = 0.35),
                         KpiEdge(target = checkedInBinaries, weight = 0.1),
                     ),
+                metaInfo =
+                    MetaInfo(
+                        displayName = "Security",
+                        description = "Measures the overall security of the project",
+                        tags = setOf("security", "overall"),
+                    ),
             )
 
         val internalQuality =
@@ -152,6 +253,12 @@ object DefaultHierarchy {
                 typeId = KpiType.INTERNAL_QUALITY.name,
                 strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                 edges = listOf(KpiEdge(target = documentation, weight = 1.0)),
+                metaInfo =
+                    MetaInfo(
+                        displayName = "Internal Quality",
+                        description = "Measures the internal quality aspects of the project",
+                        tags = setOf("quality", "internal"),
+                    ),
             )
 
         val externalQuality =
@@ -159,6 +266,12 @@ object DefaultHierarchy {
                 typeId = KpiType.EXTERNAL_QUALITY.name,
                 strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                 edges = listOf(KpiEdge(target = documentation, weight = 1.0)),
+                metaInfo =
+                    MetaInfo(
+                        displayName = "External Quality",
+                        description = "Measures the external quality aspects of the project",
+                        tags = setOf("quality", "external"),
+                    ),
             )
 
         val root =
@@ -172,6 +285,12 @@ object DefaultHierarchy {
                         KpiEdge(target = security, weight = 0.4),
                         KpiEdge(target = internalQuality, weight = 0.15),
                         KpiEdge(target = externalQuality, weight = 0.25),
+                    ),
+                metaInfo =
+                    MetaInfo(
+                        displayName = "Software Product Health Score",
+                        description = "Overall health score of the software product",
+                        tags = setOf("health", "overall", "root"),
                     ),
             )
 

@@ -13,7 +13,10 @@ group = "de.fraunhofer.iem"
 
 mavenPublishing {
     publishToMavenCentral()
-    signAllPublications()
+    // Only sign publications when not publishing to mavenLocal
+    if (gradle.startParameter.taskNames.none { it.contains("publishToMavenLocal") }) {
+        signAllPublications()
+    }
     coordinates("de.fraunhofer.iem", "spha-${project.name}")
     pom {
         name = "spha-${project.name}"

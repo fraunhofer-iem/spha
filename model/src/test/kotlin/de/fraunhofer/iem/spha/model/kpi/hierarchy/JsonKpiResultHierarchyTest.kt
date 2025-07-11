@@ -72,9 +72,12 @@ class JsonKpiResultHierarchyTest {
                                     strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                     edges = emptyList(),
                                     id = "cveId", // Stable ID here
-                                    tags = setOf("A", "B", "a", "b", "A"),
+                                    metaInfo =
+                                        MetaInfo(
+                                            tags = setOf("A", "B", "a", "b", "A"),
+                                            description = "CRA relevant",
+                                        ),
                                     originId = "someOrigin",
-                                    reason = "CRA relevant",
                                     thresholds =
                                         listOf(Threshold("warning", 50), Threshold("critical", 90)),
                                 ),
@@ -86,13 +89,15 @@ class JsonKpiResultHierarchyTest {
 
         val jsonResult = Json.Default.encodeToString(hierarchy)
 
-        println(jsonResult)
+        println("Actual JSON: $jsonResult")
 
         // Pretty printing might add spaces, tabs, (CR)LF, etc. which is hard to assert against.
         // This implicitly asserts that KpiResultNode and KpiResultEdge get serialized to the
         // expected JSON too
         val expected =
-            "{\"root\":{\"typeId\":\"ROOT\",\"result\":{\"type\":\"de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success\",\"score\":100},\"strategy\":\"MAXIMUM_STRATEGY\",\"edges\":[{\"target\":{\"typeId\":\"CODE_VULNERABILITY_SCORE\",\"result\":{\"type\":\"de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success\",\"score\":100},\"strategy\":\"RAW_VALUE_STRATEGY\",\"edges\":[],\"tags\":[\"A\",\"B\",\"a\",\"b\"],\"originId\":\"someOrigin\",\"reason\":\"CRA relevant\",\"thresholds\":[{\"name\":\"warning\",\"value\":50},{\"name\":\"critical\",\"value\":90}],\"id\":\"cveId\"},\"plannedWeight\":1.0,\"actualWeight\":0.5}],\"id\":\"rootId\"},\"schemaVersion\":\"1.1.0\",\"timestamp\":\"${hierarchy.timestamp}\"}"
+            "{\"root\":{\"typeId\":\"ROOT\",\"result\":{\"type\":\"de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success\",\"score\":100},\"strategy\":\"MAXIMUM_STRATEGY\",\"edges\":[{\"target\":{\"typeId\":\"CODE_VULNERABILITY_SCORE\",\"result\":{\"type\":\"de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success\",\"score\":100},\"strategy\":\"RAW_VALUE_STRATEGY\",\"thresholds\":[{\"name\":\"warning\",\"value\":50},{\"name\":\"critical\",\"value\":90}],\"originId\":\"someOrigin\",\"metaInfo\":{\"description\":\"CRA relevant\",\"tags\":[\"A\",\"B\",\"a\",\"b\"]},\"id\":\"cveId\"},\"plannedWeight\":1.0,\"actualWeight\":0.5}],\"id\":\"rootId\"},\"schemaVersion\":\"1.1.0\",\"timestamp\":\"${hierarchy.timestamp}\"}"
+
+        println("Expected JSON: $expected")
 
         kotlin.test.assertEquals(expected, jsonResult)
     }
@@ -114,9 +119,9 @@ class JsonKpiResultHierarchyTest {
                     strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                     edges = listOf(),
                     id = "someId",
-                    tags = setOf("A", "B", "a", "b", "A"),
                     originId = "someOrigin",
-                    reason = "someReason",
+                    metaInfo =
+                        MetaInfo(tags = setOf("A", "B", "a", "b", "A"), description = "someReason"),
                     thresholds = listOf(Threshold("warning", 50), Threshold("critical", 90)),
                 ),
                 KpiResultNode(

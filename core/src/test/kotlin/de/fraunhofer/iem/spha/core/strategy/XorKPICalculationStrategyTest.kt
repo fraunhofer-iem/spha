@@ -7,6 +7,7 @@ import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiEdge
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiNode
+import de.fraunhofer.iem.spha.model.kpi.hierarchy.MetaInfo
 import kotlin.test.Test
 import org.junit.jupiter.api.Assertions.assertEquals
 
@@ -38,7 +39,7 @@ class XorKPICalculationStrategyTest {
                                     typeId = KpiType.NUMBER_OF_COMMITS.name,
                                     strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                     edges = listOf(),
-                                    reason = "Child reason",
+                                    metaInfo = MetaInfo(description = "Child reason"),
                                 ),
                             weight = 0.5,
                         ),
@@ -48,7 +49,7 @@ class XorKPICalculationStrategyTest {
                                     typeId = KpiType.NUMBER_OF_COMMITS.name,
                                     strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                     edges = listOf(),
-                                    reason = null,
+                                    metaInfo = null,
                                 ),
                             weight = 0.5,
                         ),
@@ -58,15 +59,15 @@ class XorKPICalculationStrategyTest {
                                     typeId = KpiType.NUMBER_OF_COMMITS.name,
                                     strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                     edges = listOf(),
-                                    reason = null,
+                                    metaInfo = null,
                                 ),
                             weight = 0.5,
                         ),
                     ),
-                reason = "XOR root reason",
+                metaInfo = MetaInfo(description = "XOR root reason"),
             )
-        assertEquals("XOR root reason", nodeManyChildren.reason)
-        assertEquals("Child reason", nodeManyChildren.edges[0].target.reason)
+        assertEquals("XOR root reason", nodeManyChildren.metaInfo?.description)
+        assertEquals("Child reason", nodeManyChildren.edges[0].target.metaInfo?.description)
 
         assertEquals(
             false,

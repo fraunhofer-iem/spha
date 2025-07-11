@@ -55,8 +55,7 @@ class KpiResultHierarchyTest {
                 strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                 edges = listOf(),
             )
-        assertEquals(setOf(), resultNode.tags)
-        assertNull(resultNode.reason)
+        assertNull(resultNode.metaInfo)
         assertNull(resultNode.originId)
     }
 
@@ -86,7 +85,7 @@ class KpiResultHierarchyTest {
                 edges = listOf(),
                 id = "someKpiId",
                 originId = "someOrigin",
-                tags = setOf("tag1", "tag2"),
+                metaInfo = MetaInfo(tags = setOf("tag1", "tag2")),
             )
         assertEquals("ROOT", resultNode.typeId)
         assertEquals(KpiStrategyId.RAW_VALUE_STRATEGY, resultNode.strategy)
@@ -94,6 +93,6 @@ class KpiResultHierarchyTest {
         assertEquals(42, success.score)
         assertEquals("someKpiId", resultNode.id)
         assertEquals("someOrigin", resultNode.originId)
-        assertEquals(setOf("tag1", "tag2"), resultNode.tags)
+        assertEquals(setOf("tag1", "tag2"), resultNode.metaInfo?.tags)
     }
 }

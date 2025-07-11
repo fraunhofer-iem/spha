@@ -16,6 +16,7 @@ import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiEdge
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiNode
+import de.fraunhofer.iem.spha.model.kpi.hierarchy.MetaInfo
 import kotlin.test.Test
 import org.junit.jupiter.api.Assertions.assertEquals
 
@@ -48,7 +49,7 @@ class MinimumKPICalculationStrategyTest {
                                         typeId = KpiType.NUMBER_OF_SIGNED_COMMITS.name,
                                         strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                         edges = listOf(),
-                                        reason = "Signed commits reason",
+                                        metaInfo = MetaInfo(description = "Signed commits reason"),
                                     ),
                                 weight = 0.5,
                             ),
@@ -58,12 +59,12 @@ class MinimumKPICalculationStrategyTest {
                                         typeId = KpiType.NUMBER_OF_COMMITS.name,
                                         strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                         edges = listOf(),
-                                        reason = null,
+                                        metaInfo = null,
                                     ),
                                 weight = 0.5,
                             ),
                         ),
-                    reason = "Root minimum reason",
+                    metaInfo = MetaInfo(description = "Root minimum reason"),
                 ),
                 listOf(
                     RawValueKpi(typeId = KpiType.NUMBER_OF_SIGNED_COMMITS.name, score = 15),
@@ -71,9 +72,9 @@ class MinimumKPICalculationStrategyTest {
                 ),
             )
 
-        // Check that the reason is present in the node
-        assertEquals("Root minimum reason", root.reason)
-        assertEquals("Signed commits reason", root.edges[0].to.reason)
+        // Check that the metaInfo description is present in the node
+        assertEquals("Root minimum reason", root.metaInfo?.description)
+        assertEquals("Signed commits reason", root.edges[0].to.metaInfo?.description)
 
         val calcRelaxed = MinimumKPICalculationStrategy.calculateKpi(root.edges, strict = false)
         val calcStrict = MinimumKPICalculationStrategy.calculateKpi(root.edges, strict = true)

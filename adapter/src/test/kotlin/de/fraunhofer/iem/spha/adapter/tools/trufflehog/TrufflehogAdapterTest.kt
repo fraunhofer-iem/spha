@@ -10,39 +10,49 @@
 package de.fraunhofer.iem.spha.adapter.tools.trufflehog
 
 import de.fraunhofer.iem.spha.adapter.AdapterResult
-import de.fraunhofer.iem.spha.model.adapter.TrufflehogDto
+import de.fraunhofer.iem.spha.model.adapter.TrufflehogReportDto
 import java.nio.file.Files
 import kotlin.io.path.Path
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.assertDoesNotThrow
-import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
 class TrufflehogAdapterTest {
+
+    val emptyDto =
+        TrufflehogReportDto(
+            chunks = null,
+            bytes = null,
+            verifiedSecrets = null,
+            unverifiedSecrets = null,
+            scanDuration = null,
+            trufflehogVersion = null,
+        )
+
     @ParameterizedTest
     @ValueSource(
         strings =
             [
-                "{}", // No schema
-                "{\"SchemaVersion\": 3}", // Not supported schema
+                "{\"trufflehog_wrong\": 3}" // Not supported schema
             ]
     )
     fun testInvalidJson(input: String) {
         input.byteInputStream().use {
-            assertThrows<Exception> {
-                TrufflehogAdapter.dtoFromJson(it, TrufflehogDto.serializer())
-            }
+            assertEquals(
+                emptyDto,
+                TrufflehogAdapter.dtoFromJson(it, TrufflehogReportDto.serializer()),
+            )
         }
     }
 
     @ParameterizedTest
-    @ValueSource(strings = ["{\"results\": []}"])
+    @ValueSource(strings = ["{}"])
     fun testEmptyDto(input: String) {
         input.byteInputStream().use {
-            val dto = TrufflehogAdapter.dtoFromJson(it, TrufflehogDto.serializer())
-            assertEquals(0, dto.results.count())
+            val dto = TrufflehogAdapter.dtoFromJson(it, TrufflehogReportDto.serializer())
+            assertEquals(null, dto.verifiedSecrets)
         }
     }
 
@@ -50,7 +60,7 @@ class TrufflehogAdapterTest {
     fun testResultDto() {
         Files.newInputStream(Path("src/test/resources/trufflehog-no-result.json")).use {
             val dto = assertDoesNotThrow {
-                TrufflehogAdapter.dtoFromJson(it, TrufflehogDto.serializer())
+                TrufflehogAdapter.dtoFromJson(it, TrufflehogReportDto.serializer())
             }
 
             val kpis = assertDoesNotThrow { TrufflehogAdapter.transformDataToKpi(dto) }
@@ -67,7 +77,7 @@ class TrufflehogAdapterTest {
     fun testResultResultDto() {
         Files.newInputStream(Path("src/test/resources/trufflehog.json")).use {
             val dto = assertDoesNotThrow {
-                TrufflehogAdapter.dtoFromJson(it, TrufflehogDto.serializer())
+                TrufflehogAdapter.dtoFromJson(it, TrufflehogReportDto.serializer())
             }
 
             val kpis = assertDoesNotThrow { TrufflehogAdapter.transformDataToKpi(dto) }

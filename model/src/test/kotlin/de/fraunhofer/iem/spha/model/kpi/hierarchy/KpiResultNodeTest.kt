@@ -24,6 +24,7 @@ class KpiResultNodeTest {
                 result = KpiCalculationResult.Success(100),
                 strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                 edges = emptyList(),
+                thresholds = listOf(),
             )
         val node2 =
             KpiResultNode(
@@ -31,6 +32,7 @@ class KpiResultNodeTest {
                 result = KpiCalculationResult.Success(100),
                 strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                 edges = emptyList(),
+                thresholds = listOf(),
             )
 
         // Verify that the IDs are different
@@ -41,6 +43,7 @@ class KpiResultNodeTest {
         assertEquals(KpiCalculationResult.Success(100), node1.result)
         assertEquals(KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY, node1.strategy)
         assertEquals(emptyList(), node1.edges)
+        assertEquals(emptyList(), node1.thresholds)
         assertEquals(null, node1.originId)
         assertEquals(null, node1.reason)
     }
@@ -58,6 +61,7 @@ class KpiResultNodeTest {
                 id = customId,
                 originId = "origin-123",
                 reason = "test reason",
+                thresholds = listOf(Threshold("warning", 50), Threshold("critical", 90)),
             )
 
         // Verify that the custom ID is used
@@ -70,6 +74,7 @@ class KpiResultNodeTest {
         assertEquals(emptyList(), node.edges)
         assertEquals("origin-123", node.originId)
         assertEquals("test reason", node.reason)
+        assertEquals(listOf(Threshold("warning", 50), Threshold("critical", 90)), node.thresholds)
     }
 
     @Test
@@ -116,6 +121,7 @@ class KpiResultNodeTest {
                 id = "same-id",
                 originId = "origin-123",
                 reason = "test reason",
+                thresholds = listOf(Threshold("warning", 50), Threshold("critical", 90)),
             )
         val node2 =
             KpiResultNode(
@@ -126,6 +132,7 @@ class KpiResultNodeTest {
                 id = "same-id",
                 originId = "origin-123",
                 reason = "test reason",
+                thresholds = listOf(Threshold("warning", 50), Threshold("critical", 90)),
             )
 
         // IDs should be the same

@@ -18,6 +18,7 @@ import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiEdge
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiHierarchy
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiNode
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.SCHEMA_VERSIONS
+import de.fraunhofer.iem.spha.model.kpi.hierarchy.Threshold
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
@@ -417,6 +418,7 @@ class KpiCalculatorTest {
                 edges = emptyList(),
                 tags = setOf("cvss", "cve", "cwe"),
                 reason = "CRA relevant",
+                thresholds = listOf(Threshold("warning", 50), Threshold("critical", 90)),
             )
 
         val root =
@@ -450,6 +452,10 @@ class KpiCalculatorTest {
         assertEquals(setOf(), cvssResultNode.tags)
         assertEquals("cvssOrigin", cvssResultNode.originId)
         assertEquals("CRA relevant", cvssResultNode.reason)
+        assertEquals(
+            listOf(Threshold("warning", 50), Threshold("critical", 90)),
+            cvssResultNode.thresholds,
+        )
 
         // Check SAST Node
         val sastResultNode =

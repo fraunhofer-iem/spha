@@ -75,11 +75,16 @@ class KpiHierarchyTest {
                 edges = listOf(),
                 tags = setOf("A", "B", "a", "b", "A"),
                 reason = "someReason",
+                thresholds = listOf(Threshold("warning", 50), Threshold("critical", 90)),
             )
         assertEquals("ROOT", resultNode.typeId)
         assertEquals(KpiStrategyId.RAW_VALUE_STRATEGY, resultNode.strategy)
         assertEquals("someReason", resultNode.reason)
         assertEquals(setOf("A", "B", "a", "b"), resultNode.tags)
+        assertEquals(
+            listOf(Threshold("warning", 50), Threshold("critical", 90)),
+            resultNode.thresholds,
+        )
     }
 
     @Test
@@ -91,7 +96,8 @@ class KpiHierarchyTest {
                 listOf(),
             )
 
-        assertEquals(setOf(), node.tags)
+        assertEquals(emptySet(), node.tags)
+        assertEquals(listOf(), node.thresholds)
         assertNull(node.reason)
     }
 }

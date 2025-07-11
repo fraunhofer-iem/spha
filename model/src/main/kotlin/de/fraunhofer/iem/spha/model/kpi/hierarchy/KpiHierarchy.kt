@@ -24,14 +24,19 @@ data class KpiHierarchy private constructor(val root: KpiNode, val schemaVersion
 }
 
 @Serializable
+data class MetaInfo(
+    val description: String? = null,
+    val displayName: String? = null,
+    val tags: Set<String> = emptySet(),
+)
+
+@Serializable
 data class KpiNode(
     val typeId: String,
     val strategy: KpiStrategyId,
     val edges: List<KpiEdge>,
-    val tags: Set<String> = emptySet(),
-    val reason: String? = null,
     val thresholds: List<Threshold> = emptyList(),
-    val displayName: String,
+    val metaInfo: MetaInfo? = null,
 )
 
 @Serializable data class KpiEdge(val target: KpiNode, val weight: Double)

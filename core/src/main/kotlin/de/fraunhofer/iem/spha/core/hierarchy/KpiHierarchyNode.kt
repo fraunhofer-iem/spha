@@ -15,6 +15,7 @@ import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiNode
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiResultEdge
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiResultNode
+import de.fraunhofer.iem.spha.model.kpi.hierarchy.MetaInfo
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.Threshold
 import java.util.UUID
 
@@ -23,11 +24,9 @@ private constructor(
     val typeId: String,
     val strategy: KpiStrategyId,
     val edges: List<KpiHierarchyEdge>,
-    val tags: Set<String> = emptySet(),
-    val displayName: String,
-    val originId: String? = null,
-    val reason: String? = null,
     val thresholds: List<Threshold> = emptyList(),
+    val originId: String? = null,
+    val metaInfo: MetaInfo? = null,
 ) {
     private var _id: String = UUID.randomUUID().toString()
     val id: String
@@ -38,12 +37,10 @@ private constructor(
         strategy: KpiStrategyId,
         edges: List<KpiHierarchyEdge>,
         id: String,
-        tags: Set<String> = emptySet(),
-        displayName: String,
-        originId: String? = null,
-        reason: String? = null,
         thresholds: List<Threshold> = emptyList(),
-    ) : this(typeId, strategy, edges, tags, displayName, originId, reason, thresholds) {
+        originId: String? = null,
+        metaInfo: MetaInfo? = null,
+    ) : this(typeId, strategy, edges, thresholds, originId, metaInfo) {
         this._id = id
     }
 
@@ -70,14 +67,12 @@ private constructor(
     companion object {
         fun to(node: KpiHierarchyNode): KpiResultNode {
             return KpiResultNode(
-                displayName = node.displayName,
                 typeId = node.typeId,
                 strategy = node.strategy,
                 result = node.result,
                 originId = node.originId,
                 id = node.id,
-                reason = node.reason,
-                tags = node.tags,
+                metaInfo = node.metaInfo,
                 thresholds = node.thresholds,
                 edges =
                     node.edges.map {
@@ -124,9 +119,8 @@ private constructor(
                                 edges = emptyList(),
                                 originId = rawValueKpi.originId,
                                 id = rawValueKpi.id,
-                                reason = child.target.reason,
                                 thresholds = child.target.thresholds,
-                                displayName = child.target.displayName,
+                                metaInfo = child.target.metaInfo,
                             )
                         hierarchyNode.result = KpiCalculationResult.Success(rawValueKpi.score)
                         val edge =
@@ -151,10 +145,8 @@ private constructor(
                     typeId = node.typeId,
                     edges = edges,
                     strategy = node.strategy,
-                    reason = node.reason,
-                    tags = node.tags,
-                    displayName = node.displayName,
                     thresholds = node.thresholds,
+                    metaInfo = node.metaInfo,
                 )
 
             return calcNode

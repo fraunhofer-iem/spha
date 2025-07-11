@@ -30,14 +30,12 @@ private constructor(val root: KpiResultNode, val schemaVersion: String) {
 @Serializable
 data class KpiResultNode(
     val typeId: String,
-    val displayName: String,
     val result: KpiCalculationResult,
     val strategy: KpiStrategyId,
-    val edges: List<KpiResultEdge>,
-    val tags: Set<String> = emptySet(),
-    val originId: String? = null,
-    val reason: String? = null,
+    val edges: List<KpiResultEdge> = emptyList(),
     val thresholds: List<Threshold> = emptyList(),
+    val originId: String? = null,
+    val metaInfo: MetaInfo? = null,
 ) {
     @SerialName("id") private var _id: String = UUID.randomUUID().toString()
     val id: String
@@ -46,24 +44,20 @@ data class KpiResultNode(
     constructor(
         typeId: String,
         result: KpiCalculationResult,
-        displayName: String,
         strategy: KpiStrategyId,
         edges: List<KpiResultEdge>,
         id: String,
-        tags: Set<String> = emptySet(),
         originId: String? = null,
-        reason: String? = null,
+        metaInfo: MetaInfo? = null,
         thresholds: List<Threshold> = emptyList(),
     ) : this(
         typeId = typeId,
-        displayName = displayName,
         result = result,
         strategy = strategy,
         edges = edges,
-        tags = tags,
         originId = originId,
-        reason = reason,
         thresholds = thresholds,
+        metaInfo = metaInfo,
     ) {
         this._id = id
     }

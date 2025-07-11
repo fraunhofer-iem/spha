@@ -1,95 +1,19 @@
 {
-  "results": [
-    {
-      "level": "info-0",
-      "ts": "2024-11-19T13:14:04Z",
-      "logger": "trufflehog",
-      "msg": "running source",
-      "source_manager_worker_id": "JrTPL",
-      "with_units": true
-    },
-    {
-      "level": "info-0",
-      "ts": "2024-11-19T13:14:04Z",
-      "logger": "trufflehog",
-      "msg": "scanning repo",
-      "source_manager_worker_id": "JrTPL",
-      "unit_kind": "dir",
-      "unit": "/tmp/",
-      "repo": "https://github.com/fraunhofer-iem/spha-demo",
-      "head": "2f6d0a9ccb3211eff95126a7e36c68063c2432ce"
-    },
-    {
-      "SourceMetadata": {
-        "Data": {
-          "Git": {
-            "commit": "4a88901aaf9889a0672013bd4edfe8a99e290ab6",
-            "file": "src/main/java/com/example/demo/VulnerableJavaAppApplication.java",
-            "email": "Jan-Niclas Struewer \u003cj.n.struewer@gmail.com\u003e",
-            "repository": "https://github.com/fraunhofer-iem/spha-demo",
-            "timestamp": "2024-11-19 11:54:10 +0000",
-            "line": 9
-          }
-        }
-      },
-      "SourceID": 1,
-      "SourceType": 16,
-      "SourceName": "trufflehog - git",
-      "DetectorType": 895,
-      "DetectorName": "MongoDB",
-      "DetectorDescription": "MongoDB is a NoSQL database that uses a document-oriented data model. MongoDB credentials can be used to access and manipulate the database.",
-      "DecoderName": "PLAIN",
-      "Verified": false,
-      "VerificationError": "context deadline exceeded",
-      "Raw": "***agenda-live.mongo.cosmos.azure.com:10255/?appName=%40agenda-live\u0026maxIdleTimeMS=120000\u0026replicaSet=globaldb\u0026retryWrites=false\u0026ssl=true",
-      "RawV2": "",
-      "Redacted": "",
-      "ExtraData": {
-        "rotation_guide": "https://howtorotate.com/docs/tutorials/mongo/"
-      },
-      "StructuredData": null
-    },
-    {
-      "level": "info-0",
-      "ts": "2024-11-19T13:14:06Z",
-      "logger": "trufflehog",
-      "msg": "finished scanning",
-      "chunks": 63,
-      "bytes": 31905,
-      "verified_secrets": 0,
-      "unverified_secrets": 2,
-      "scan_duration": "2.020861236s",
-      "trufflehog_version": "3.83.7"
-    },
-    {
-      "SourceMetadata": {
-        "Data": {
-          "Git": {
-            "commit": "4a88901aaf9889a0672013bd4edfe8a99e290ab6",
-            "file": "src/main/resources/application.properties",
-            "email": "Jan-Niclas Struewer \u003cj.n.struewer@gmail.com\u003e",
-            "repository": "https://github.com/fraunhofer-iem/spha-demo",
-            "timestamp": "2024-11-19 11:54:10 +0000",
-            "line": 1
-          }
-        }
-      },
-      "SourceID": 1,
-      "SourceType": 16,
-      "SourceName": "trufflehog - git",
-      "DetectorType": 895,
-      "DetectorName": "MongoDB",
-      "DetectorDescription": "MongoDB is a NoSQL database that uses a document-oriented data model. MongoDB credentials can be used to access and manipulate the database.",
-      "DecoderName": "PLAIN",
-      "Verified": false,
-      "VerificationError": "context deadline exceeded",
-      "Raw": "***agenda-live.mongo.cosmos.azure.com:10255/?appName=%40agenda-live\u0026maxIdleTimeMS=120000\u0026replicaSet=globaldb\u0026retryWrites=false\u0026ssl=true",
-      "RawV2": "",
-      "Redacted": "",
-      "ExtraData": {
-        "rotation_guide": "https://howtorotate.com/docs/tutorials/mongo/"
-      },
-      "StructuredData": null
-    }
-  ]
+  "level": "info-0",
+  "ts": "2025-07-10T11:12:56+02:00",
+  "logger": "trufflehog",
+  "msg": "finished scanning",
+  "chunks": 14,
+  "bytes": 6959,
+  "verified_secrets": 0,
+  "unverified_secrets": 0,
+  "scan_duration": "1.802821959s",
+  "trufflehog_version": "3.89.2",
+  "verification_caching": {
+    "Hits": 0,
+    "Misses": 6,
+    "HitsWasted": 0,
+    "AttemptsSaved": 0,
+    "VerificationTimeSpentMS": 4639
+  }
 }

@@ -12,18 +12,12 @@ package de.fraunhofer.iem.spha.model.adapter
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@Serializable data class TrufflehogDto(val results: List<TrufflehogReportDto>) : ToolResult
-
 @Serializable
 data class TrufflehogReportDto(
-    val level: String?,
-    val ts: String?,
-    val logger: String?,
-    val msg: String?,
     val chunks: Int?,
     val bytes: Int?,
     @SerialName("verified_secrets") val verifiedSecrets: Int?,
     @SerialName("unverified_secrets") val unverifiedSecrets: Int?,
     @SerialName("scan_duration") val scanDuration: String?,
     @SerialName("trufflehog_version") val trufflehogVersion: String?,
-) : Origin
+) : ToolResult, Origin

@@ -17,6 +17,7 @@ object DefaultHierarchy {
 
         val secrets =
             KpiNode(
+                displayName = "Secrets",
                 typeId = KpiType.SECRETS.name,
                 strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                 edges = listOf(),
@@ -24,6 +25,7 @@ object DefaultHierarchy {
 
         val documentationInfrastructure =
             KpiNode(
+                displayName = "Documentation Infrastructure",
                 typeId = KpiType.DOCUMENTATION_INFRASTRUCTURE.name,
                 strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                 edges = listOf(),
@@ -31,6 +33,7 @@ object DefaultHierarchy {
 
         val commentsInCode =
             KpiNode(
+                displayName = "Comments in Code",
                 typeId = KpiType.COMMENTS_IN_CODE.name,
                 strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                 edges = listOf(),
@@ -38,6 +41,7 @@ object DefaultHierarchy {
 
         val numberOfCommits =
             KpiNode(
+                displayName = "Number of Commits",
                 typeId = KpiType.NUMBER_OF_COMMITS.name,
                 strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                 edges = listOf(),
@@ -45,6 +49,7 @@ object DefaultHierarchy {
 
         val numberOfSignedCommits =
             KpiNode(
+                displayName = "Number of Signed Commits",
                 typeId = KpiType.NUMBER_OF_SIGNED_COMMITS.name,
                 strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                 edges = listOf(),
@@ -52,6 +57,7 @@ object DefaultHierarchy {
 
         val isDefaultBranchProtected =
             KpiNode(
+                displayName = "Is Default Branch Protected?",
                 typeId = KpiType.IS_DEFAULT_BRANCH_PROTECTED.name,
                 strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                 edges = listOf(),
@@ -59,6 +65,7 @@ object DefaultHierarchy {
 
         val checkedInBinaries =
             KpiNode(
+                displayName = "Checked In Binaries",
                 typeId = KpiType.CHECKED_IN_BINARIES.name,
                 strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                 edges = listOf(),
@@ -66,6 +73,7 @@ object DefaultHierarchy {
 
         val signedCommitsRatio =
             KpiNode(
+                displayName = "Signed Commits Ratio",
                 typeId = KpiType.SIGNED_COMMITS_RATIO.name,
                 strategy = KpiStrategyId.WEIGHTED_RATIO_STRATEGY,
                 edges =
@@ -77,6 +85,7 @@ object DefaultHierarchy {
 
         val documentation =
             KpiNode(
+                displayName = "Documentation",
                 typeId = KpiType.DOCUMENTATION.name,
                 strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                 edges =
@@ -88,6 +97,7 @@ object DefaultHierarchy {
 
         val processComplianceKpi =
             KpiNode(
+                displayName = "Process Compliance",
                 typeId = KpiType.PROCESS_COMPLIANCE.name,
                 strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                 edges =
@@ -101,6 +111,7 @@ object DefaultHierarchy {
 
         val processTransparency =
             KpiNode(
+                displayName = "Process Transparency",
                 typeId = KpiType.PROCESS_TRANSPARENCY.name,
                 strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                 edges = listOf(KpiEdge(target = signedCommitsRatio, weight = 1.0)),
@@ -108,6 +119,7 @@ object DefaultHierarchy {
 
         val codeVulnerabilities =
             KpiNode(
+                displayName = "Code Vulnerabilities",
                 typeId = KpiType.CODE_VULNERABILITY_SCORE.name,
                 strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                 edges = listOf(),
@@ -115,6 +127,7 @@ object DefaultHierarchy {
 
         val maxDepVulnerability =
             KpiNode(
+                displayName = "Maximal Dependency Vulnerability",
                 typeId = KpiType.MAXIMAL_VULNERABILITY.name,
                 strategy = KpiStrategyId.MINIMUM_STRATEGY,
                 edges = listOf(KpiEdge(target = codeVulnerabilities, weight = 1.0)),
@@ -122,6 +135,7 @@ object DefaultHierarchy {
 
         val containerVulnerabilities =
             KpiNode(
+                displayName = "Container Vulnerabilities",
                 typeId = KpiType.CONTAINER_VULNERABILITY_SCORE.name,
                 strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                 edges = listOf(),
@@ -129,6 +143,7 @@ object DefaultHierarchy {
 
         val maxContainerVulnerability =
             KpiNode(
+                displayName = "Maximal Container Vulnerability",
                 typeId = KpiType.MAXIMAL_VULNERABILITY.name,
                 strategy = KpiStrategyId.MAXIMUM_STRATEGY,
                 edges = listOf(KpiEdge(target = containerVulnerabilities, weight = 1.0)),
@@ -136,6 +151,7 @@ object DefaultHierarchy {
 
         val security =
             KpiNode(
+                displayName = "Security",
                 typeId = KpiType.SECURITY.name,
                 strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                 edges =
@@ -149,6 +165,7 @@ object DefaultHierarchy {
 
         val internalQuality =
             KpiNode(
+                displayName = "Internal Quality",
                 typeId = KpiType.INTERNAL_QUALITY.name,
                 strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                 edges = listOf(KpiEdge(target = documentation, weight = 1.0)),
@@ -156,6 +173,7 @@ object DefaultHierarchy {
 
         val externalQuality =
             KpiNode(
+                displayName = "External Quality",
                 typeId = KpiType.EXTERNAL_QUALITY.name,
                 strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                 edges = listOf(KpiEdge(target = documentation, weight = 1.0)),
@@ -164,6 +182,7 @@ object DefaultHierarchy {
         val root =
             KpiNode(
                 typeId = KpiType.ROOT.name,
+                displayName = "Software Product Health Score",
                 strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                 edges =
                     listOf(

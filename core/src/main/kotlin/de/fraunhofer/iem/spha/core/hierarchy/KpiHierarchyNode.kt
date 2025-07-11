@@ -24,6 +24,7 @@ private constructor(
     val strategy: KpiStrategyId,
     val edges: List<KpiHierarchyEdge>,
     val tags: Set<String> = emptySet(),
+    val displayName: String,
     val originId: String? = null,
     val reason: String? = null,
     val thresholds: List<Threshold> = emptyList(),
@@ -38,10 +39,11 @@ private constructor(
         edges: List<KpiHierarchyEdge>,
         id: String,
         tags: Set<String> = emptySet(),
+        displayName: String,
         originId: String? = null,
         reason: String? = null,
         thresholds: List<Threshold> = emptyList(),
-    ) : this(typeId, strategy, edges, tags, originId, reason, thresholds) {
+    ) : this(typeId, strategy, edges, tags, displayName, originId, reason, thresholds) {
         this._id = id
     }
 
@@ -68,6 +70,7 @@ private constructor(
     companion object {
         fun to(node: KpiHierarchyNode): KpiResultNode {
             return KpiResultNode(
+                displayName = node.displayName,
                 typeId = node.typeId,
                 strategy = node.strategy,
                 result = node.result,
@@ -123,6 +126,7 @@ private constructor(
                                 id = rawValueKpi.id,
                                 reason = child.target.reason,
                                 thresholds = child.target.thresholds,
+                                displayName = child.target.displayName,
                             )
                         hierarchyNode.result = KpiCalculationResult.Success(rawValueKpi.score)
                         val edge =
@@ -149,6 +153,7 @@ private constructor(
                     strategy = node.strategy,
                     reason = node.reason,
                     tags = node.tags,
+                    displayName = node.displayName,
                     thresholds = node.thresholds,
                 )
 

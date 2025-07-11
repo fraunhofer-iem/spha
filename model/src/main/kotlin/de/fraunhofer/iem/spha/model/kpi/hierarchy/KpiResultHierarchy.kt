@@ -30,6 +30,7 @@ private constructor(val root: KpiResultNode, val schemaVersion: String) {
 @Serializable
 data class KpiResultNode(
     val typeId: String,
+    val displayName: String,
     val result: KpiCalculationResult,
     val strategy: KpiStrategyId,
     val edges: List<KpiResultEdge>,
@@ -45,6 +46,7 @@ data class KpiResultNode(
     constructor(
         typeId: String,
         result: KpiCalculationResult,
+        displayName: String,
         strategy: KpiStrategyId,
         edges: List<KpiResultEdge>,
         id: String,
@@ -54,6 +56,7 @@ data class KpiResultNode(
         thresholds: List<Threshold> = emptyList(),
     ) : this(
         typeId = typeId,
+        displayName = displayName,
         result = result,
         strategy = strategy,
         edges = edges,

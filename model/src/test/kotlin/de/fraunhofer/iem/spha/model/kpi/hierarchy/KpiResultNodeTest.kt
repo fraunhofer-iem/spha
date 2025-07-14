@@ -45,7 +45,7 @@ class KpiResultNodeTest {
         assertEquals(emptyList(), node1.edges)
         assertEquals(emptyList(), node1.thresholds)
         assertEquals(null, node1.originId)
-        assertEquals(null, node1.reason)
+        assertEquals(null, node1.metaInfo)
     }
 
     @Test
@@ -59,8 +59,8 @@ class KpiResultNodeTest {
                 strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                 edges = emptyList(),
                 id = customId,
+                metaInfo = MetaInfo(description = "test reason"),
                 originId = "origin-123",
-                reason = "test reason",
                 thresholds = listOf(Threshold("warning", 50), Threshold("critical", 90)),
             )
 
@@ -73,7 +73,7 @@ class KpiResultNodeTest {
         assertEquals(KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY, node.strategy)
         assertEquals(emptyList(), node.edges)
         assertEquals("origin-123", node.originId)
-        assertEquals("test reason", node.reason)
+        assertEquals("test reason", node.metaInfo?.description)
         assertEquals(listOf(Threshold("warning", 50), Threshold("critical", 90)), node.thresholds)
     }
 
@@ -88,7 +88,6 @@ class KpiResultNodeTest {
                 strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                 edges = emptyList(),
                 originId = "origin-123",
-                reason = "test reason",
             )
         val node2 =
             KpiResultNode(
@@ -97,7 +96,6 @@ class KpiResultNodeTest {
                 strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                 edges = emptyList(),
                 originId = "origin-123",
-                reason = "test reason",
             )
 
         // IDs should be different
@@ -120,7 +118,6 @@ class KpiResultNodeTest {
                 edges = emptyList(),
                 id = "same-id",
                 originId = "origin-123",
-                reason = "test reason",
                 thresholds = listOf(Threshold("warning", 50), Threshold("critical", 90)),
             )
         val node2 =
@@ -131,7 +128,6 @@ class KpiResultNodeTest {
                 edges = emptyList(),
                 id = "same-id",
                 originId = "origin-123",
-                reason = "test reason",
                 thresholds = listOf(Threshold("warning", 50), Threshold("critical", 90)),
             )
 

@@ -16,6 +16,7 @@ import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiEdge
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiNode
+import de.fraunhofer.iem.spha.model.kpi.hierarchy.MetaInfo
 import kotlin.test.Test
 import org.junit.jupiter.api.Assertions.assertEquals
 
@@ -54,7 +55,7 @@ class AggregationKpiCalculationStrategyTest {
                                         typeId = KpiType.NUMBER_OF_SIGNED_COMMITS.name,
                                         strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                         edges = listOf(),
-                                        reason = "Signed commits reason",
+                                        metaInfo = MetaInfo(description = "Signed commits reason"),
                                     ),
                                 weight = 0.5,
                             ),
@@ -64,12 +65,12 @@ class AggregationKpiCalculationStrategyTest {
                                         typeId = KpiType.NUMBER_OF_COMMITS.name,
                                         strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                         edges = listOf(),
-                                        reason = null,
+                                        metaInfo = null,
                                     ),
                                 weight = 0.5,
                             ),
                         ),
-                    reason = "Root aggregation reason",
+                    metaInfo = MetaInfo(description = "Root aggregation reason"),
                 ),
                 listOf(
                     RawValueKpi(typeId = KpiType.NUMBER_OF_SIGNED_COMMITS.name, score = 15),
@@ -77,10 +78,10 @@ class AggregationKpiCalculationStrategyTest {
                 ),
             )
 
-        // Check that the reason is present in the node
-        assertEquals("Root aggregation reason", root.reason)
-        assertEquals("Signed commits reason", root.edges[0].to.reason)
-        assertEquals(null, root.edges[1].to.reason)
+        // Check that the metaInfo description is present in the node
+        assertEquals("Root aggregation reason", root.metaInfo?.description)
+        assertEquals("Signed commits reason", root.edges[0].to.metaInfo?.description)
+        assertEquals(null, root.edges[1].to.metaInfo?.description)
 
         val calcRelaxed =
             WeightedAverageKPICalculationStrategy.calculateKpi(root.edges, strict = false)

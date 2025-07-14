@@ -73,8 +73,11 @@ class JsonKpiHierarchyTest {
                                     typeId = KpiType.CODE_VULNERABILITY_SCORE.name,
                                     strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                     edges = emptyList(),
-                                    tags = setOf("cvss", "cve", "cwe"),
-                                    reason = "CRA relevant",
+                                    metaInfo =
+                                        MetaInfo(
+                                            tags = setOf("cvss", "cve", "cwe"),
+                                            description = "CRA relevant",
+                                        ),
                                     thresholds =
                                         listOf(Threshold("warning", 50), Threshold("critical", 90)),
                                 ),
@@ -87,7 +90,7 @@ class JsonKpiHierarchyTest {
         // Pretty printing might add spaces, tabs, (CR)LF, etc. which is hard to assert against.
         // This implicitly asserts that KpiNode and KpiEdge get serialized to the expected JSON too
         val expected =
-            "{\"root\":{\"typeId\":\"ROOT\",\"strategy\":\"MAXIMUM_STRATEGY\",\"edges\":[{\"target\":{\"typeId\":\"CODE_VULNERABILITY_SCORE\",\"strategy\":\"RAW_VALUE_STRATEGY\",\"edges\":[],\"tags\":[\"cvss\",\"cve\",\"cwe\"],\"reason\":\"CRA relevant\",\"thresholds\":[{\"name\":\"warning\",\"value\":50},{\"name\":\"critical\",\"value\":90}]},\"weight\":1.0}]},\"schemaVersion\":\"1.1.0\"}"
+            "{\"root\":{\"typeId\":\"ROOT\",\"strategy\":\"MAXIMUM_STRATEGY\",\"edges\":[{\"target\":{\"typeId\":\"CODE_VULNERABILITY_SCORE\",\"strategy\":\"RAW_VALUE_STRATEGY\",\"edges\":[],\"thresholds\":[{\"name\":\"warning\",\"value\":50},{\"name\":\"critical\",\"value\":90}],\"metaInfo\":{\"description\":\"CRA relevant\",\"tags\":[\"cvss\",\"cve\",\"cwe\"]}},\"weight\":1.0}]},\"schemaVersion\":\"1.1.0\"}"
 
         assertEquals(expected, jsonResult)
     }
@@ -106,8 +109,8 @@ class JsonKpiHierarchyTest {
                     typeId = "someId",
                     strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                     edges = listOf(),
-                    tags = setOf("A", "B", "a", "b", "A"),
-                    reason = "someReason",
+                    metaInfo =
+                        MetaInfo(tags = setOf("A", "B", "a", "b", "A"), description = "someReason"),
                     thresholds = listOf(Threshold("warning", 50), Threshold("critical", 90)),
                 ),
             )

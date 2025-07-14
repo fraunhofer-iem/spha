@@ -18,8 +18,7 @@ internal fun KpiNode.assertEquals(actual: KpiNode) {
     assertEquals(this.typeId, actual.typeId)
     assertEquals(this.strategy, actual.strategy)
     assertEquals(this.edges, actual.edges)
-    assertEquals(this.tags, actual.tags)
-    assertEquals(this.reason, actual.reason)
+    assertEquals(this.metaInfo, actual.metaInfo)
 }
 
 internal fun RawValueKpi.assertEquals(actualKpi: RawValueKpi) {
@@ -35,7 +34,6 @@ internal fun KpiResultNode.assertEquals(actualNode: KpiResultNode) {
     assertEquals(this.strategy, actualNode.strategy)
     assertEquals(this.edges, actualNode.edges)
     assertEquals(this.id, actualNode.id)
-    assertEquals(this.tags, actualNode.tags)
     assertEquals(this.originId, actualNode.originId)
-    assertEquals(this.reason, actualNode.reason)
+    assertEquals(this.metaInfo, actualNode.metaInfo)
 }

@@ -10,286 +10,140 @@
 package de.fraunhofer.iem.spha.adapter.tools.tlc
 
 import de.fraunhofer.iem.spha.adapter.AdapterResult
-import de.fraunhofer.iem.spha.adapter.tools.tlc.model.ArtifactVersion
-import de.fraunhofer.iem.spha.adapter.tools.tlc.model.Version
-import de.fraunhofer.iem.spha.model.adapter.ArtifactDto
-import de.fraunhofer.iem.spha.model.adapter.ArtifactVersionDto
-import de.fraunhofer.iem.spha.model.adapter.DependencyGraphDto
-import de.fraunhofer.iem.spha.model.adapter.DependencyNodeDto
-import de.fraunhofer.iem.spha.model.adapter.EnvironmentInfoDto
-import de.fraunhofer.iem.spha.model.adapter.ProjectDto
-import de.fraunhofer.iem.spha.model.adapter.RepositoryInfoDto
-import de.fraunhofer.iem.spha.model.adapter.ScopeToGraph
 import de.fraunhofer.iem.spha.model.adapter.TlcDto
-import de.fraunhofer.iem.spha.model.adapter.TlcOriginDto
 import de.fraunhofer.iem.spha.model.kpi.KpiType
-import kotlin.test.Test
+import java.nio.file.Files
+import kotlin.io.path.Path
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-import kotlin.test.fail
-import kotlin.time.ExperimentalTime
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toInstant
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 
 class TlcAdapterTest {
 
     @Test
-    fun transformDataToKpiEmpty() {
-        val kpis =
-            TlcAdapter.transformDataToKpi(
-                data =
-                    arrayOf(
-                        TlcDto(
-                            repositoryInfo =
-                                RepositoryInfoDto(url = "", revision = "", projects = listOf()),
-                            environmentInfo = EnvironmentInfoDto(ortVersion = "", javaVersion = ""),
-                            projectDtos =
-                                listOf(
-                                    ProjectDto(
-                                        artifacts = listOf(),
-                                        graph = listOf(),
-                                        ecosystem = "",
-                                        version = "",
-                                        artifactId = "",
-                                        groupId = "",
-                                    )
-                                ),
-                        )
-                    )
+    fun testParsingTlcJson() {
+        Files.newInputStream(Path("src/test/resources/techLag-npm-vuejs.json")).use { inputStream ->
+            val tlcDto = assertDoesNotThrow {
+                TlcAdapter.dtoFromJson(inputStream, TlcDto.serializer())
+            }
+
+            // Verify the parsed data matches expected values
+            assertEquals<Double>(7092.976631944444, tlcDto.optional.libdays)
+            assertEquals<Int>(118, tlcDto.optional.missedReleases)
+            assertEquals<Int>(52, tlcDto.optional.numComponents)
+            assertEquals<Double>(2707.638275462963, tlcDto.optional.highestLibdays)
+            assertEquals<Int>(10, tlcDto.optional.highestMissedReleases)
+            assertEquals<String>(
+                "@types/node@24.0.7",
+                tlcDto.optional.componentHighestMissedReleases.bomRef,
+            )
+            assertEquals<String>(
+                "detect-libc@1.0.3",
+                tlcDto.optional.componentHighestLibdays.bomRef,
             )
 
-        assertEquals(0, kpis.size)
-    }
+            assertEquals<Double>(2129.9822916666662, tlcDto.production.libdays)
+            assertEquals<Int>(43, tlcDto.production.missedReleases)
+            assertEquals<Int>(29, tlcDto.production.numComponents)
 
-    @OptIn(ExperimentalTime::class)
-    @Test
-    fun transformSingleNodeToKpi() {
+            assertEquals<Double>(376.57055555555553, tlcDto.directOptional.libdays)
+            assertEquals<Int>(26, tlcDto.directOptional.missedReleases)
+            assertEquals<Int>(8, tlcDto.directOptional.numComponents)
 
-        val usedVersionDate =
-            LocalDateTime(2024, 1, 1, 0, 0).toInstant(TimeZone.of("UTC+3")).toEpochMilliseconds()
-        val patchVersionDate =
-            LocalDateTime(2024, 1, 3, 0, 0).toInstant(TimeZone.of("UTC+3")).toEpochMilliseconds()
-        val minorVersionDate =
-            LocalDateTime(2024, 1, 9, 0, 0).toInstant(TimeZone.of("UTC+3")).toEpochMilliseconds()
-        val majorVersionDate =
-            LocalDateTime(2024, 1, 19, 0, 0).toInstant(TimeZone.of("UTC+3")).toEpochMilliseconds()
-
-        val versions =
-            listOf(
-                ArtifactVersionDto(
-                    versionNumber = "3.11",
-                    releaseDate = usedVersionDate,
-                    isDefault = true,
-                ),
-                ArtifactVersionDto(
-                    versionNumber = "3.11.3",
-                    releaseDate = patchVersionDate,
-                    isDefault = false,
-                ),
-                ArtifactVersionDto(versionNumber = "3.12", releaseDate = 0L, isDefault = false),
-                ArtifactVersionDto(
-                    versionNumber = "3.12.3",
-                    releaseDate = minorVersionDate,
-                    isDefault = false,
-                ),
-                ArtifactVersionDto(
-                    versionNumber = "4.12.3",
-                    releaseDate = majorVersionDate,
-                    isDefault = false,
-                ),
-            )
-
-        val kpis =
-            TlcAdapter.transformDataToKpi(
-                data =
-                    arrayOf(
-                        TlcDto(
-                            repositoryInfo =
-                                RepositoryInfoDto(url = "", revision = "", projects = listOf()),
-                            environmentInfo = EnvironmentInfoDto(ortVersion = "", javaVersion = ""),
-                            projectDtos =
-                                listOf(
-                                    ProjectDto(
-                                        artifacts =
-                                            listOf(
-                                                ArtifactDto(
-                                                    artifactId = "first",
-                                                    groupId = "first group id",
-                                                    versions = versions,
-                                                )
-                                            ),
-                                        graph =
-                                            listOf(
-                                                ScopeToGraph(
-                                                    scope = "dependencies",
-                                                    graph =
-                                                        DependencyGraphDto(
-                                                            nodes =
-                                                                listOf(
-                                                                    DependencyNodeDto(0, "3.11")
-                                                                ),
-                                                            edges = listOf(),
-                                                            directDependencyIndices = listOf(0),
-                                                        ),
-                                                )
-                                            ),
-                                        ecosystem = "NPM",
-                                        version = "",
-                                        artifactId = "",
-                                        groupId = "",
-                                    )
-                                ),
-                        )
-                    )
-            )
-
-        assertEquals(1, kpis.size)
-
-        val kpi = kpis.first()
-
-        val isSuccess = kpi is AdapterResult.Success<TlcOriginDto>
-        assertTrue(isSuccess)
-
-        val rawValueKpi = kpi.rawValueKpi
-
-        assertEquals(KpiType.LIB_DAYS_PROD.name, rawValueKpi.typeId)
-        assertEquals(100, rawValueKpi.score)
-        assertEquals(18, kpi.origin.libyears)
-    }
-
-    private fun testVersion(
-        expectedVersion: String,
-        versions: List<ArtifactVersion>,
-        targetVersion: Version,
-        usedVersion: String,
-    ) {
-
-        val target =
-            ArtifactVersion.getTargetVersion(
-                usedVersion = usedVersion,
-                updateType = targetVersion,
-                versions = versions,
-            )
-
-        if (target == null) {
-            fail("Target version is null")
+            assertEquals(34.48798611111111, tlcDto.directProduction.libdays)
+            assertEquals<Int>(1, tlcDto.directProduction.missedReleases)
+            assertEquals<Int>(6, tlcDto.directProduction.numComponents)
         }
-        assertEquals(expectedVersion, target.versionNumber)
     }
 
-    @OptIn(ExperimentalTime::class)
     @Test
-    fun getTargetVersion() {
-        val usedVersionDate =
-            LocalDateTime(2024, 1, 1, 0, 0).toInstant(TimeZone.of("UTC+3")).toEpochMilliseconds()
-        val patchVersionDate =
-            LocalDateTime(2024, 1, 3, 0, 0).toInstant(TimeZone.of("UTC+3")).toEpochMilliseconds()
-        val minorVersionDate =
-            LocalDateTime(2024, 1, 9, 0, 0).toInstant(TimeZone.of("UTC+3")).toEpochMilliseconds()
-        val majorVersionDate =
-            LocalDateTime(2024, 1, 19, 0, 0).toInstant(TimeZone.of("UTC+3")).toEpochMilliseconds()
-        val alphaVersionDate =
-            LocalDateTime(2024, 1, 29, 0, 0).toInstant(TimeZone.of("UTC+3")).toEpochMilliseconds()
+    fun testTransformDataToKpi() {
+        Files.newInputStream(Path("src/test/resources/techLag-npm-vuejs.json")).use { inputStream ->
+            val tlcDto = TlcAdapter.dtoFromJson(inputStream, TlcDto.serializer())
 
-        val versions =
-            listOf(
-                    ArtifactVersion.create(
-                        versionNumber = "0.3.11",
-                        releaseDate = usedVersionDate,
-                        isDefault = true,
-                    ),
-                    ArtifactVersion.create(
-                        versionNumber = "3.11",
-                        releaseDate = usedVersionDate,
-                        isDefault = true,
-                    ),
-                    ArtifactVersion.create(
-                        versionNumber = "3.11.3",
-                        releaseDate = patchVersionDate,
-                        isDefault = false,
-                    ),
-                    ArtifactVersion.create(
-                        versionNumber = "3.12",
-                        releaseDate = 0L,
-                        isDefault = false,
-                    ),
-                    ArtifactVersion.create(
-                        versionNumber = "3.12.3",
-                        releaseDate = minorVersionDate,
-                        isDefault = false,
-                    ),
-                    ArtifactVersion.create(
-                        versionNumber = "4.12.3",
-                        releaseDate = majorVersionDate,
-                        isDefault = false,
-                    ),
-                    ArtifactVersion.create(
-                        versionNumber = "4.12.4-Alpha",
-                        releaseDate = alphaVersionDate,
-                        isDefault = false,
-                    ),
-                )
-                .mapNotNull { it }
+            val kpis = assertDoesNotThrow { TlcAdapter.transformDataToKpi(tlcDto) }
 
-        testVersion("4.12.3", versions, Version.Major, "3.11")
-        testVersion("3.12.3", versions, Version.Minor, "3.11")
-        testVersion("3.11.3", versions, Version.Patch, "3.11")
+            // We should have 16 KPIs (4 categories × 4 metrics)
+            assertEquals(16, kpis.size)
 
-        testVersion("4.12.3", versions, Version.Major, "3.11.3")
-        testVersion("3.12.3", versions, Version.Minor, "3.12")
-        testVersion("3.11.3", versions, Version.Patch, "3.11.3")
+            // All results should be Success.Kpi - use the same generic type
+            kpis.forEach { assertTrue(it is AdapterResult.Success.Kpi<*>) }
 
-        testVersion("4.12.4-Alpha", versions, Version.Major, "3.11.3-Beta")
-        testVersion("4.12.3", versions, Version.Major, "0.3.10")
-        testVersion("0.3.11", versions, Version.Patch, "0.3.10")
+            // Verify specific KPIs
+            val kpiMap =
+                kpis.filterIsInstance<AdapterResult.Success.Kpi<*>>().associateBy {
+                    it.rawValueKpi.typeId
+                }
+
+            // Check LIB_DAYS metrics
+            assertEquals(7092, kpiMap[KpiType.LIB_DAYS_DEV.name]?.rawValueKpi?.score)
+            assertEquals(2129, kpiMap[KpiType.LIB_DAYS_PROD.name]?.rawValueKpi?.score)
+            assertEquals(376, kpiMap[KpiType.LIB_DAYS_DIRECT_DEV.name]?.rawValueKpi?.score)
+            assertEquals(34, kpiMap[KpiType.LIB_DAYS_DIRECT_PROD.name]?.rawValueKpi?.score)
+
+            // Check MISSED_RELEASES metrics
+            assertEquals(118, kpiMap[KpiType.LIB_DAYS_MISSED_RELEASES_DEV.name]?.rawValueKpi?.score)
+            assertEquals(43, kpiMap[KpiType.LIB_DAYS_MISSED_RELEASES_PROD.name]?.rawValueKpi?.score)
+            assertEquals(
+                26,
+                kpiMap[KpiType.LIB_DAYS_MISSED_RELEASES_DIRECT_DEV.name]?.rawValueKpi?.score,
+            )
+            assertEquals(
+                1,
+                kpiMap[KpiType.LIB_DAYS_MISSED_RELEASES_DIRECT_PROD.name]?.rawValueKpi?.score,
+            )
+
+            // Check HIGHEST_LIB_DAYS metrics
+            assertEquals(2707, kpiMap[KpiType.HIGHEST_LIB_DAYS_DEV.name]?.rawValueKpi?.score)
+            assertEquals(787, kpiMap[KpiType.HIGHEST_LIB_DAYS_PROD.name]?.rawValueKpi?.score)
+            assertEquals(117, kpiMap[KpiType.HIGHEST_LIB_DAYS_DIRECT_DEV.name]?.rawValueKpi?.score)
+            assertEquals(34, kpiMap[KpiType.HIGHEST_LIB_DAYS_DIRECT_PROD.name]?.rawValueKpi?.score)
+
+            // Check HIGHEST_MISSED_RELEASES metrics
+            assertEquals(
+                10,
+                kpiMap[KpiType.HIGHEST_LIB_DAYS_MISSED_RELEASES_DEV.name]?.rawValueKpi?.score,
+            )
+            assertEquals(
+                19,
+                kpiMap[KpiType.HIGHEST_LIB_DAYS_MISSED_RELEASES_PROD.name]?.rawValueKpi?.score,
+            )
+            assertEquals(
+                10,
+                kpiMap[KpiType.HIGHEST_LIB_DAYS_MISSED_RELEASES_DIRECT_DEV.name]?.rawValueKpi?.score,
+            )
+            assertEquals(
+                1,
+                kpiMap[KpiType.HIGHEST_LIB_DAYS_MISSED_RELEASES_DIRECT_PROD.name]
+                    ?.rawValueKpi
+                    ?.score,
+            )
+        }
     }
 
-    @OptIn(ExperimentalTime::class)
     @Test
-    fun getTargetVersionUnknown() {
-        val usedVersionDate =
-            LocalDateTime(2024, 1, 1, 0, 0).toInstant(TimeZone.of("UTC+3")).toEpochMilliseconds()
-        val patchVersionDate =
-            LocalDateTime(2024, 1, 3, 0, 0).toInstant(TimeZone.of("UTC+3")).toEpochMilliseconds()
-        val minorVersionDate =
-            LocalDateTime(2024, 1, 9, 0, 0).toInstant(TimeZone.of("UTC+3")).toEpochMilliseconds()
-        val majorVersionDate =
-            LocalDateTime(2024, 1, 19, 0, 0).toInstant(TimeZone.of("UTC+3")).toEpochMilliseconds()
+    fun testMultipleTransformDataToKpi() {
+        // Create two separate input streams to avoid the issue with reading from the same stream
+        // twice
+        val tlcDto1 =
+            Files.newInputStream(Path("src/test/resources/techLag-npm-vuejs.json")).use {
+                inputStream1 ->
+                TlcAdapter.dtoFromJson(inputStream1, TlcDto.serializer())
+            }
 
-        val versions =
-            listOf(
-                    ArtifactVersion.create(
-                        versionNumber = "3.11",
-                        releaseDate = usedVersionDate,
-                        isDefault = true,
-                    ),
-                    ArtifactVersion.create(
-                        versionNumber = "3.11.3",
-                        releaseDate = patchVersionDate,
-                        isDefault = false,
-                    ),
-                    ArtifactVersion.create(
-                        versionNumber = "3.12",
-                        releaseDate = 0L,
-                        isDefault = false,
-                    ),
-                    ArtifactVersion.create(
-                        versionNumber = "3.12.3",
-                        releaseDate = minorVersionDate,
-                        isDefault = false,
-                    ),
-                    ArtifactVersion.create(
-                        versionNumber = "4.12.3",
-                        releaseDate = majorVersionDate,
-                        isDefault = false,
-                    ),
-                )
-                .mapNotNull { it }
+        val tlcDto2 =
+            Files.newInputStream(Path("src/test/resources/techLag-npm-vuejs.json")).use {
+                inputStream2 ->
+                TlcAdapter.dtoFromJson(inputStream2, TlcDto.serializer())
+            }
 
-        // the used version doesn't need to exist in the version list to select the
-        // correct
-        // update target
-        testVersion("4.12.3", versions, Version.Major, "2.11")
+        val kpis = assertDoesNotThrow { TlcAdapter.transformDataToKpi(tlcDto1, tlcDto2) }
+
+        // We should have 32 KPIs (2 DTOs × 16 KPIs each)
+        assertEquals(32, kpis.size)
+
+        // All results should be Success.Kpi
+        kpis.forEach { assertTrue(it is AdapterResult.Success.Kpi) }
     }
 }

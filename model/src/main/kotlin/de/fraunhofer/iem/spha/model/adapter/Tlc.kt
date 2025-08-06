@@ -22,10 +22,10 @@ data class TlcDto(
 
 @Serializable
 data class Tlc(
-    val libdays: Long,
+    val libdays: Double,
     val missedReleases: Int,
     val numComponents: Int,
-    val highestLibdays: Long,
+    val highestLibdays: Double,
     val highestMissedReleases: Int,
     val componentHighestMissedReleases: Component,
     val componentHighestLibdays: Component,

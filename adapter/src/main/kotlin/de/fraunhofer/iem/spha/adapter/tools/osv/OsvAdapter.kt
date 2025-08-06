@@ -30,21 +30,17 @@ object OsvAdapter : KpiAdapter<OsvScannerDto, OsvVulnerabilityDto>() {
                 pkg.vulnerabilities.map { osvVuln ->
                     // If severity is null or empty, return an error
                     val severityList =
-                        osvVuln.severity?.mapNotNull { CvssVector.parseVector(it.score)?.baseScore }
-                    if (severityList.isNullOrEmpty()) {
+                        osvVuln.severity.mapNotNull { CvssVector.parseVector(it.score)?.baseScore }
+                    if (severityList.isEmpty()) {
                         return@map AdapterResult.Error(ErrorType.DATA_VALIDATION_ERROR)
                     }
 
                     val score = severityList.maxOrNull()
+                        ?: return@map AdapterResult.Error(ErrorType.DATA_VALIDATION_ERROR)
 
-                    if (score == null) {
-                        return@map AdapterResult.Error(ErrorType.DATA_VALIDATION_ERROR)
-                    }
                     val rawValueKpi =
                         transformVulnerabilityToKpi(score, KpiType.CODE_VULNERABILITY_SCORE)
-                    if (rawValueKpi == null) {
-                        return@map AdapterResult.Error(ErrorType.DATA_VALIDATION_ERROR)
-                    }
+                            ?: return@map AdapterResult.Error(ErrorType.DATA_VALIDATION_ERROR)
                     return@map AdapterResult.Success.Kpi(rawValueKpi, osvVuln)
                 }
             }

@@ -1,0 +1,380 @@
+{
+  "optional": {
+    "libdays": 7092.976631944444,
+    "missedReleases": 118,
+    "numComponents": 52,
+    "highestLibdays": 2707.638275462963,
+    "highestMissedReleases": 10,
+    "componentHighestMissedReleases": {
+      "bom-ref": "@types/node@24.0.7",
+      "type": "library",
+      "name": "@types/node",
+      "version": "24.0.7",
+      "description": "TypeScript definitions for node",
+      "scope": "optional",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "60811452be327fcabca10a173e94a59ef28d54a0d094f316ae639c833a1dba8ee4bc0d94174fc1c09fde30a153893b6434bd7b23433a5dedadbf0154edb7ba8b"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:npm/%40types/node@24.0.7",
+      "externalReferences": [
+        {
+          "url": "https://registry.npmjs.org/@types/node/-/node-24.0.7.tgz",
+          "type": "distribution"
+        },
+        {
+          "url": "git+https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+          "type": "vcs"
+        },
+        {
+          "url": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/node",
+          "type": "website"
+        },
+        {
+          "url": "https://github.com/DefinitelyTyped/DefinitelyTyped/issues",
+          "type": "issue-tracker"
+        }
+      ],
+      "properties": [
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        }
+      ]
+    },
+    "componentHighestLibdays": {
+      "bom-ref": "detect-libc@1.0.3",
+      "type": "library",
+      "author": "Lovell Fuller",
+      "name": "detect-libc",
+      "version": "1.0.3",
+      "description": "Node.js module to detect the C standard library (libc) implementation family and version",
+      "scope": "optional",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "a468f086c9aca7890bd914f3d3cc1c3a518df37a2d96a1de0ff6794fc197641fbf61ca50fdd828fa56d4f19b06c55d0722faaac68f65ee6a98c3260c0fd6ca0e"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "purl": "pkg:npm/detect-libc@1.0.3",
+      "externalReferences": [
+        {
+          "url": "https://registry.npmjs.org/detect-libc/-/detect-libc-1.0.3.tgz",
+          "type": "distribution"
+        },
+        {
+          "url": "git://github.com/lovell/detect-libc.git",
+          "type": "vcs"
+        },
+        {
+          "url": "https://github.com/lovell/detect-libc#readme",
+          "type": "website"
+        },
+        {
+          "url": "https://github.com/lovell/detect-libc/issues",
+          "type": "issue-tracker"
+        }
+      ],
+      "properties": [
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        }
+      ]
+    }
+  },
+  "production": {
+    "libdays": 2129.9822916666662,
+    "missedReleases": 43,
+    "numComponents": 29,
+    "highestLibdays": 787.0649074074073,
+    "highestMissedReleases": 19,
+    "componentHighestMissedReleases": {
+      "bom-ref": "nanoid@3.3.11",
+      "type": "library",
+      "author": "Andrey Sitnik",
+      "name": "nanoid",
+      "version": "3.3.11",
+      "description": "A tiny (116 bytes), secure URL-friendly unique string ID generator",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "37c4a97cf527529d5b2be3cc616f2a496765f54fb0c0d588e102b13980f2f4902ba3758c5fba7639e55117dbfedf8ee99da90d7af3e688784d999d876c503beb"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:npm/nanoid@3.3.11",
+      "externalReferences": [
+        {
+          "url": "https://registry.npmjs.org/nanoid/-/nanoid-3.3.11.tgz",
+          "type": "distribution"
+        },
+        {
+          "url": "git+https://github.com/ai/nanoid.git",
+          "type": "vcs"
+        },
+        {
+          "url": "https://github.com/ai/nanoid#readme",
+          "type": "website"
+        },
+        {
+          "url": "https://github.com/ai/nanoid/issues",
+          "type": "issue-tracker"
+        }
+      ],
+      "properties": []
+    },
+    "componentHighestLibdays": {
+      "bom-ref": "entities@4.5.0",
+      "type": "library",
+      "author": "Felix Boehm",
+      "name": "entities",
+      "version": "4.5.0",
+      "description": "Encode \u0026 decode XML and HTML entities with ease \u0026 speed",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "5748631f87463e1f40a39a74328458e8156ab700a3873eaf2392d3f00279e47fb883dff8bdb1f1d48e787d2d17b9c94b8431c0acf40288c8c3c6368bf1f3f187"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD-2-Clause"
+          }
+        }
+      ],
+      "purl": "pkg:npm/entities@4.5.0",
+      "externalReferences": [
+        {
+          "url": "https://registry.npmjs.org/entities/-/entities-4.5.0.tgz",
+          "type": "distribution"
+        },
+        {
+          "url": "git://github.com/fb55/entities.git",
+          "type": "vcs"
+        },
+        {
+          "url": "https://github.com/fb55/entities#readme",
+          "type": "website"
+        },
+        {
+          "url": "https://github.com/fb55/entities/issues",
+          "type": "issue-tracker"
+        }
+      ],
+      "properties": []
+    }
+  },
+  "directOptional": {
+    "libdays": 376.57055555555553,
+    "missedReleases": 26,
+    "numComponents": 8,
+    "highestLibdays": 117.73366898148147,
+    "highestMissedReleases": 10,
+    "componentHighestMissedReleases": {
+      "bom-ref": "@types/node@24.0.7",
+      "type": "library",
+      "name": "@types/node",
+      "version": "24.0.7",
+      "description": "TypeScript definitions for node",
+      "scope": "optional",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "60811452be327fcabca10a173e94a59ef28d54a0d094f316ae639c833a1dba8ee4bc0d94174fc1c09fde30a153893b6434bd7b23433a5dedadbf0154edb7ba8b"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:npm/%40types/node@24.0.7",
+      "externalReferences": [
+        {
+          "url": "https://registry.npmjs.org/@types/node/-/node-24.0.7.tgz",
+          "type": "distribution"
+        },
+        {
+          "url": "git+https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+          "type": "vcs"
+        },
+        {
+          "url": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/node",
+          "type": "website"
+        },
+        {
+          "url": "https://github.com/DefinitelyTyped/DefinitelyTyped/issues",
+          "type": "issue-tracker"
+        }
+      ],
+      "properties": [
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        }
+      ]
+    },
+    "componentHighestLibdays": {
+      "bom-ref": "typescript@5.8.3",
+      "type": "library",
+      "author": "Microsoft Corp.",
+      "name": "typescript",
+      "version": "5.8.3",
+      "description": "TypeScript is a language for application scale JavaScript development",
+      "scope": "optional",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "a757625ba4ea2fd2f4ee7371bd130cee130cc387395cea3fd626cbe1a0081a6480b7db254c4d57830e4a5aea1fdae4cebc283d058ed9462f86685fbbb1f80f79"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "purl": "pkg:npm/typescript@5.8.3",
+      "externalReferences": [
+        {
+          "url": "https://registry.npmjs.org/typescript/-/typescript-5.8.3.tgz",
+          "type": "distribution"
+        },
+        {
+          "url": "git+https://github.com/microsoft/TypeScript.git",
+          "type": "vcs"
+        },
+        {
+          "url": "https://www.typescriptlang.org/",
+          "type": "website"
+        },
+        {
+          "url": "https://github.com/microsoft/TypeScript/issues",
+          "type": "issue-tracker"
+        }
+      ],
+      "properties": []
+    }
+  },
+  "directProduction": {
+    "libdays": 34.48798611111111,
+    "missedReleases": 1,
+    "numComponents": 6,
+    "highestLibdays": 34.48798611111111,
+    "highestMissedReleases": 1,
+    "componentHighestMissedReleases": {
+      "bom-ref": "vue@3.5.17",
+      "type": "library",
+      "author": "Evan You",
+      "name": "vue",
+      "version": "3.5.17",
+      "description": "The progressive JavaScript framework for building modern web UI.",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "2db1d5df13cdf417a58cc2fe5dcb6ae256f3da5547091e83b5ba537f95c83ba82e8295d4378f63d9040f70c8f4f3aafdf80909d057d44fcc63ba528a06492bf6"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:npm/vue@3.5.17",
+      "externalReferences": [
+        {
+          "url": "https://registry.npmjs.org/vue/-/vue-3.5.17.tgz",
+          "type": "distribution"
+        },
+        {
+          "url": "git+https://github.com/vuejs/core.git",
+          "type": "vcs"
+        },
+        {
+          "url": "https://github.com/vuejs/core/tree/main/packages/vue#readme",
+          "type": "website"
+        },
+        {
+          "url": "https://github.com/vuejs/core/issues",
+          "type": "issue-tracker"
+        }
+      ],
+      "properties": []
+    },
+    "componentHighestLibdays": {
+      "bom-ref": "vue@3.5.17",
+      "type": "library",
+      "author": "Evan You",
+      "name": "vue",
+      "version": "3.5.17",
+      "description": "The progressive JavaScript framework for building modern web UI.",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "2db1d5df13cdf417a58cc2fe5dcb6ae256f3da5547091e83b5ba537f95c83ba82e8295d4378f63d9040f70c8f4f3aafdf80909d057d44fcc63ba528a06492bf6"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:npm/vue@3.5.17",
+      "externalReferences": [
+        {
+          "url": "https://registry.npmjs.org/vue/-/vue-3.5.17.tgz",
+          "type": "distribution"
+        },
+        {
+          "url": "git+https://github.com/vuejs/core.git",
+          "type": "vcs"
+        },
+        {
+          "url": "https://github.com/vuejs/core/tree/main/packages/vue#readme",
+          "type": "website"
+        },
+        {
+          "url": "https://github.com/vuejs/core/issues",
+          "type": "issue-tracker"
+        }
+      ],
+      "properties": []
+    }
+  },
+  "timestamp": 1754477888
+}

@@ -35,8 +35,9 @@ object OsvAdapter : KpiAdapter<OsvScannerDto, OsvVulnerabilityDto>() {
                         return@map AdapterResult.Error(ErrorType.DATA_VALIDATION_ERROR)
                     }
 
-                    val score = severityList.maxOrNull()
-                        ?: return@map AdapterResult.Error(ErrorType.DATA_VALIDATION_ERROR)
+                    val score =
+                        severityList.maxOrNull()
+                            ?: return@map AdapterResult.Error(ErrorType.DATA_VALIDATION_ERROR)
 
                     val rawValueKpi =
                         transformVulnerabilityToKpi(score, KpiType.CODE_VULNERABILITY_SCORE)

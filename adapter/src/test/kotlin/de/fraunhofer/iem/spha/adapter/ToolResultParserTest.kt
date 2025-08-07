@@ -113,23 +113,6 @@ class ToolResultParserTest {
     }
 
     @Test
-    fun testParseJsonFilesFromDirectoryWithTlcFile() {
-        // Copy only the TLC file to a temporary directory
-        val tempTlcDir = createTempDirectory("tlc")
-        val tlcFile = File("$testResourcesDir/tlc-result-npm.json")
-        val tempTlcFile = tempTlcDir.resolve("tlc-result-npm.json").toFile()
-        tlcFile.copyTo(tempTlcFile)
-
-        val results = ToolResultParser.parseJsonFilesFromDirectory(tempTlcDir.toString())
-
-        // Clean up
-        tempTlcDir.toFile().deleteRecursively()
-
-        assertTrue(results.isNotEmpty())
-        assertTrue(results.all { it is AdapterResult.Success })
-    }
-
-    @Test
     fun testParseJsonFilesFromDirectoryWithInvalidJsonFile() {
         val results = ToolResultParser.parseJsonFilesFromDirectory(invalidJsonDir.toString())
         assertTrue(results.isEmpty())

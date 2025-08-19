@@ -129,19 +129,19 @@ class TlcAdapterTest {
         val typeCounts = kpisTyped.groupingBy { it.rawValueKpi.typeId }.eachCount()
         assertEquals(
             tlcDto.transitiveOptional.components.size,
-            typeCounts[KpiType.TECHNICAL_LAG_DEV_TRANSITIVE.name] ?: 0,
+            typeCounts[KpiType.TECHNICAL_LAG_DEV_TRANSITIVE_COMPONENT.name] ?: 0,
         )
         assertEquals(
             tlcDto.transitiveProduction.components.size,
-            typeCounts[KpiType.TECHNICAL_LAG_PROD_TRANSITIVE.name] ?: 0,
+            typeCounts[KpiType.TECHNICAL_LAG_PROD_TRANSITIVE_COMPONENT.name] ?: 0,
         )
         assertEquals(
             tlcDto.directOptional.components.size,
-            typeCounts[KpiType.TECHNICAL_LAG_DEV_DIRECT.name] ?: 0,
+            typeCounts[KpiType.TECHNICAL_LAG_DEV_DIRECT_COMPONENT.name] ?: 0,
         )
         assertEquals(
             tlcDto.directProduction.components.size,
-            typeCounts[KpiType.TECHNICAL_LAG_PROD_DIRECT.name] ?: 0,
+            typeCounts[KpiType.TECHNICAL_LAG_PROD_DIRECT_COMPONENT.name] ?: 0,
         )
     }
 

@@ -14,22 +14,23 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TlcDto(
-    val optional: Tlc,
-    val production: Tlc,
+    val transitiveOptional: Tlc,
+    val transitiveProduction: Tlc,
     val directOptional: Tlc,
     val directProduction: Tlc,
 ) : ToolResult
 
 @Serializable
 data class Tlc(
-    val libdays: Double,
-    val missedReleases: Int,
-    val numComponents: Int,
+    val totalNumComponents: Int = 0,
     val highestLibdays: Double,
-    val highestMissedReleases: Int,
-    val componentHighestMissedReleases: Component,
     val componentHighestLibdays: Component,
+    val components: List<ComponentLag> = emptyList(),
 ) : Origin
+
+@Serializable data class ComponentLag(val component: Component, val technicalLag: TechnicalLag)
+
+@Serializable data class TechnicalLag(val libdays: Double)
 
 @Serializable
 data class Component(

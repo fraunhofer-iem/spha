@@ -16,6 +16,8 @@ import de.fraunhofer.iem.spha.model.adapter.TechnicalLag
 import de.fraunhofer.iem.spha.model.adapter.Tlc
 import de.fraunhofer.iem.spha.model.adapter.TlcDto
 import de.fraunhofer.iem.spha.model.kpi.KpiType
+import java.nio.file.Files
+import kotlin.io.path.Path
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import org.junit.jupiter.api.Test
@@ -168,5 +170,30 @@ class TlcAdapterTest {
 
         // All results should be Success.Kpi
         kpis.forEach { assertTrue(it is AdapterResult.Success.Kpi<*>) }
+    }
+
+    @Test
+    fun testWithRealTechLagData() {
+        Files.newInputStream(Path("src/test/resources/techLag-npm-vuejs.json")).use {
+            val tlcDto = assertDoesNotThrow { TlcAdapter.dtoFromJson(it, TlcDto.serializer()) }
+            
+            // Verify basic structure
+            assertTrue(tlcDto.transitiveProduction.highestLibdays > 0)
+            assertTrue(tlcDto.transitiveProduction.components.isNotEmpty())
+            assertTrue(tlcDto.transitiveProduction.componentHighestLibdays.bomRef.isNotBlank())
+            
+            // Test transformation to KPIs
+            val kpis = assertDoesNotThrow { TlcAdapter.transformDataToKpi(tlcDto) }
+            
+            // All results should be Success.Kpi
+            kpis.forEach { assertTrue(it is AdapterResult.Success.Kpi<*>) }
+            
+            // Should have at least the base KPIs + component KPIs
+            val expectedMinimumKpis = 4 + tlcDto.transitiveProduction.components.size +
+                    tlcDto.transitiveOptional.components.size +
+                    tlcDto.directProduction.components.size +
+                    tlcDto.directOptional.components.size
+            assertTrue(kpis.size >= expectedMinimumKpis)
+        }
     }
 }

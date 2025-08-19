@@ -29,34 +29,6 @@ object DefaultHierarchy {
                     ),
             )
 
-        val documentationInfrastructure =
-            KpiNode(
-                typeId = KpiType.DOCUMENTATION_INFRASTRUCTURE.name,
-                strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
-                edges = listOf(),
-                metaInfo =
-                    MetaInfo(
-                        displayName = "Documentation Infrastructure",
-                        description =
-                            "Measures the quality and completeness of project documentation infrastructure",
-                        tags = setOf("documentation", "infrastructure"),
-                    ),
-            )
-
-        val commentsInCode =
-            KpiNode(
-                typeId = KpiType.COMMENTS_IN_CODE.name,
-                strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
-                edges = listOf(),
-                metaInfo =
-                    MetaInfo(
-                        displayName = "Comments in Code",
-                        description =
-                            "Measures the quality and quantity of comments in the codebase",
-                        tags = setOf("documentation", "code-quality"),
-                    ),
-            )
-
         val numberOfCommits =
             KpiNode(
                 typeId = KpiType.NUMBER_OF_COMMITS.name,
@@ -98,18 +70,6 @@ object DefaultHierarchy {
                     ),
             )
 
-        val checkedInBinaries =
-            KpiNode(
-                typeId = KpiType.CHECKED_IN_BINARIES.name,
-                strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
-                edges = listOf(),
-                metaInfo =
-                    MetaInfo(
-                        displayName = "Checked In Binaries",
-                        description = "Measures the presence of binary files in the repository",
-                        tags = setOf("version-control", "best-practices"),
-                    ),
-            )
 
         val signedCommitsRatio =
             KpiNode(
@@ -128,33 +88,14 @@ object DefaultHierarchy {
                     ),
             )
 
-        val documentation =
-            KpiNode(
-                typeId = KpiType.DOCUMENTATION.name,
-                strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
-                edges =
-                    listOf(
-                        KpiEdge(target = documentationInfrastructure, weight = 0.6),
-                        KpiEdge(target = commentsInCode, weight = 0.4),
-                    ),
-                metaInfo =
-                    MetaInfo(
-                        displayName = "Documentation",
-                        description = "Measures the overall quality of project documentation",
-                        tags = setOf("documentation", "quality"),
-                    ),
-            )
-
         val processComplianceKpi =
             KpiNode(
                 typeId = KpiType.PROCESS_COMPLIANCE.name,
                 strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                 edges =
                     listOf(
-                        KpiEdge(target = checkedInBinaries, weight = 0.2),
-                        KpiEdge(target = signedCommitsRatio, weight = 0.2),
-                        KpiEdge(target = isDefaultBranchProtected, weight = 0.3),
-                        KpiEdge(target = documentation, weight = 0.3),
+                        KpiEdge(target = signedCommitsRatio, weight = 0.3),
+                        KpiEdge(target = isDefaultBranchProtected, weight = 0.7),
                     ),
                 metaInfo =
                     MetaInfo(
@@ -235,10 +176,9 @@ object DefaultHierarchy {
                 strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                 edges =
                     listOf(
-                        KpiEdge(target = secrets, weight = 0.2),
+                        KpiEdge(target = secrets, weight = 0.3),
                         KpiEdge(target = maxDepVulnerability, weight = 0.35),
                         KpiEdge(target = maxContainerVulnerability, weight = 0.35),
-                        KpiEdge(target = checkedInBinaries, weight = 0.1),
                     ),
                 metaInfo =
                     MetaInfo(
@@ -248,29 +188,17 @@ object DefaultHierarchy {
                     ),
             )
 
-        val internalQuality =
+        val quality =
             KpiNode(
-                typeId = KpiType.INTERNAL_QUALITY.name,
+                typeId = KpiType.QUALITY.name,
                 strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
-                edges = listOf(KpiEdge(target = documentation, weight = 1.0)),
+                edges = listOf(KpiEdge(target = getTechLag(), weight = 1.0)),
                 metaInfo =
                     MetaInfo(
-                        displayName = "Internal Quality",
-                        description = "Measures the internal quality aspects of the project",
-                        tags = setOf("quality", "internal"),
-                    ),
-            )
-
-        val externalQuality =
-            KpiNode(
-                typeId = KpiType.EXTERNAL_QUALITY.name,
-                strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
-                edges = listOf(KpiEdge(target = documentation, weight = 1.0)),
-                metaInfo =
-                    MetaInfo(
-                        displayName = "External Quality",
-                        description = "Measures the external quality aspects of the project",
-                        tags = setOf("quality", "external"),
+                        displayName = "Quality",
+                        description =
+                            "Measures the quality and maintainability aspects of the project",
+                        tags = setOf("quality"),
                     ),
             )
 
@@ -283,8 +211,7 @@ object DefaultHierarchy {
                         KpiEdge(target = processTransparency, weight = 0.1),
                         KpiEdge(target = processComplianceKpi, weight = 0.1),
                         KpiEdge(target = security, weight = 0.4),
-                        KpiEdge(target = internalQuality, weight = 0.15),
-                        KpiEdge(target = externalQuality, weight = 0.25),
+                        KpiEdge(target = quality, weight = 0.15),
                     ),
                 metaInfo =
                     MetaInfo(
@@ -295,5 +222,190 @@ object DefaultHierarchy {
             )
 
         return KpiHierarchy.create(root)
+    }
+
+    private fun getTechLag(): KpiNode {
+
+        val techLagProd =
+            KpiNode(
+                typeId = KpiType.TECHNICAL_LAG_PROD.name,
+                KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
+                edges =
+                    listOf(
+                        KpiEdge(
+                            KpiNode(
+                                typeId = KpiType.TECHNICAL_LAG_PROD_DIRECT.name,
+                                KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
+                                edges =
+                                    listOf(
+                                        KpiEdge(
+                                            KpiNode(
+                                                typeId = KpiType.HIGHEST_LIB_DAYS_PROD_DIRECT.name,
+                                                KpiStrategyId.RAW_VALUE_STRATEGY,
+                                                thresholds = listOf(Threshold("maximum", 60)),
+                                                edges = listOf(),
+                                            ),
+                                            weight = 0.5,
+                                        ),
+                                        KpiEdge(
+                                            KpiNode(
+                                                typeId =
+                                                    KpiType.TECHNICAL_LAG_PROD_DIRECT_COMPONENT
+                                                        .name,
+                                                KpiStrategyId.RAW_VALUE_STRATEGY,
+                                                thresholds =
+                                                    listOf(
+                                                        Threshold(
+                                                            "maximum",
+                                                            30, // days
+                                                        )
+                                                    ),
+                                                edges = listOf(),
+                                            ),
+                                            weight = 0.5,
+                                        ),
+                                    ),
+                            ),
+                            weight = 0.7,
+                        ),
+                        KpiEdge(
+                            target =
+                                KpiNode(
+                                    typeId = KpiType.TECHNICAL_LAG_PROD_TRANSITIVE.name,
+                                    KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
+                                    edges =
+                                        listOf(
+                                            KpiEdge(
+                                                KpiNode(
+                                                    typeId =
+                                                        KpiType.HIGHEST_LIB_DAYS_PROD_TRANSITIVE
+                                                            .name,
+                                                    KpiStrategyId.RAW_VALUE_STRATEGY,
+                                                    thresholds = listOf(Threshold("maximum", 180)),
+                                                    edges = listOf(),
+                                                ),
+                                                weight = 0.5,
+                                            ),
+                                            KpiEdge(
+                                                KpiNode(
+                                                    typeId =
+                                                        KpiType
+                                                            .TECHNICAL_LAG_PROD_TRANSITIVE_COMPONENT
+                                                            .name,
+                                                    KpiStrategyId.RAW_VALUE_STRATEGY,
+                                                    thresholds =
+                                                        listOf(
+                                                            Threshold(
+                                                                "maximum",
+                                                                90, // days
+                                                            )
+                                                        ),
+                                                    edges = listOf(),
+                                                ),
+                                                weight = 0.5,
+                                            ),
+                                        ),
+                                ),
+                            weight = 0.3,
+                        ),
+                    ),
+            )
+
+        val techLagDev =
+            KpiNode(
+                typeId = KpiType.TECHNICAL_LAG_DEV.name,
+                KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
+                edges =
+                    listOf(
+                        KpiEdge(
+                            KpiNode(
+                                typeId = KpiType.TECHNICAL_LAG_DEV_DIRECT.name,
+                                KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
+                                edges =
+                                    listOf(
+                                        KpiEdge(
+                                            KpiNode(
+                                                typeId = KpiType.HIGHEST_LIB_DAYS_DEV_DIRECT.name,
+                                                KpiStrategyId.RAW_VALUE_STRATEGY,
+                                                thresholds = listOf(Threshold("maximum", 60)),
+                                                edges = listOf(),
+                                            ),
+                                            weight = 0.5,
+                                        ),
+                                        KpiEdge(
+                                            KpiNode(
+                                                typeId =
+                                                    KpiType.TECHNICAL_LAG_DEV_DIRECT_COMPONENT.name,
+                                                KpiStrategyId.RAW_VALUE_STRATEGY,
+                                                thresholds =
+                                                    listOf(
+                                                        Threshold(
+                                                            "maximum",
+                                                            30, // days
+                                                        )
+                                                    ),
+                                                edges = listOf(),
+                                            ),
+                                            weight = 0.5,
+                                        ),
+                                    ),
+                            ),
+                            weight = 0.7,
+                        ),
+                        KpiEdge(
+                            target =
+                                KpiNode(
+                                    typeId = KpiType.TECHNICAL_LAG_DEV_TRANSITIVE.name,
+                                    KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
+                                    edges =
+                                        listOf(
+                                            KpiEdge(
+                                                KpiNode(
+                                                    typeId =
+                                                        KpiType.HIGHEST_LIB_DAYS_DEV_TRANSITIVE
+                                                            .name,
+                                                    KpiStrategyId.RAW_VALUE_STRATEGY,
+                                                    thresholds = listOf(Threshold("maximum", 180)),
+                                                    edges = listOf(),
+                                                ),
+                                                weight = 0.5,
+                                            ),
+                                            KpiEdge(
+                                                KpiNode(
+                                                    typeId =
+                                                        KpiType
+                                                            .TECHNICAL_LAG_DEV_TRANSITIVE_COMPONENT
+                                                            .name,
+                                                    KpiStrategyId.RAW_VALUE_STRATEGY,
+                                                    thresholds =
+                                                        listOf(
+                                                            Threshold(
+                                                                "maximum",
+                                                                90, // days
+                                                            )
+                                                        ),
+                                                    edges = listOf(),
+                                                ),
+                                                weight = 0.5,
+                                            ),
+                                        ),
+                                ),
+                            weight = 0.3,
+                        ),
+                    ),
+            )
+
+        val techLag =
+            KpiNode(
+                typeId = KpiType.TECHNICAL_LAG.name,
+                KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
+                edges =
+                    listOf(
+                        KpiEdge(target = techLagProd, weight = 0.9),
+                        KpiEdge(target = techLagDev, weight = 0.1),
+                    ),
+            )
+
+        return techLag
     }
 }

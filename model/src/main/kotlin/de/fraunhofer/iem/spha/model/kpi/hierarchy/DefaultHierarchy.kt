@@ -228,21 +228,35 @@ object DefaultHierarchy {
         val techLagProd =
             KpiNode(
                 typeId = KpiType.TECHNICAL_LAG_PROD.name,
-                KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
+                strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                 edges =
                     listOf(
                         KpiEdge(
                             KpiNode(
                                 typeId = KpiType.TECHNICAL_LAG_PROD_DIRECT.name,
-                                KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
+                                strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                                 edges =
                                     listOf(
                                         KpiEdge(
                                             KpiNode(
                                                 typeId = KpiType.HIGHEST_LIB_DAYS_PROD_DIRECT.name,
-                                                KpiStrategyId.RAW_VALUE_STRATEGY,
+                                                strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                                 thresholds = listOf(Threshold("maximum", 60)),
                                                 edges = listOf(),
+                                                metaInfo =
+                                                    MetaInfo(
+                                                        displayName =
+                                                            "Highest Library Days (Production Direct)",
+                                                        description =
+                                                            "Measures the highest number of days since the last update for direct production dependencies",
+                                                        tags =
+                                                            setOf(
+                                                                "technical-lag",
+                                                                "dependencies",
+                                                                "production",
+                                                                "direct",
+                                                            ),
+                                                    ),
                                             ),
                                             weight = 0.5,
                                         ),
@@ -251,18 +265,40 @@ object DefaultHierarchy {
                                                 typeId =
                                                     KpiType.TECHNICAL_LAG_PROD_DIRECT_COMPONENT
                                                         .name,
-                                                KpiStrategyId.RAW_VALUE_STRATEGY,
-                                                thresholds =
-                                                    listOf(
-                                                        Threshold(
-                                                            "maximum",
-                                                            30, // days
-                                                        )
-                                                    ),
+                                                strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                                thresholds = listOf(Threshold("maximum", 30)),
                                                 edges = listOf(),
+                                                metaInfo =
+                                                    MetaInfo(
+                                                        displayName =
+                                                            "Technical Lag Production Direct Component",
+                                                        description =
+                                                            "Measures the technical lag in days for direct production dependencies by component",
+                                                        tags =
+                                                            setOf(
+                                                                "technical-lag",
+                                                                "dependencies",
+                                                                "production",
+                                                                "direct",
+                                                                "component",
+                                                            ),
+                                                    ),
                                             ),
                                             weight = 0.5,
                                         ),
+                                    ),
+                                metaInfo =
+                                    MetaInfo(
+                                        displayName = "Technical Lag Production Direct",
+                                        description =
+                                            "Measures the technical lag for direct production dependencies",
+                                        tags =
+                                            setOf(
+                                                "technical-lag",
+                                                "dependencies",
+                                                "production",
+                                                "direct",
+                                            ),
                                     ),
                             ),
                             weight = 0.7,
@@ -271,7 +307,7 @@ object DefaultHierarchy {
                             target =
                                 KpiNode(
                                     typeId = KpiType.TECHNICAL_LAG_PROD_TRANSITIVE.name,
-                                    KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
+                                    strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                                     edges =
                                         listOf(
                                             KpiEdge(
@@ -279,9 +315,23 @@ object DefaultHierarchy {
                                                     typeId =
                                                         KpiType.HIGHEST_LIB_DAYS_PROD_TRANSITIVE
                                                             .name,
-                                                    KpiStrategyId.RAW_VALUE_STRATEGY,
+                                                    strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                                     thresholds = listOf(Threshold("maximum", 180)),
                                                     edges = listOf(),
+                                                    metaInfo =
+                                                        MetaInfo(
+                                                            displayName =
+                                                                "Highest Library Days (Production Transitive)",
+                                                            description =
+                                                                "Measures the highest number of days since the last update for transitive production dependencies",
+                                                            tags =
+                                                                setOf(
+                                                                    "technical-lag",
+                                                                    "dependencies",
+                                                                    "production",
+                                                                    "transitive",
+                                                                ),
+                                                        ),
                                                 ),
                                                 weight = 0.5,
                                             ),
@@ -291,43 +341,86 @@ object DefaultHierarchy {
                                                         KpiType
                                                             .TECHNICAL_LAG_PROD_TRANSITIVE_COMPONENT
                                                             .name,
-                                                    KpiStrategyId.RAW_VALUE_STRATEGY,
-                                                    thresholds =
-                                                        listOf(
-                                                            Threshold(
-                                                                "maximum",
-                                                                90, // days
-                                                            )
-                                                        ),
+                                                    strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                                    thresholds = listOf(Threshold("maximum", 90)),
                                                     edges = listOf(),
+                                                    metaInfo =
+                                                        MetaInfo(
+                                                            displayName =
+                                                                "Technical Lag Production Transitive Component",
+                                                            description =
+                                                                "Measures the technical lag in days for transitive production dependencies by component",
+                                                            tags =
+                                                                setOf(
+                                                                    "technical-lag",
+                                                                    "dependencies",
+                                                                    "production",
+                                                                    "transitive",
+                                                                    "component",
+                                                                ),
+                                                        ),
                                                 ),
                                                 weight = 0.5,
                                             ),
                                         ),
+                                    metaInfo =
+                                        MetaInfo(
+                                            displayName = "Technical Lag Production Transitive",
+                                            description =
+                                                "Measures the technical lag for transitive production dependencies",
+                                            tags =
+                                                setOf(
+                                                    "technical-lag",
+                                                    "dependencies",
+                                                    "production",
+                                                    "transitive",
+                                                ),
+                                        ),
                                 ),
                             weight = 0.3,
                         ),
+                    ),
+                metaInfo =
+                    MetaInfo(
+                        displayName = "Technical Lag Production",
+                        description =
+                            "Measures the overall technical lag for production dependencies",
+                        tags = setOf("technical-lag", "dependencies", "production"),
                     ),
             )
 
         val techLagDev =
             KpiNode(
                 typeId = KpiType.TECHNICAL_LAG_DEV.name,
-                KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
+                strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                 edges =
                     listOf(
                         KpiEdge(
                             KpiNode(
                                 typeId = KpiType.TECHNICAL_LAG_DEV_DIRECT.name,
-                                KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
+                                strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                                 edges =
                                     listOf(
                                         KpiEdge(
                                             KpiNode(
                                                 typeId = KpiType.HIGHEST_LIB_DAYS_DEV_DIRECT.name,
-                                                KpiStrategyId.RAW_VALUE_STRATEGY,
+                                                strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                                 thresholds = listOf(Threshold("maximum", 60)),
                                                 edges = listOf(),
+                                                metaInfo =
+                                                    MetaInfo(
+                                                        displayName =
+                                                            "Highest Library Days (Development Direct)",
+                                                        description =
+                                                            "Measures the highest number of days since the last update for direct development dependencies",
+                                                        tags =
+                                                            setOf(
+                                                                "technical-lag",
+                                                                "dependencies",
+                                                                "development",
+                                                                "direct",
+                                                            ),
+                                                    ),
                                             ),
                                             weight = 0.5,
                                         ),
@@ -335,18 +428,40 @@ object DefaultHierarchy {
                                             KpiNode(
                                                 typeId =
                                                     KpiType.TECHNICAL_LAG_DEV_DIRECT_COMPONENT.name,
-                                                KpiStrategyId.RAW_VALUE_STRATEGY,
-                                                thresholds =
-                                                    listOf(
-                                                        Threshold(
-                                                            "maximum",
-                                                            30, // days
-                                                        )
-                                                    ),
+                                                strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                                thresholds = listOf(Threshold("maximum", 30)),
                                                 edges = listOf(),
+                                                metaInfo =
+                                                    MetaInfo(
+                                                        displayName =
+                                                            "Technical Lag Development Direct Component",
+                                                        description =
+                                                            "Measures the technical lag in days for direct development dependencies by component",
+                                                        tags =
+                                                            setOf(
+                                                                "technical-lag",
+                                                                "dependencies",
+                                                                "development",
+                                                                "direct",
+                                                                "component",
+                                                            ),
+                                                    ),
                                             ),
                                             weight = 0.5,
                                         ),
+                                    ),
+                                metaInfo =
+                                    MetaInfo(
+                                        displayName = "Technical Lag Development Direct",
+                                        description =
+                                            "Measures the technical lag for direct development dependencies",
+                                        tags =
+                                            setOf(
+                                                "technical-lag",
+                                                "dependencies",
+                                                "development",
+                                                "direct",
+                                            ),
                                     ),
                             ),
                             weight = 0.7,
@@ -355,7 +470,7 @@ object DefaultHierarchy {
                             target =
                                 KpiNode(
                                     typeId = KpiType.TECHNICAL_LAG_DEV_TRANSITIVE.name,
-                                    KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
+                                    strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                                     edges =
                                         listOf(
                                             KpiEdge(
@@ -363,9 +478,23 @@ object DefaultHierarchy {
                                                     typeId =
                                                         KpiType.HIGHEST_LIB_DAYS_DEV_TRANSITIVE
                                                             .name,
-                                                    KpiStrategyId.RAW_VALUE_STRATEGY,
+                                                    strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
                                                     thresholds = listOf(Threshold("maximum", 180)),
                                                     edges = listOf(),
+                                                    metaInfo =
+                                                        MetaInfo(
+                                                            displayName =
+                                                                "Highest Library Days (Development Transitive)",
+                                                            description =
+                                                                "Measures the highest number of days since the last update for transitive development dependencies",
+                                                            tags =
+                                                                setOf(
+                                                                    "technical-lag",
+                                                                    "dependencies",
+                                                                    "development",
+                                                                    "transitive",
+                                                                ),
+                                                        ),
                                                 ),
                                                 weight = 0.5,
                                             ),
@@ -375,33 +504,69 @@ object DefaultHierarchy {
                                                         KpiType
                                                             .TECHNICAL_LAG_DEV_TRANSITIVE_COMPONENT
                                                             .name,
-                                                    KpiStrategyId.RAW_VALUE_STRATEGY,
-                                                    thresholds =
-                                                        listOf(
-                                                            Threshold(
-                                                                "maximum",
-                                                                90, // days
-                                                            )
-                                                        ),
+                                                    strategy = KpiStrategyId.RAW_VALUE_STRATEGY,
+                                                    thresholds = listOf(Threshold("maximum", 90)),
                                                     edges = listOf(),
+                                                    metaInfo =
+                                                        MetaInfo(
+                                                            displayName =
+                                                                "Technical Lag Development Transitive Component",
+                                                            description =
+                                                                "Measures the technical lag in days for transitive development dependencies by component",
+                                                            tags =
+                                                                setOf(
+                                                                    "technical-lag",
+                                                                    "dependencies",
+                                                                    "development",
+                                                                    "transitive",
+                                                                    "component",
+                                                                ),
+                                                        ),
                                                 ),
                                                 weight = 0.5,
                                             ),
                                         ),
+                                    metaInfo =
+                                        MetaInfo(
+                                            displayName = "Technical Lag Development Transitive",
+                                            description =
+                                                "Measures the technical lag for transitive development dependencies",
+                                            tags =
+                                                setOf(
+                                                    "technical-lag",
+                                                    "dependencies",
+                                                    "development",
+                                                    "transitive",
+                                                ),
+                                        ),
                                 ),
                             weight = 0.3,
                         ),
+                    ),
+                metaInfo =
+                    MetaInfo(
+                        displayName = "Technical Lag Development",
+                        description =
+                            "Measures the overall technical lag for development dependencies",
+                        tags = setOf("technical-lag", "dependencies", "development"),
                     ),
             )
 
         val techLag =
             KpiNode(
                 typeId = KpiType.TECHNICAL_LAG.name,
-                KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
+                strategy = KpiStrategyId.WEIGHTED_AVERAGE_STRATEGY,
                 edges =
                     listOf(
                         KpiEdge(target = techLagProd, weight = 0.9),
                         KpiEdge(target = techLagDev, weight = 0.1),
+                    ),
+                metaInfo =
+                    MetaInfo(
+                        displayName = "Technical Lag",
+                        description =
+                            "Measures the overall technical lag of the project's dependencies",
+                        tags = setOf("technical-lag", "dependencies", "quality"),
                     ),
             )
 

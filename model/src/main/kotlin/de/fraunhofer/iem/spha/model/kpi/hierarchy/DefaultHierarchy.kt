@@ -70,7 +70,6 @@ object DefaultHierarchy {
                     ),
             )
 
-
         val signedCommitsRatio =
             KpiNode(
                 typeId = KpiType.SIGNED_COMMITS_RATIO.name,

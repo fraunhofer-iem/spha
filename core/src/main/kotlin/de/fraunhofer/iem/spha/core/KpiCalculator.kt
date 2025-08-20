@@ -53,5 +53,4 @@ object KpiCalculator {
         logger.info { "KPI calculation result $result" }
         return result
     }
-
 }

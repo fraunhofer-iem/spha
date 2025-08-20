@@ -48,14 +48,19 @@ internal object DefaultRawValueTransformer : RawValueTransformer {
             return KpiCalculationResult.Error("Score for node $node is negative.")
         }
 
-        val score =
-            if (node.score <= highestThreshold.value) {
-                100
-            } else if (node.score > highestThreshold.value * 2) {
-                0
-            } else {
-                (1 - ((node.score - highestThreshold.value) / (highestThreshold.value * 2))) * 100
+        fun calculateTechLagScore(score: Int, threshold: Int): Int {
+            return when {
+                score <= threshold -> 100
+                score > threshold * 2 -> 0
+                else -> {
+                    val ratio = (score - threshold).toDouble() / threshold
+                    ((1.0 - ratio) * 100).toInt()
+                }
             }
+        }
+
+        // Then in your main function:
+        val score = calculateTechLagScore(node.score, highestThreshold.value)
 
         return KpiCalculationResult.Success(score)
     }

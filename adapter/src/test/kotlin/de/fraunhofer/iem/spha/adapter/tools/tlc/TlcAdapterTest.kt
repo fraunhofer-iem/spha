@@ -66,10 +66,13 @@ class TlcAdapterTest {
         assertTrue(tlcDto.directProduction.highestLibdays >= 0.0)
 
         // componentHighestLibdays bomRef not blank
-        assertTrue(tlcDto.transitiveOptional.componentHighestLibdays.bomRef.isNotBlank())
-        assertTrue(tlcDto.transitiveProduction.componentHighestLibdays.bomRef.isNotBlank())
-        assertTrue(tlcDto.directOptional.componentHighestLibdays.bomRef.isNotBlank())
-        assertTrue(tlcDto.directProduction.componentHighestLibdays.bomRef.isNotBlank())
+        assertEquals(tlcDto.transitiveOptional.componentHighestLibdays?.bomRef?.isNotBlank(), true)
+        assertEquals(
+            tlcDto.transitiveProduction.componentHighestLibdays?.bomRef?.isNotBlank(),
+            true,
+        )
+        assertEquals(tlcDto.directOptional.componentHighestLibdays?.bomRef?.isNotBlank(), true)
+        assertEquals(tlcDto.directProduction.componentHighestLibdays?.bomRef?.isNotBlank(), true)
 
         // totalNumComponents >= components.size
         assertTrue(
@@ -180,7 +183,10 @@ class TlcAdapterTest {
             // Verify basic structure
             assertTrue(tlcDto.transitiveProduction.highestLibdays > 0)
             assertTrue(tlcDto.transitiveProduction.components.isNotEmpty())
-            assertTrue(tlcDto.transitiveProduction.componentHighestLibdays.bomRef.isNotBlank())
+            assertEquals(
+                tlcDto.transitiveProduction.componentHighestLibdays?.bomRef?.isNotBlank(),
+                true,
+            )
 
             // Test transformation to KPIs
             val kpis = assertDoesNotThrow { TlcAdapter.transformDataToKpi(tlcDto) }

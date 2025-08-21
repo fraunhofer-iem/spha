@@ -24,7 +24,7 @@ data class TlcDto(
 data class Tlc(
     val totalNumComponents: Int = 0,
     val highestLibdays: Double,
-    val componentHighestLibdays: Component,
+    val componentHighestLibdays: Component? = null,
     val components: List<ComponentLag> = emptyList(),
 ) : Origin
 
@@ -34,16 +34,16 @@ data class Tlc(
 
 @Serializable
 data class Component(
-    @SerialName("bom-ref") val bomRef: String,
-    val type: String = "",
-    val name: String = "",
-    val version: String = "",
-    val description: String = "",
-    val scope: String = "",
-    val purl: String = "",
-    val licenses: List<LicenseWrapper> = emptyList(),
+    @SerialName("bom-ref") val bomRef: String? = "",
+    val type: String? = "",
+    val name: String? = "",
+    val version: String? = "",
+    val description: String? = "",
+    val scope: String? = "",
+    val purl: String? = "",
+    val licenses: List<LicenseWrapper>? = emptyList(),
 )
 
-@Serializable data class LicenseWrapper(val license: License)
+@Serializable data class LicenseWrapper(val license: License? = null)
 
 @Serializable data class License(val id: String = "")

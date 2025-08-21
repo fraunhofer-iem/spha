@@ -150,10 +150,7 @@ class ToolResultParserTest {
 
     @Test
     fun testGetAdapterResultsFromJsonFilesTlcVue() {
-        val jsonFiles =
-            listOf(
-                File("$testResourcesDir/techLag-npm-vuejs.json"),
-            )
+        val jsonFiles = listOf(File("$testResourcesDir/techLag-npm-vuejs.json"))
 
         val results = ToolResultParser.getAdapterResultsFromJsonFiles(jsonFiles)
 
@@ -165,7 +162,7 @@ class ToolResultParserTest {
         val jsonFiles =
             listOf(
                 // breaks
-                File("$testResourcesDir/techLag-npm-angular.json"),
+                File("$testResourcesDir/techLag-npm-angular.json")
             )
 
         val results = ToolResultParser.getAdapterResultsFromJsonFiles(jsonFiles)

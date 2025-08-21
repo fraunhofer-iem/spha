@@ -90,7 +90,7 @@ class JsonKpiHierarchyTest {
         // Pretty printing might add spaces, tabs, (CR)LF, etc. which is hard to assert against.
         // This implicitly asserts that KpiNode and KpiEdge get serialized to the expected JSON too
         val expected =
-            "{\"root\":{\"typeId\":\"ROOT\",\"strategy\":\"MAXIMUM_STRATEGY\",\"edges\":[{\"target\":{\"typeId\":\"CODE_VULNERABILITY_SCORE\",\"strategy\":\"RAW_VALUE_STRATEGY\",\"edges\":[],\"thresholds\":[{\"name\":\"warning\",\"value\":50},{\"name\":\"critical\",\"value\":90}],\"metaInfo\":{\"description\":\"CRA relevant\",\"tags\":[\"cvss\",\"cve\",\"cwe\"]}},\"weight\":1.0}]},\"schemaVersion\":\"1.1.0\"}"
+            "{\"root\":{\"typeId\":\"ROOT\",\"strategy\":\"MAXIMUM_STRATEGY\",\"edges\":[{\"target\":{\"typeId\":\"CODE_VULNERABILITY_SCORE\",\"strategy\":\"RAW_VALUE_STRATEGY\",\"thresholds\":[{\"name\":\"warning\",\"value\":50},{\"name\":\"critical\",\"value\":90}],\"metaInfo\":{\"description\":\"CRA relevant\",\"tags\":[\"cvss\",\"cve\",\"cwe\"]}},\"weight\":1.0}]},\"schemaVersion\":\"1.1.0\"}"
 
         assertEquals(expected, jsonResult)
     }

@@ -12,6 +12,7 @@ package de.fraunhofer.iem.spha.core
 import de.fraunhofer.iem.spha.core.hierarchy.KpiHierarchyNode
 import de.fraunhofer.iem.spha.core.hierarchy.KpiHierarchyNode.Companion.depthFirstTraversal
 import de.fraunhofer.iem.spha.core.strategy.getKpiCalculationStrategy
+import de.fraunhofer.iem.spha.core.transformation.DefaultRawValueTransformer
 import de.fraunhofer.iem.spha.model.kpi.KpiStrategyId
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult
@@ -45,7 +46,7 @@ object KpiCalculator {
     ): KpiCalculationResult {
         logger.info { "Running KPI calculation on $node" }
         if (node.strategy == KpiStrategyId.RAW_VALUE_STRATEGY) {
-            return node.result
+            return DefaultRawValueTransformer.transform(node)
         }
 
         val result = getKpiCalculationStrategy(node.strategy).calculateKpi(node.edges, strict)

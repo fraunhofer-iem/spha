@@ -14,35 +14,39 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TlcDto(
-    val optional: Tlc,
-    val production: Tlc,
+    val transitiveOptional: Tlc,
+    val transitiveProduction: Tlc,
     val directOptional: Tlc,
     val directProduction: Tlc,
 ) : ToolResult
 
 @Serializable
 data class Tlc(
-    val libdays: Double,
-    val missedReleases: Int,
-    val numComponents: Int,
+    val totalNumComponents: Int = 0,
     val highestLibdays: Double,
-    val highestMissedReleases: Int,
-    val componentHighestMissedReleases: Component,
-    val componentHighestLibdays: Component,
-) : Origin
+    val componentHighestLibdays: Component? = null,
+    val components: List<ComponentLag> = emptyList(),
+) : TlcOrigin
+
+sealed interface TlcOrigin : Origin
+
+@Serializable
+data class ComponentLag(val component: Component, val technicalLag: TechnicalLag) : TlcOrigin
+
+@Serializable data class TechnicalLag(val libdays: Double)
 
 @Serializable
 data class Component(
-    @SerialName("bom-ref") val bomRef: String,
-    val type: String = "",
-    val name: String = "",
-    val version: String = "",
-    val description: String = "",
-    val scope: String = "",
-    val purl: String = "",
-    val licenses: List<LicenseWrapper> = emptyList(),
-)
+    @SerialName("bom-ref") val bomRef: String? = "",
+    @SerialName("component-type") val type: String? = "",
+    val name: String? = "",
+    val version: String? = "",
+    val description: String? = "",
+    val scope: String? = "",
+    val purl: String? = "",
+    val licenses: List<LicenseWrapper>? = emptyList(),
+) : TlcOrigin
 
-@Serializable data class LicenseWrapper(val license: License)
+@Serializable data class LicenseWrapper(val license: License? = null)
 
 @Serializable data class License(val id: String = "")

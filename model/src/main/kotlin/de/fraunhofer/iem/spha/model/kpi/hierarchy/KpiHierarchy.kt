@@ -34,7 +34,7 @@ data class MetaInfo(
 data class KpiNode(
     val typeId: String,
     val strategy: KpiStrategyId,
-    val edges: List<KpiEdge>,
+    val edges: List<KpiEdge> = emptyList(),
     val thresholds: List<Threshold> = emptyList(),
     val metaInfo: MetaInfo? = null,
 )

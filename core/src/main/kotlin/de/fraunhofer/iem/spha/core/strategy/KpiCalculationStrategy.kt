@@ -103,7 +103,7 @@ internal abstract class BaseKpiCalculationStrategy : KpiCalculationStrategy {
                 result is KpiCalculationResult.Success
         ) {
             // Even if the current calculation returns success, we repackage this result into an
-            // Incomplete result if any of the edges had no result / an incomplete results to
+            // Incomplete result if any of the edges had no result / an incomplete result to
             // propagate
             // this information to the top. Every result depending on incomplete information is also
             // incomplete.

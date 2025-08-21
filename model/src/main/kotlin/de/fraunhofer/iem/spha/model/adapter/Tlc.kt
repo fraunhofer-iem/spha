@@ -38,7 +38,7 @@ data class ComponentLag(val component: Component, val technicalLag: TechnicalLag
 @Serializable
 data class Component(
     @SerialName("bom-ref") val bomRef: String? = "",
-    @SerialName("type") val componentType: String? = "",
+    @SerialName("component-type") val type: String? = "",
     val name: String? = "",
     val version: String? = "",
     val description: String? = "",

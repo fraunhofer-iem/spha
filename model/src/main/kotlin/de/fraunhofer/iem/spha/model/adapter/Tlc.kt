@@ -26,9 +26,12 @@ data class Tlc(
     val highestLibdays: Double,
     val componentHighestLibdays: Component? = null,
     val components: List<ComponentLag> = emptyList(),
-) : Origin
+) : TlcOrigin
 
-@Serializable data class ComponentLag(val component: Component, val technicalLag: TechnicalLag)
+sealed interface TlcOrigin : Origin
+
+@Serializable
+data class ComponentLag(val component: Component, val technicalLag: TechnicalLag) : TlcOrigin
 
 @Serializable data class TechnicalLag(val libdays: Double)
 
@@ -42,7 +45,7 @@ data class Component(
     val scope: String? = "",
     val purl: String? = "",
     val licenses: List<LicenseWrapper>? = emptyList(),
-)
+) : TlcOrigin
 
 @Serializable data class LicenseWrapper(val license: License? = null)
 

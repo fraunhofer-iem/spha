@@ -9,7 +9,7 @@
 
 package de.fraunhofer.iem.spha.adapter.tools.trivy
 
-import de.fraunhofer.iem.spha.adapter.AdapterResult
+import de.fraunhofer.iem.spha.adapter.TransformationResult
 import de.fraunhofer.iem.spha.adapter.ErrorType
 import de.fraunhofer.iem.spha.adapter.KpiAdapter
 import de.fraunhofer.iem.spha.adapter.kpis.cve.transformVulnerabilityToKpi
@@ -24,21 +24,21 @@ object TrivyAdapter : KpiAdapter<TrivyDtoV2, TrivyVulnerabilityDto>() {
 
     override fun transformDataToKpi(
         vararg data: TrivyDtoV2
-    ): Collection<AdapterResult<TrivyVulnerabilityDto>> {
+    ): Collection<TransformationResult<TrivyVulnerabilityDto>> {
         return data
             .flatMap { it.results }
             .flatMap { it.vulnerabilities }
             .map { trivyVuln ->
                 val score = getHighestCvssScore(trivyVuln)
                 if (score == null) {
-                    return@map AdapterResult.Error(ErrorType.DATA_VALIDATION_ERROR)
+                    return@map TransformationResult.Error(ErrorType.DATA_VALIDATION_ERROR)
                 }
                 val rawValueKpi =
                     transformVulnerabilityToKpi(score, KpiType.CONTAINER_VULNERABILITY_SCORE)
                 if (rawValueKpi == null) {
-                    return@map AdapterResult.Error(ErrorType.DATA_VALIDATION_ERROR)
+                    return@map TransformationResult.Error(ErrorType.DATA_VALIDATION_ERROR)
                 }
-                return@map AdapterResult.Success.Kpi(rawValueKpi, trivyVuln)
+                return@map TransformationResult.Success.Kpi(rawValueKpi, trivyVuln)
             }
     }
 

@@ -77,7 +77,7 @@ class ToolResultParserTest {
         tempOsvDir.toFile().deleteRecursively()
 
         assertTrue(results.isNotEmpty())
-        assertTrue(results.all { it is AdapterResult.Success })
+        assertTrue(results.all { it is TransformationResult.Success })
     }
 
     @Test

@@ -9,7 +9,7 @@
 
 package de.fraunhofer.iem.spha.adapter.tools.osv
 
-import de.fraunhofer.iem.spha.adapter.AdapterResult
+import de.fraunhofer.iem.spha.adapter.TransformationResult
 import de.fraunhofer.iem.spha.adapter.ErrorType
 import de.fraunhofer.iem.spha.adapter.KpiAdapter
 import de.fraunhofer.iem.spha.adapter.kpis.cve.transformVulnerabilityToKpi
@@ -22,7 +22,7 @@ object OsvAdapter : KpiAdapter<OsvScannerDto, OsvVulnerabilityDto>() {
 
     override fun transformDataToKpi(
         vararg data: OsvScannerDto
-    ): Collection<AdapterResult<OsvVulnerabilityDto>> {
+    ): Collection<TransformationResult<OsvVulnerabilityDto>> {
         return data
             .flatMap { it.results }
             .flatMap { it.packages }
@@ -32,17 +32,17 @@ object OsvAdapter : KpiAdapter<OsvScannerDto, OsvVulnerabilityDto>() {
                     val severityList =
                         osvVuln.severity.mapNotNull { CvssVector.parseVector(it.score)?.baseScore }
                     if (severityList.isEmpty()) {
-                        return@map AdapterResult.Error(ErrorType.DATA_VALIDATION_ERROR)
+                        return@map TransformationResult.Error(ErrorType.DATA_VALIDATION_ERROR)
                     }
 
                     val score =
                         severityList.maxOrNull()
-                            ?: return@map AdapterResult.Error(ErrorType.DATA_VALIDATION_ERROR)
+                            ?: return@map TransformationResult.Error(ErrorType.DATA_VALIDATION_ERROR)
 
                     val rawValueKpi =
                         transformVulnerabilityToKpi(score, KpiType.CODE_VULNERABILITY_SCORE)
-                            ?: return@map AdapterResult.Error(ErrorType.DATA_VALIDATION_ERROR)
-                    return@map AdapterResult.Success.Kpi(rawValueKpi, osvVuln)
+                            ?: return@map TransformationResult.Error(ErrorType.DATA_VALIDATION_ERROR)
+                    return@map TransformationResult.Success.Kpi(rawValueKpi, osvVuln)
                 }
             }
     }

@@ -39,7 +39,7 @@ private interface ToolProcessor {
      *   this processor's format.
      * @throws Exception for unexpected errors during transformation logic.
      */
-    fun tryProcess(content: String): Collection<AdapterResult<Origin>>?
+    fun tryProcess(content: String): Collection<TransformationResult<Origin>>?
 }
 
 /**
@@ -53,13 +53,13 @@ private interface ToolProcessor {
 private class ToolProcessorImpl<T : ToolResult>(
     private val serializer: KSerializer<T>,
     private val jsonParser: Json,
-    private val transform: (T) -> Collection<AdapterResult<Origin>>,
+    private val transform: (T) -> Collection<TransformationResult<Origin>>,
 ) : ToolProcessor {
 
     override val name: String
         get() = serializer.descriptor.serialName
 
-    override fun tryProcess(content: String): Collection<AdapterResult<Origin>>? {
+    override fun tryProcess(content: String): Collection<TransformationResult<Origin>>? {
         return try {
             val resultObject = jsonParser.decodeFromString(serializer, content)
             transform(resultObject)
@@ -126,7 +126,7 @@ object ToolResultParser {
      * @return a list of `AdapterResult<Origin>` containing the results of parsing and processing
      *   the `.json` files
      */
-    fun parseJsonFilesFromDirectory(directoryPath: String): List<AdapterResult<Origin>> {
+    fun parseJsonFilesFromDirectory(directoryPath: String): List<TransformationResult<Origin>> {
 
         val jsonFiles = getJsonFiles(directoryPath)
 
@@ -138,9 +138,9 @@ object ToolResultParser {
         return getAdapterResultsFromJsonFiles(jsonFiles)
     }
 
-    fun getAdapterResultsFromJsonFiles(jsonFiles: List<File>): List<AdapterResult<Origin>> {
+    fun getAdapterResultsFromJsonFiles(jsonFiles: List<File>): List<TransformationResult<Origin>> {
 
-        val adapterResults = mutableListOf<AdapterResult<Origin>>()
+        val transformationResults = mutableListOf<TransformationResult<Origin>>()
         for (file in jsonFiles) {
             try {
                 val content = file.readText(Charsets.UTF_8)
@@ -154,7 +154,7 @@ object ToolResultParser {
                         // tryProcess returns results on success or null on format mismatch
                         val results = processor.tryProcess(content)
                         if (results != null) {
-                            adapterResults.addAll(results)
+                            transformationResults.addAll(results)
                             logger.info {
                                 "Successfully parsed '${file.name}' as '${processor.name}'"
                             }
@@ -173,6 +173,6 @@ object ToolResultParser {
                 logger.error { "Unexpected error processing file '${file.name}': ${e.message}" }
             }
         }
-        return adapterResults
+        return transformationResults
     }
 }

@@ -9,7 +9,7 @@
 
 package de.fraunhofer.iem.spha.adapter.tools.trufflehog
 
-import de.fraunhofer.iem.spha.adapter.AdapterResult
+import de.fraunhofer.iem.spha.adapter.TransformationResult
 import de.fraunhofer.iem.spha.adapter.KpiAdapter
 import de.fraunhofer.iem.spha.model.adapter.TrufflehogReportDto
 import de.fraunhofer.iem.spha.model.kpi.KpiType
@@ -19,14 +19,14 @@ object TrufflehogAdapter : KpiAdapter<TrufflehogReportDto, TrufflehogReportDto>(
 
     override fun transformDataToKpi(
         vararg data: TrufflehogReportDto
-    ): Collection<AdapterResult<TrufflehogReportDto>> {
+    ): Collection<TransformationResult<TrufflehogReportDto>> {
         return data.mapNotNull {
             val verifiedSecrets = it.verifiedSecrets
             if (verifiedSecrets == null) {
                 return@mapNotNull null
             }
             val score = if (verifiedSecrets > 0) 0 else 100
-            AdapterResult.Success.Kpi(
+            TransformationResult.Success.Kpi(
                 RawValueKpi(score = score, typeId = KpiType.SECRETS.name),
                 origin = it,
             )

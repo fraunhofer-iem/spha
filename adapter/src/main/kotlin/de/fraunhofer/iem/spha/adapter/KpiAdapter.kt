@@ -12,6 +12,7 @@ package de.fraunhofer.iem.spha.adapter
 import de.fraunhofer.iem.spha.model.adapter.Origin
 import de.fraunhofer.iem.spha.model.adapter.ToolResult
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
+import de.fraunhofer.iem.spha.model.kpi.hierarchy.MetaInfo
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.InputStream
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -32,7 +33,7 @@ abstract class KpiAdapter<T : ToolResult, O : Origin> {
 
     protected val logger = KotlinLogging.logger {}
 
-    abstract fun transformDataToKpi(vararg data: T): Collection<AdapterResult<O>>
+    abstract fun transformDataToKpi(vararg data: T): Collection<TransformationResult<O>>
 
     @OptIn(ExperimentalSerializationApi::class)
     fun dtoFromJson(jsonData: InputStream, deserializer: KSerializer<T>): T {
@@ -40,13 +41,15 @@ abstract class KpiAdapter<T : ToolResult, O : Origin> {
     }
 }
 
-sealed class AdapterResult<out T : Origin> {
+data class AdapterResult<T : Origin>(val metaInfo: MetaInfo, val transformationResults: Collection<TransformationResult<T>>)
+
+sealed class TransformationResult<out T : Origin> {
     /**
      * @param origin describes the data that the RawValueKpi was created from. If, for some reason,
      *   no origin data is available, T should be set to Unit.
      */
     sealed class Success<T : Origin>(val rawValueKpi: RawValueKpi, val origin: T) :
-        AdapterResult<T>() {
+        TransformationResult<T>() {
         class Kpi<T : Origin>(rawValueKpi: RawValueKpi, origin: T) :
             Success<T>(rawValueKpi, origin)
 
@@ -55,5 +58,5 @@ sealed class AdapterResult<out T : Origin> {
         }
     }
 
-    data class Error(val type: ErrorType) : AdapterResult<Nothing>()
+    data class Error(val type: ErrorType) : TransformationResult<Nothing>()
 }

@@ -9,7 +9,7 @@
 
 package de.fraunhofer.iem.spha.adapter.kpis.vcs
 
-import de.fraunhofer.iem.spha.adapter.AdapterResult
+import de.fraunhofer.iem.spha.adapter.TransformationResult
 import de.fraunhofer.iem.spha.adapter.KpiAdapter
 import de.fraunhofer.iem.spha.model.adapter.RepositoryDetails
 import de.fraunhofer.iem.spha.model.kpi.KpiType
@@ -19,25 +19,25 @@ object VcsAdapter : KpiAdapter<RepositoryDetails, RepositoryDetails>() {
 
     override fun transformDataToKpi(
         vararg data: RepositoryDetails
-    ): Collection<AdapterResult<RepositoryDetails>> {
+    ): Collection<TransformationResult<RepositoryDetails>> {
 
         return data.flatMap { repoDetailsDto ->
             return@flatMap listOf(
-                AdapterResult.Success.Kpi(
+                TransformationResult.Success.Kpi(
                     RawValueKpi(
                         typeId = KpiType.NUMBER_OF_COMMITS.name,
                         score = repoDetailsDto.numberOfCommits,
                     ),
                     origin = repoDetailsDto,
                 ),
-                AdapterResult.Success.Kpi(
+                TransformationResult.Success.Kpi(
                     RawValueKpi(
                         typeId = KpiType.NUMBER_OF_SIGNED_COMMITS.name,
                         score = repoDetailsDto.numberOfSignedCommits,
                     ),
                     origin = repoDetailsDto,
                 ),
-                AdapterResult.Success.Kpi(
+                TransformationResult.Success.Kpi(
                     RawValueKpi(
                         typeId = KpiType.IS_DEFAULT_BRANCH_PROTECTED.name,
                         score = if (repoDetailsDto.isDefaultBranchProtected) 100 else 0,

@@ -9,7 +9,7 @@
 
 package de.fraunhofer.iem.spha.adapter.tools.tlc
 
-import de.fraunhofer.iem.spha.adapter.AdapterResult
+import de.fraunhofer.iem.spha.adapter.TransformationResult
 import de.fraunhofer.iem.spha.model.adapter.Component
 import de.fraunhofer.iem.spha.model.adapter.ComponentLag
 import de.fraunhofer.iem.spha.model.adapter.TechnicalLag
@@ -106,9 +106,9 @@ class TlcAdapterTest {
         assertEquals(expectedTotal, kpis.size)
 
         // All results should be Success.Kpi
-        kpis.forEach { assertTrue(it is AdapterResult.Success.Kpi<*>) }
+        kpis.forEach { assertTrue(it is TransformationResult.Success.Kpi<*>) }
 
-        val kpisTyped = kpis.filterIsInstance<AdapterResult.Success.Kpi<*>>()
+        val kpisTyped = kpis.filterIsInstance<TransformationResult.Success.Kpi<*>>()
 
         // Verify the 4 base KPIs and their scores equal rounded-down highestLibdays
         fun Double.toScore() = this.toInt()
@@ -172,7 +172,7 @@ class TlcAdapterTest {
         assertEquals(expected, kpis.size)
 
         // All results should be Success.Kpi
-        kpis.forEach { assertTrue(it is AdapterResult.Success.Kpi<*>) }
+        kpis.forEach { assertTrue(it is TransformationResult.Success.Kpi<*>) }
     }
 
     @Test
@@ -192,7 +192,7 @@ class TlcAdapterTest {
             val kpis = assertDoesNotThrow { TlcAdapter.transformDataToKpi(tlcDto) }
 
             // All results should be Success.Kpi
-            kpis.forEach { assertTrue(it is AdapterResult.Success.Kpi<*>) }
+            kpis.forEach { assertTrue(it is TransformationResult.Success.Kpi<*>) }
 
             // Should have at least the base KPIs + component KPIs
             val expectedMinimumKpis =

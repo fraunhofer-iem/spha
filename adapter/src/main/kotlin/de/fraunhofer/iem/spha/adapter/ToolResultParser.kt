@@ -14,7 +14,6 @@ import de.fraunhofer.iem.spha.adapter.tools.osv.OsvAdapter
 import de.fraunhofer.iem.spha.adapter.tools.tlc.TlcAdapter
 import de.fraunhofer.iem.spha.adapter.tools.trivy.TrivyAdapter
 import de.fraunhofer.iem.spha.adapter.tools.trufflehog.TrufflehogAdapter
-import de.fraunhofer.iem.spha.model.adapter.Origin
 import de.fraunhofer.iem.spha.model.adapter.OsvScannerDto
 import de.fraunhofer.iem.spha.model.adapter.TlcDto
 import de.fraunhofer.iem.spha.model.adapter.ToolResult
@@ -35,11 +34,11 @@ private interface ToolProcessor {
      * Tries to process the given JSON content.
      *
      * @param content The JSON string to process.
-     * @return A list of `TransformationResult<Origin>` on success, or `null` if the content does not match
-     *   this processor's format.
+     * @return A list of `TransformationResult<Origin>` on success, or `null` if the content does
+     *   not match this processor's format.
      * @throws Exception for unexpected errors during transformation logic.
      */
-    fun tryProcess(content: String): Collection<TransformationResult<Origin>>?
+    fun tryProcess(content: String): AdapterResult<*>?
 }
 
 /**
@@ -59,10 +58,10 @@ private class ToolProcessorImpl<T : ToolResult>(
     override val name: String
         get() = serializer.descriptor.serialName
 
-    override fun tryProcess(content: String): Collection<TransformationResult<Origin>>? {
+    override fun tryProcess(content: String): AdapterResult<*>? {
         return try {
             val resultObject = jsonParser.decodeFromString(serializer, content)
-            transform(resultObject).transformationResults
+            transform(resultObject)
         } catch (_: SerializationException) {
             // This is an expected failure when the JSON does not match the DTO.
             // Return null to signal that the next processor should be tried.
@@ -126,7 +125,7 @@ object ToolResultParser {
      * @return a list of `AdapterResult<Origin>` containing the results of parsing and processing
      *   the `.json` files
      */
-    fun parseJsonFilesFromDirectory(directoryPath: String): List<TransformationResult<Origin>> {
+    fun parseJsonFilesFromDirectory(directoryPath: String): List<AdapterResult<*>> {
 
         val jsonFiles = getJsonFiles(directoryPath)
 
@@ -138,9 +137,9 @@ object ToolResultParser {
         return getAdapterResultsFromJsonFiles(jsonFiles)
     }
 
-    fun getAdapterResultsFromJsonFiles(jsonFiles: List<File>): List<TransformationResult<Origin>> {
+    fun getAdapterResultsFromJsonFiles(jsonFiles: List<File>): List<AdapterResult<*>> {
 
-        val transformationResults = mutableListOf<TransformationResult<Origin>>()
+        val transformationResults = mutableListOf<AdapterResult<*>>()
         for (file in jsonFiles) {
             try {
                 val content = file.readText(Charsets.UTF_8)
@@ -154,7 +153,7 @@ object ToolResultParser {
                         // tryProcess returns results on success or null on format mismatch
                         val results = processor.tryProcess(content)
                         if (results != null) {
-                            transformationResults.addAll(results)
+                            transformationResults.add(results)
                             logger.info {
                                 "Successfully parsed '${file.name}' as '${processor.name}'"
                             }

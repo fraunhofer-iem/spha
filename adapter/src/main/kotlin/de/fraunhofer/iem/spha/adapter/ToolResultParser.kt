@@ -35,7 +35,7 @@ private interface ToolProcessor {
      * Tries to process the given JSON content.
      *
      * @param content The JSON string to process.
-     * @return A list of `AdapterResult<Origin>` on success, or `null` if the content does not match
+     * @return A list of `TransformationResult<Origin>` on success, or `null` if the content does not match
      *   this processor's format.
      * @throws Exception for unexpected errors during transformation logic.
      */
@@ -53,7 +53,7 @@ private interface ToolProcessor {
 private class ToolProcessorImpl<T : ToolResult>(
     private val serializer: KSerializer<T>,
     private val jsonParser: Json,
-    private val transform: (T) -> Collection<TransformationResult<Origin>>,
+    private val transform: (T) -> AdapterResult<*>,
 ) : ToolProcessor {
 
     override val name: String
@@ -62,7 +62,7 @@ private class ToolProcessorImpl<T : ToolResult>(
     override fun tryProcess(content: String): Collection<TransformationResult<Origin>>? {
         return try {
             val resultObject = jsonParser.decodeFromString(serializer, content)
-            transform(resultObject)
+            transform(resultObject).transformationResults
         } catch (_: SerializationException) {
             // This is an expected failure when the JSON does not match the DTO.
             // Return null to signal that the next processor should be tried.

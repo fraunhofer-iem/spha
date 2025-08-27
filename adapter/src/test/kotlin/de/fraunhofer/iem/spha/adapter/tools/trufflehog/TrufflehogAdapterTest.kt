@@ -63,7 +63,8 @@ class TrufflehogAdapterTest {
                 TrufflehogAdapter.dtoFromJson(it, TrufflehogReportDto.serializer())
             }
 
-            val kpis = assertDoesNotThrow { TrufflehogAdapter.transformDataToKpi(dto) }
+            val adapterResult = assertDoesNotThrow { TrufflehogAdapter.transformDataToKpi(dto) }
+            val kpis = adapterResult.transformationResults
 
             assertEquals(1, kpis.size)
 
@@ -80,7 +81,8 @@ class TrufflehogAdapterTest {
                 TrufflehogAdapter.dtoFromJson(it, TrufflehogReportDto.serializer())
             }
 
-            val kpis = assertDoesNotThrow { TrufflehogAdapter.transformDataToKpi(dto) }
+            val adapterResult = assertDoesNotThrow { TrufflehogAdapter.transformDataToKpi(dto) }
+            val kpis = adapterResult.transformationResults
 
             assertEquals(1, kpis.size)
 

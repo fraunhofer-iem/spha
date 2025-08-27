@@ -9,8 +9,8 @@
 
 package de.fraunhofer.iem.spha.adapter.tools.trivy
 
-import de.fraunhofer.iem.spha.adapter.TransformationResult
 import de.fraunhofer.iem.spha.adapter.ErrorType
+import de.fraunhofer.iem.spha.adapter.TransformationResult
 import de.fraunhofer.iem.spha.model.adapter.TrivyDtoV2
 import de.fraunhofer.iem.spha.model.adapter.TrivyResult
 import de.fraunhofer.iem.spha.model.adapter.TrivyVulnerabilityDto
@@ -114,7 +114,8 @@ class TrivyAdapterTest {
                 schemaVersion = 2,
             )
 
-        val adapterResults = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResult = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResults = adapterResult.transformationResults
 
         assertEquals(1, adapterResults.size)
         val result = adapterResults.first()
@@ -151,7 +152,8 @@ class TrivyAdapterTest {
                 schemaVersion = 2,
             )
 
-        val adapterResults = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResult = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResults = adapterResult.transformationResults
 
         assertEquals(1, adapterResults.size)
         val result = adapterResults.first()
@@ -182,7 +184,8 @@ class TrivyAdapterTest {
                 schemaVersion = 2,
             )
 
-        val adapterResults = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResult = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResults = adapterResult.transformationResults
 
         assertEquals(1, adapterResults.size)
         val result = adapterResults.first()
@@ -230,7 +233,8 @@ class TrivyAdapterTest {
                 schemaVersion = 2,
             )
 
-        val adapterResults = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResult = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResults = adapterResult.transformationResults
 
         assertEquals(1, adapterResults.size)
         val result = adapterResults.first()
@@ -278,7 +282,8 @@ class TrivyAdapterTest {
                 schemaVersion = 2,
             )
 
-        val adapterResults = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResult = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResults = adapterResult.transformationResults
 
         assertEquals(1, adapterResults.size)
         val result = adapterResults.first()
@@ -331,7 +336,8 @@ class TrivyAdapterTest {
                 schemaVersion = 2,
             )
 
-        val adapterResults = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResult = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResults = adapterResult.transformationResults
 
         assertEquals(1, adapterResults.size)
         val result = adapterResults.first()
@@ -399,7 +405,8 @@ class TrivyAdapterTest {
                 schemaVersion = 2,
             )
 
-        val adapterResults = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResult = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResults = adapterResult.transformationResults
 
         assertEquals(1, adapterResults.size)
         val result = adapterResults.first()
@@ -447,7 +454,8 @@ class TrivyAdapterTest {
                 schemaVersion = 2,
             )
 
-        val adapterResults = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResult = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResults = adapterResult.transformationResults
 
         assertEquals(1, adapterResults.size)
         val result = adapterResults.first()
@@ -519,7 +527,8 @@ class TrivyAdapterTest {
                 schemaVersion = 2,
             )
 
-        val adapterResults = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResult = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResults = adapterResult.transformationResults
 
         assertEquals(2, adapterResults.size)
 

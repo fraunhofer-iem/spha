@@ -95,7 +95,8 @@ class TlcAdapterTest {
     fun testTransformDataToKpi() {
         val tlcDto = sampleDto()
 
-        val kpis = assertDoesNotThrow { TlcAdapter.transformDataToKpi(tlcDto) }
+        val adapterResult = assertDoesNotThrow { TlcAdapter.transformDataToKpi(tlcDto) }
+        val kpis = adapterResult.transformationResults
 
         val componentCount =
             tlcDto.transitiveOptional.components.size +
@@ -155,7 +156,8 @@ class TlcAdapterTest {
         val tlcDto1 = sampleDto()
         val tlcDto2 = sampleDto()
 
-        val kpis = assertDoesNotThrow { TlcAdapter.transformDataToKpi(tlcDto1, tlcDto2) }
+        val adapterResult = assertDoesNotThrow { TlcAdapter.transformDataToKpi(tlcDto1, tlcDto2) }
+        val kpis = adapterResult.transformationResults
 
         val componentCount1 =
             tlcDto1.transitiveOptional.components.size +
@@ -189,7 +191,8 @@ class TlcAdapterTest {
             )
 
             // Test transformation to KPIs
-            val kpis = assertDoesNotThrow { TlcAdapter.transformDataToKpi(tlcDto) }
+            val adapterResult = assertDoesNotThrow { TlcAdapter.transformDataToKpi(tlcDto) }
+            val kpis = adapterResult.transformationResults
 
             // All results should be Success.Kpi
             kpis.forEach { assertTrue(it is TransformationResult.Success.Kpi<*>) }

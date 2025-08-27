@@ -9,8 +9,8 @@
 
 package de.fraunhofer.iem.spha.adapter.tools.osv
 
-import de.fraunhofer.iem.spha.adapter.TransformationResult
 import de.fraunhofer.iem.spha.adapter.ErrorType
+import de.fraunhofer.iem.spha.adapter.TransformationResult
 import de.fraunhofer.iem.spha.model.adapter.OsvPackageDto
 import de.fraunhofer.iem.spha.model.adapter.OsvPackageWrapperDto
 import de.fraunhofer.iem.spha.model.adapter.OsvScannerDto
@@ -54,10 +54,13 @@ class OsvAdapterTest {
 
     @Test
     fun testResultDto() {
-        Files.newInputStream(Path("src/test/resources/osv-scanner.json")).use {
-            val dto = assertDoesNotThrow { OsvAdapter.dtoFromJson(it, OsvScannerDto.serializer()) }
+        Files.newInputStream(Path("src/test/resources/osv-scanner.json")).use { data ->
+            val dto = assertDoesNotThrow {
+                OsvAdapter.dtoFromJson(data, OsvScannerDto.serializer())
+            }
 
-            val kpis = assertDoesNotThrow { OsvAdapter.transformDataToKpi(dto) }
+            val adapterResult = assertDoesNotThrow { OsvAdapter.transformDataToKpi(dto) }
+            val kpis = adapterResult.transformationResults
 
             // Print debug information
             println("[DEBUG_LOG] Total KPIs: ${kpis.size}")
@@ -117,7 +120,8 @@ class OsvAdapterTest {
         val osvScannerDto = OsvScannerDto(results = listOf(osvScannerResultDto))
 
         // Transform the data
-        val results = OsvAdapter.transformDataToKpi(osvScannerDto)
+        val adapterResult = OsvAdapter.transformDataToKpi(osvScannerDto)
+        val results = adapterResult.transformationResults
 
         // Verify the results
         assertEquals(1, results.size)
@@ -163,7 +167,8 @@ class OsvAdapterTest {
         val osvScannerDto = OsvScannerDto(results = listOf(osvScannerResultDto))
 
         // Transform the data
-        val results = OsvAdapter.transformDataToKpi(osvScannerDto)
+        val adapterResult = OsvAdapter.transformDataToKpi(osvScannerDto)
+        val results = adapterResult.transformationResults
 
         // Verify the results
         assertEquals(1, results.size)
@@ -215,7 +220,8 @@ class OsvAdapterTest {
         val osvScannerDto = OsvScannerDto(results = listOf(osvScannerResultDto))
 
         // Transform the data
-        val results = OsvAdapter.transformDataToKpi(osvScannerDto)
+        val adapterResult = OsvAdapter.transformDataToKpi(osvScannerDto)
+        val results = adapterResult.transformationResults
 
         // Verify the results
         assertEquals(1, results.size)
@@ -278,7 +284,8 @@ class OsvAdapterTest {
         val osvScannerDto = OsvScannerDto(results = listOf(osvScannerResultDto))
 
         // Transform the data
-        val results = OsvAdapter.transformDataToKpi(osvScannerDto)
+        val adapterResult = OsvAdapter.transformDataToKpi(osvScannerDto)
+        val results = adapterResult.transformationResults
 
         // Verify the results
         assertEquals(1, results.size)
@@ -333,14 +340,14 @@ class OsvAdapterTest {
         val osvScannerDto = OsvScannerDto(results = listOf(osvScannerResultDto))
 
         // Transform the data
-        val results = OsvAdapter.transformDataToKpi(osvScannerDto)
+        val adapterResult = OsvAdapter.transformDataToKpi(osvScannerDto)
+        val results = adapterResult.transformationResults
 
         // Verify the results
         assertEquals(1, results.size)
         val result = results.first()
         assertTrue(result is TransformationResult.Success)
-        val successResult = result
-        assertEquals(27, successResult.rawValueKpi.score) // 100 - (7.3 * 10) = 27
-        assertEquals(osvVulnerabilityDto, successResult.origin)
+        assertEquals(27, result.rawValueKpi.score) // 100 - (7.3 * 10) = 27
+        assertEquals(osvVulnerabilityDto, result.origin)
     }
 }

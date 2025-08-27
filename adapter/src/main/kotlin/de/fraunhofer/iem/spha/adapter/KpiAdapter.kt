@@ -16,6 +16,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.InputStream
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 
@@ -40,13 +41,16 @@ abstract class KpiAdapter<T : ToolResult, O : Origin> {
     }
 }
 
+@Serializable
 data class ToolInfo(val name: String, val description: String, val version: String? = null)
 
+@Serializable
 data class AdapterResult<T : Origin>(
     val toolInfo: ToolInfo? = null,
     val transformationResults: Collection<TransformationResult<T>> = emptyList(),
 )
 
+@Serializable
 sealed class TransformationResult<out T : Origin> {
     /**
      * @param origin describes the data that the RawValueKpi was created from. If, for some reason,

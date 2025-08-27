@@ -9,9 +9,11 @@
 
 package de.fraunhofer.iem.spha.adapter.tools.tlc
 
-import de.fraunhofer.iem.spha.adapter.TransformationResult
+import de.fraunhofer.iem.spha.adapter.AdapterResult
 import de.fraunhofer.iem.spha.adapter.ErrorType
 import de.fraunhofer.iem.spha.adapter.KpiAdapter
+import de.fraunhofer.iem.spha.adapter.ToolInfo
+import de.fraunhofer.iem.spha.adapter.TransformationResult
 import de.fraunhofer.iem.spha.model.adapter.ComponentLag
 import de.fraunhofer.iem.spha.model.adapter.TlcDto
 import de.fraunhofer.iem.spha.model.adapter.TlcOrigin
@@ -20,12 +22,23 @@ import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 
 object TlcAdapter : KpiAdapter<TlcDto, TlcOrigin>() {
 
-    override fun transformDataToKpi(vararg data: TlcDto): Collection<TransformationResult<TlcOrigin>> =
-        data.flatMap { tlcDto ->
-            val baseKpis = createBaseKpis(tlcDto)
-            val componentKpis = createComponentKpis(tlcDto)
-            baseKpis + componentKpis
-        }
+    override fun transformDataToKpi(vararg data: TlcDto): AdapterResult<TlcOrigin> {
+        val transformedData =
+            data.flatMap { tlcDto ->
+                val baseKpis = createBaseKpis(tlcDto)
+                val componentKpis = createComponentKpis(tlcDto)
+                baseKpis + componentKpis
+            }
+
+        return AdapterResult(
+            toolInfo =
+                ToolInfo(
+                    "Technical Lag Analyzer",
+                    "Calculates technical lag based on a project's SBOM",
+                ),
+            transformationResults = transformedData,
+        )
+    }
 
     private fun createBaseKpis(tlcDto: TlcDto): List<TransformationResult<TlcOrigin>> {
         val sections =
@@ -49,7 +62,9 @@ object TlcAdapter : KpiAdapter<TlcDto, TlcOrigin>() {
         }
     }
 
-    private fun createComponentKpis(tlcDto: TlcDto): List<TransformationResult.Success.Kpi<ComponentLag>> {
+    private fun createComponentKpis(
+        tlcDto: TlcDto
+    ): List<TransformationResult.Success.Kpi<ComponentLag>> {
         val sections =
             listOf(
                 tlcDto.transitiveOptional to KpiType.TECHNICAL_LAG_DEV_TRANSITIVE_COMPONENT,

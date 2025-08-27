@@ -12,7 +12,6 @@ package de.fraunhofer.iem.spha.adapter
 import de.fraunhofer.iem.spha.model.adapter.Origin
 import de.fraunhofer.iem.spha.model.adapter.ToolResult
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
-import de.fraunhofer.iem.spha.model.kpi.hierarchy.MetaInfo
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.InputStream
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -33,7 +32,7 @@ abstract class KpiAdapter<T : ToolResult, O : Origin> {
 
     protected val logger = KotlinLogging.logger {}
 
-    abstract fun transformDataToKpi(vararg data: T): Collection<TransformationResult<O>>
+    abstract fun transformDataToKpi(vararg data: T): AdapterResult<O>
 
     @OptIn(ExperimentalSerializationApi::class)
     fun dtoFromJson(jsonData: InputStream, deserializer: KSerializer<T>): T {
@@ -41,7 +40,12 @@ abstract class KpiAdapter<T : ToolResult, O : Origin> {
     }
 }
 
-data class AdapterResult<T : Origin>(val metaInfo: MetaInfo, val transformationResults: Collection<TransformationResult<T>>)
+data class ToolInfo(val name: String, val description: String, val version: String? = null)
+
+data class AdapterResult<T : Origin>(
+    val toolInfo: ToolInfo? = null,
+    val transformationResults: Collection<TransformationResult<T>> = emptyList(),
+)
 
 sealed class TransformationResult<out T : Origin> {
     /**

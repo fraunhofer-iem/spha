@@ -16,6 +16,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.InputStream
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 
@@ -32,7 +33,7 @@ abstract class KpiAdapter<T : ToolResult, O : Origin> {
 
     protected val logger = KotlinLogging.logger {}
 
-    abstract fun transformDataToKpi(vararg data: T): Collection<AdapterResult<O>>
+    abstract fun transformDataToKpi(vararg data: T): AdapterResult<O>
 
     @OptIn(ExperimentalSerializationApi::class)
     fun dtoFromJson(jsonData: InputStream, deserializer: KSerializer<T>): T {
@@ -40,13 +41,23 @@ abstract class KpiAdapter<T : ToolResult, O : Origin> {
     }
 }
 
-sealed class AdapterResult<out T : Origin> {
+@Serializable
+data class ToolInfo(val name: String, val description: String, val version: String? = null)
+
+@Serializable
+data class AdapterResult<T : Origin>(
+    val toolInfo: ToolInfo? = null,
+    val transformationResults: Collection<TransformationResult<T>> = emptyList(),
+)
+
+@Serializable
+sealed class TransformationResult<out T : Origin> {
     /**
      * @param origin describes the data that the RawValueKpi was created from. If, for some reason,
      *   no origin data is available, T should be set to Unit.
      */
     sealed class Success<T : Origin>(val rawValueKpi: RawValueKpi, val origin: T) :
-        AdapterResult<T>() {
+        TransformationResult<T>() {
         class Kpi<T : Origin>(rawValueKpi: RawValueKpi, origin: T) :
             Success<T>(rawValueKpi, origin)
 
@@ -55,5 +66,5 @@ sealed class AdapterResult<out T : Origin> {
         }
     }
 
-    data class Error(val type: ErrorType) : AdapterResult<Nothing>()
+    data class Error(val type: ErrorType) : TransformationResult<Nothing>()
 }

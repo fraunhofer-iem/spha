@@ -9,7 +9,7 @@
 
 package de.fraunhofer.iem.spha.adapter.tools.trufflehog
 
-import de.fraunhofer.iem.spha.adapter.AdapterResult
+import de.fraunhofer.iem.spha.adapter.TransformationResult
 import de.fraunhofer.iem.spha.model.adapter.TrufflehogReportDto
 import java.nio.file.Files
 import kotlin.io.path.Path
@@ -63,13 +63,14 @@ class TrufflehogAdapterTest {
                 TrufflehogAdapter.dtoFromJson(it, TrufflehogReportDto.serializer())
             }
 
-            val kpis = assertDoesNotThrow { TrufflehogAdapter.transformDataToKpi(dto) }
+            val adapterResult = assertDoesNotThrow { TrufflehogAdapter.transformDataToKpi(dto) }
+            val kpis = adapterResult.transformationResults
 
             assertEquals(1, kpis.size)
 
-            kpis.forEach { assert(it is AdapterResult.Success) }
+            kpis.forEach { assert(it is TransformationResult.Success) }
 
-            assertEquals(100, (kpis.first() as AdapterResult.Success.Kpi).rawValueKpi.score)
+            assertEquals(100, (kpis.first() as TransformationResult.Success.Kpi).rawValueKpi.score)
         }
     }
 
@@ -80,13 +81,14 @@ class TrufflehogAdapterTest {
                 TrufflehogAdapter.dtoFromJson(it, TrufflehogReportDto.serializer())
             }
 
-            val kpis = assertDoesNotThrow { TrufflehogAdapter.transformDataToKpi(dto) }
+            val adapterResult = assertDoesNotThrow { TrufflehogAdapter.transformDataToKpi(dto) }
+            val kpis = adapterResult.transformationResults
 
             assertEquals(1, kpis.size)
 
-            kpis.forEach { assert(it is AdapterResult.Success) }
+            kpis.forEach { assert(it is TransformationResult.Success) }
 
-            assertEquals(0, (kpis.first() as AdapterResult.Success.Kpi).rawValueKpi.score)
+            assertEquals(0, (kpis.first() as TransformationResult.Success.Kpi).rawValueKpi.score)
         }
     }
 }

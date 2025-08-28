@@ -9,8 +9,8 @@
 
 package de.fraunhofer.iem.spha.adapter.tools.trivy
 
-import de.fraunhofer.iem.spha.adapter.AdapterResult
 import de.fraunhofer.iem.spha.adapter.ErrorType
+import de.fraunhofer.iem.spha.adapter.TransformationResult
 import de.fraunhofer.iem.spha.model.adapter.TrivyDtoV2
 import de.fraunhofer.iem.spha.model.adapter.TrivyResult
 import de.fraunhofer.iem.spha.model.adapter.TrivyVulnerabilityDto
@@ -114,17 +114,18 @@ class TrivyAdapterTest {
                 schemaVersion = 2,
             )
 
-        val adapterResults = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResult = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResults = adapterResult.transformationResults
 
         assertEquals(1, adapterResults.size)
         val result = adapterResults.first()
 
         // The result might be an AdapterResult.Error, so we'll check both cases
-        if (result is AdapterResult.Success) {
+        if (result is TransformationResult.Success) {
             assertEquals(40, result.rawValueKpi.score)
         } else {
             // If it's an error, we'll just check that it's an AdapterResult.Error
-            assert(result is AdapterResult.Error)
+            assert(result is TransformationResult.Error)
         }
     }
 
@@ -151,11 +152,12 @@ class TrivyAdapterTest {
                 schemaVersion = 2,
             )
 
-        val adapterResults = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResult = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResults = adapterResult.transformationResults
 
         assertEquals(1, adapterResults.size)
         val result = adapterResults.first()
-        assertTrue(result is AdapterResult.Error)
+        assertTrue(result is TransformationResult.Error)
         assertEquals(ErrorType.DATA_VALIDATION_ERROR, result.type)
     }
 
@@ -182,12 +184,13 @@ class TrivyAdapterTest {
                 schemaVersion = 2,
             )
 
-        val adapterResults = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResult = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResults = adapterResult.transformationResults
 
         assertEquals(1, adapterResults.size)
         val result = adapterResults.first()
-        assertTrue(result is AdapterResult.Success)
-        assertEquals(100, (result as AdapterResult.Success.Kpi).rawValueKpi.score)
+        assertTrue(result is TransformationResult.Success)
+        assertEquals(100, (result as TransformationResult.Success.Kpi).rawValueKpi.score)
     }
 
     @Test
@@ -230,12 +233,13 @@ class TrivyAdapterTest {
                 schemaVersion = 2,
             )
 
-        val adapterResults = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResult = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResults = adapterResult.transformationResults
 
         assertEquals(1, adapterResults.size)
         val result = adapterResults.first()
-        assertTrue(result is AdapterResult.Success)
-        assertEquals(25, (result as AdapterResult.Success.Kpi).rawValueKpi.score)
+        assertTrue(result is TransformationResult.Success)
+        assertEquals(25, (result as TransformationResult.Success.Kpi).rawValueKpi.score)
     }
 
     @Test
@@ -278,12 +282,13 @@ class TrivyAdapterTest {
                 schemaVersion = 2,
             )
 
-        val adapterResults = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResult = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResults = adapterResult.transformationResults
 
         assertEquals(1, adapterResults.size)
         val result = adapterResults.first()
-        assertTrue(result is AdapterResult.Success)
-        assertEquals(15, (result as AdapterResult.Success.Kpi).rawValueKpi.score)
+        assertTrue(result is TransformationResult.Success)
+        assertEquals(15, (result as TransformationResult.Success.Kpi).rawValueKpi.score)
     }
 
     @OptIn(ExperimentalSerializationApi::class)
@@ -331,12 +336,13 @@ class TrivyAdapterTest {
                 schemaVersion = 2,
             )
 
-        val adapterResults = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResult = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResults = adapterResult.transformationResults
 
         assertEquals(1, adapterResults.size)
         val result = adapterResults.first()
-        assertTrue(result is AdapterResult.Success)
-        assertEquals(100, (result as AdapterResult.Success.Kpi).rawValueKpi.score)
+        assertTrue(result is TransformationResult.Success)
+        assertEquals(100, (result as TransformationResult.Success.Kpi).rawValueKpi.score)
     }
 
     @Test
@@ -399,12 +405,13 @@ class TrivyAdapterTest {
                 schemaVersion = 2,
             )
 
-        val adapterResults = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResult = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResults = adapterResult.transformationResults
 
         assertEquals(1, adapterResults.size)
         val result = adapterResults.first()
-        assertTrue(result is AdapterResult.Success)
-        assertEquals(20, (result as AdapterResult.Success.Kpi).rawValueKpi.score)
+        assertTrue(result is TransformationResult.Success)
+        assertEquals(20, (result as TransformationResult.Success.Kpi).rawValueKpi.score)
     }
 
     @Test
@@ -447,11 +454,12 @@ class TrivyAdapterTest {
                 schemaVersion = 2,
             )
 
-        val adapterResults = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResult = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResults = adapterResult.transformationResults
 
         assertEquals(1, adapterResults.size)
         val result = adapterResults.first()
-        assertTrue(result is AdapterResult.Error)
+        assertTrue(result is TransformationResult.Error)
         assertEquals(ErrorType.DATA_VALIDATION_ERROR, result.type)
     }
 
@@ -519,20 +527,21 @@ class TrivyAdapterTest {
                 schemaVersion = 2,
             )
 
-        val adapterResults = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResult = TrivyAdapter.transformDataToKpi(trivyV2Dto)
+        val adapterResults = adapterResult.transformationResults
 
         assertEquals(2, adapterResults.size)
 
         // Check first vulnerability
         val result1 = adapterResults.first()
-        assertTrue(result1 is AdapterResult.Success)
-        assertEquals(50, (result1 as AdapterResult.Success.Kpi).rawValueKpi.score)
+        assertTrue(result1 is TransformationResult.Success)
+        assertEquals(50, (result1 as TransformationResult.Success.Kpi).rawValueKpi.score)
         assertEquals("VULN-1", result1.origin.vulnerabilityID)
 
         // Check second vulnerability
         val result2 = adapterResults.last()
-        assertTrue(result2 is AdapterResult.Success)
-        assertEquals(20, (result2 as AdapterResult.Success.Kpi).rawValueKpi.score)
+        assertTrue(result2 is TransformationResult.Success)
+        assertEquals(20, (result2 as TransformationResult.Success.Kpi).rawValueKpi.score)
         assertEquals("VULN-2", result2.origin.vulnerabilityID)
     }
 }

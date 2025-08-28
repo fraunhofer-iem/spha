@@ -9,7 +9,11 @@
 
 package de.fraunhofer.iem.spha.adapter.tools.tlc
 
-import de.fraunhofer.iem.spha.adapter.AdapterResult
+import de.fraunhofer.iem.spha.adapter.TransformationResult
+import de.fraunhofer.iem.spha.model.adapter.Component
+import de.fraunhofer.iem.spha.model.adapter.ComponentLag
+import de.fraunhofer.iem.spha.model.adapter.TechnicalLag
+import de.fraunhofer.iem.spha.model.adapter.Tlc
 import de.fraunhofer.iem.spha.model.adapter.TlcDto
 import de.fraunhofer.iem.spha.model.kpi.KpiType
 import java.nio.file.Files
@@ -21,129 +25,186 @@ import org.junit.jupiter.api.assertDoesNotThrow
 
 class TlcAdapterTest {
 
-    @Test
-    fun testParsingTlcJson() {
-        Files.newInputStream(Path("src/test/resources/techLag-npm-vuejs.json")).use { inputStream ->
-            val tlcDto = assertDoesNotThrow {
-                TlcAdapter.dtoFromJson(inputStream, TlcDto.serializer())
+    private fun sampleSection(namePrefix: String, scores: List<Double>): Tlc {
+        val components =
+            scores.mapIndexed { idx, s ->
+                ComponentLag(
+                    component = Component(bomRef = "$namePrefix-comp-$idx"),
+                    technicalLag = TechnicalLag(libdays = s),
+                )
             }
+        val highest = scores.maxOrNull() ?: 0.0
+        return Tlc(
+            totalNumComponents = components.size,
+            highestLibdays = highest,
+            componentHighestLibdays =
+                Component(
+                    bomRef =
+                        "$namePrefix-comp-${scores.indexOfFirst { it == highest }.coerceAtLeast(0)}"
+                ),
+            components = components,
+        )
+    }
 
-            // Verify the parsed data matches expected values
-            assertEquals<Double>(7092.976631944444, tlcDto.optional.libdays)
-            assertEquals<Int>(118, tlcDto.optional.missedReleases)
-            assertEquals<Int>(52, tlcDto.optional.numComponents)
-            assertEquals<Double>(2707.638275462963, tlcDto.optional.highestLibdays)
-            assertEquals<Int>(10, tlcDto.optional.highestMissedReleases)
-            assertEquals<String>(
-                "@types/node@24.0.7",
-                tlcDto.optional.componentHighestMissedReleases.bomRef,
-            )
-            assertEquals<String>(
-                "detect-libc@1.0.3",
-                tlcDto.optional.componentHighestLibdays.bomRef,
-            )
+    private fun sampleDto(): TlcDto {
+        return TlcDto(
+            transitiveOptional = sampleSection("to", listOf(1.0, 5.0, 3.0)),
+            transitiveProduction = sampleSection("tp", listOf(2.0)),
+            directOptional = sampleSection("do", listOf()),
+            directProduction = sampleSection("dp", listOf(10.0, 7.0)),
+        )
+    }
 
-            assertEquals<Double>(2129.9822916666662, tlcDto.production.libdays)
-            assertEquals<Int>(43, tlcDto.production.missedReleases)
-            assertEquals<Int>(29, tlcDto.production.numComponents)
+    @Test
+    fun testModelIntegrity() {
+        val tlcDto = sampleDto()
 
-            assertEquals<Double>(376.57055555555553, tlcDto.directOptional.libdays)
-            assertEquals<Int>(26, tlcDto.directOptional.missedReleases)
-            assertEquals<Int>(8, tlcDto.directOptional.numComponents)
+        // Highest libdays non-negative
+        assertTrue(tlcDto.transitiveOptional.highestLibdays >= 0.0)
+        assertTrue(tlcDto.transitiveProduction.highestLibdays >= 0.0)
+        assertTrue(tlcDto.directOptional.highestLibdays >= 0.0)
+        assertTrue(tlcDto.directProduction.highestLibdays >= 0.0)
 
-            assertEquals(34.48798611111111, tlcDto.directProduction.libdays)
-            assertEquals<Int>(1, tlcDto.directProduction.missedReleases)
-            assertEquals<Int>(6, tlcDto.directProduction.numComponents)
-        }
+        // componentHighestLibdays bomRef not blank
+        assertEquals(tlcDto.transitiveOptional.componentHighestLibdays?.bomRef?.isNotBlank(), true)
+        assertEquals(
+            tlcDto.transitiveProduction.componentHighestLibdays?.bomRef?.isNotBlank(),
+            true,
+        )
+        assertEquals(tlcDto.directOptional.componentHighestLibdays?.bomRef?.isNotBlank(), true)
+        assertEquals(tlcDto.directProduction.componentHighestLibdays?.bomRef?.isNotBlank(), true)
+
+        // totalNumComponents >= components.size
+        assertTrue(
+            tlcDto.transitiveOptional.totalNumComponents >=
+                tlcDto.transitiveOptional.components.size
+        )
+        assertTrue(
+            tlcDto.transitiveProduction.totalNumComponents >=
+                tlcDto.transitiveProduction.components.size
+        )
+        assertTrue(
+            tlcDto.directOptional.totalNumComponents >= tlcDto.directOptional.components.size
+        )
+        assertTrue(
+            tlcDto.directProduction.totalNumComponents >= tlcDto.directProduction.components.size
+        )
     }
 
     @Test
     fun testTransformDataToKpi() {
-        Files.newInputStream(Path("src/test/resources/techLag-npm-vuejs.json")).use { inputStream ->
-            val tlcDto = TlcAdapter.dtoFromJson(inputStream, TlcDto.serializer())
+        val tlcDto = sampleDto()
 
-            val kpis = assertDoesNotThrow { TlcAdapter.transformDataToKpi(tlcDto) }
+        val adapterResult = assertDoesNotThrow { TlcAdapter.transformDataToKpi(tlcDto) }
+        val kpis = adapterResult.transformationResults
 
-            // We should have 16 KPIs (4 categories × 4 metrics)
-            assertEquals(16, kpis.size)
+        val componentCount =
+            tlcDto.transitiveOptional.components.size +
+                tlcDto.transitiveProduction.components.size +
+                tlcDto.directOptional.components.size +
+                tlcDto.directProduction.components.size
+        val expectedTotal = 4 + componentCount
+        assertEquals(expectedTotal, kpis.size)
 
-            // All results should be Success.Kpi - use the same generic type
-            kpis.forEach { assertTrue(it is AdapterResult.Success.Kpi<*>) }
+        // All results should be Success.Kpi
+        kpis.forEach { assertTrue(it is TransformationResult.Success.Kpi<*>) }
 
-            // Verify specific KPIs
-            val kpiMap =
-                kpis.filterIsInstance<AdapterResult.Success.Kpi<*>>().associateBy {
-                    it.rawValueKpi.typeId
-                }
+        val kpisTyped = kpis.filterIsInstance<TransformationResult.Success.Kpi<*>>()
 
-            // Check LIB_DAYS metrics
-            assertEquals(7092, kpiMap[KpiType.LIB_DAYS_DEV.name]?.rawValueKpi?.score)
-            assertEquals(2129, kpiMap[KpiType.LIB_DAYS_PROD.name]?.rawValueKpi?.score)
-            assertEquals(376, kpiMap[KpiType.LIB_DAYS_DIRECT_DEV.name]?.rawValueKpi?.score)
-            assertEquals(34, kpiMap[KpiType.LIB_DAYS_DIRECT_PROD.name]?.rawValueKpi?.score)
+        // Verify the 4 base KPIs and their scores equal rounded-down highestLibdays
+        fun Double.toScore() = this.toInt()
+        val baseMap = kpisTyped.associateBy { it.rawValueKpi.typeId }
+        assertEquals(
+            tlcDto.transitiveOptional.highestLibdays.toScore(),
+            baseMap[KpiType.HIGHEST_LIB_DAYS_DEV_TRANSITIVE.name]?.rawValueKpi?.score,
+        )
+        assertEquals(
+            tlcDto.transitiveProduction.highestLibdays.toScore(),
+            baseMap[KpiType.HIGHEST_LIB_DAYS_PROD_TRANSITIVE.name]?.rawValueKpi?.score,
+        )
+        assertEquals(
+            tlcDto.directOptional.highestLibdays.toScore(),
+            baseMap[KpiType.HIGHEST_LIB_DAYS_DEV_DIRECT.name]?.rawValueKpi?.score,
+        )
+        assertEquals(
+            tlcDto.directProduction.highestLibdays.toScore(),
+            baseMap[KpiType.HIGHEST_LIB_DAYS_PROD_DIRECT.name]?.rawValueKpi?.score,
+        )
 
-            // Check MISSED_RELEASES metrics
-            assertEquals(118, kpiMap[KpiType.LIB_DAYS_MISSED_RELEASES_DEV.name]?.rawValueKpi?.score)
-            assertEquals(43, kpiMap[KpiType.LIB_DAYS_MISSED_RELEASES_PROD.name]?.rawValueKpi?.score)
-            assertEquals(
-                26,
-                kpiMap[KpiType.LIB_DAYS_MISSED_RELEASES_DIRECT_DEV.name]?.rawValueKpi?.score,
-            )
-            assertEquals(
-                1,
-                kpiMap[KpiType.LIB_DAYS_MISSED_RELEASES_DIRECT_PROD.name]?.rawValueKpi?.score,
-            )
-
-            // Check HIGHEST_LIB_DAYS metrics
-            assertEquals(2707, kpiMap[KpiType.HIGHEST_LIB_DAYS_DEV.name]?.rawValueKpi?.score)
-            assertEquals(787, kpiMap[KpiType.HIGHEST_LIB_DAYS_PROD.name]?.rawValueKpi?.score)
-            assertEquals(117, kpiMap[KpiType.HIGHEST_LIB_DAYS_DIRECT_DEV.name]?.rawValueKpi?.score)
-            assertEquals(34, kpiMap[KpiType.HIGHEST_LIB_DAYS_DIRECT_PROD.name]?.rawValueKpi?.score)
-
-            // Check HIGHEST_MISSED_RELEASES metrics
-            assertEquals(
-                10,
-                kpiMap[KpiType.HIGHEST_LIB_DAYS_MISSED_RELEASES_DEV.name]?.rawValueKpi?.score,
-            )
-            assertEquals(
-                19,
-                kpiMap[KpiType.HIGHEST_LIB_DAYS_MISSED_RELEASES_PROD.name]?.rawValueKpi?.score,
-            )
-            assertEquals(
-                10,
-                kpiMap[KpiType.HIGHEST_LIB_DAYS_MISSED_RELEASES_DIRECT_DEV.name]?.rawValueKpi?.score,
-            )
-            assertEquals(
-                1,
-                kpiMap[KpiType.HIGHEST_LIB_DAYS_MISSED_RELEASES_DIRECT_PROD.name]
-                    ?.rawValueKpi
-                    ?.score,
-            )
-        }
+        // Verify component KPI counts per section
+        val typeCounts = kpisTyped.groupingBy { it.rawValueKpi.typeId }.eachCount()
+        assertEquals(
+            tlcDto.transitiveOptional.components.size,
+            typeCounts[KpiType.TECHNICAL_LAG_DEV_TRANSITIVE_COMPONENT.name] ?: 0,
+        )
+        assertEquals(
+            tlcDto.transitiveProduction.components.size,
+            typeCounts[KpiType.TECHNICAL_LAG_PROD_TRANSITIVE_COMPONENT.name] ?: 0,
+        )
+        assertEquals(
+            tlcDto.directOptional.components.size,
+            typeCounts[KpiType.TECHNICAL_LAG_DEV_DIRECT_COMPONENT.name] ?: 0,
+        )
+        assertEquals(
+            tlcDto.directProduction.components.size,
+            typeCounts[KpiType.TECHNICAL_LAG_PROD_DIRECT_COMPONENT.name] ?: 0,
+        )
     }
 
     @Test
     fun testMultipleTransformDataToKpi() {
-        // Create two separate input streams to avoid the issue with reading from the same stream
-        // twice
-        val tlcDto1 =
-            Files.newInputStream(Path("src/test/resources/techLag-npm-vuejs.json")).use {
-                inputStream1 ->
-                TlcAdapter.dtoFromJson(inputStream1, TlcDto.serializer())
-            }
+        val tlcDto1 = sampleDto()
+        val tlcDto2 = sampleDto()
 
-        val tlcDto2 =
-            Files.newInputStream(Path("src/test/resources/techLag-npm-vuejs.json")).use {
-                inputStream2 ->
-                TlcAdapter.dtoFromJson(inputStream2, TlcDto.serializer())
-            }
+        val adapterResult = assertDoesNotThrow { TlcAdapter.transformDataToKpi(tlcDto1, tlcDto2) }
+        val kpis = adapterResult.transformationResults
 
-        val kpis = assertDoesNotThrow { TlcAdapter.transformDataToKpi(tlcDto1, tlcDto2) }
+        val componentCount1 =
+            tlcDto1.transitiveOptional.components.size +
+                tlcDto1.transitiveProduction.components.size +
+                tlcDto1.directOptional.components.size +
+                tlcDto1.directProduction.components.size
+        val componentCount2 =
+            tlcDto2.transitiveOptional.components.size +
+                tlcDto2.transitiveProduction.components.size +
+                tlcDto2.directOptional.components.size +
+                tlcDto2.directProduction.components.size
+        val expected = (4 + componentCount1) + (4 + componentCount2)
 
-        // We should have 32 KPIs (2 DTOs × 16 KPIs each)
-        assertEquals(32, kpis.size)
+        assertEquals(expected, kpis.size)
 
         // All results should be Success.Kpi
-        kpis.forEach { assertTrue(it is AdapterResult.Success.Kpi) }
+        kpis.forEach { assertTrue(it is TransformationResult.Success.Kpi<*>) }
+    }
+
+    @Test
+    fun testWithRealTechLagData() {
+        Files.newInputStream(Path("src/test/resources/techLag-npm-vuejs.json")).use {
+            val tlcDto = assertDoesNotThrow { TlcAdapter.dtoFromJson(it, TlcDto.serializer()) }
+
+            // Verify basic structure
+            assertTrue(tlcDto.transitiveProduction.highestLibdays > 0)
+            assertTrue(tlcDto.transitiveProduction.components.isNotEmpty())
+            assertEquals(
+                tlcDto.transitiveProduction.componentHighestLibdays?.bomRef?.isNotBlank(),
+                true,
+            )
+
+            // Test transformation to KPIs
+            val adapterResult = assertDoesNotThrow { TlcAdapter.transformDataToKpi(tlcDto) }
+            val kpis = adapterResult.transformationResults
+
+            // All results should be Success.Kpi
+            kpis.forEach { assertTrue(it is TransformationResult.Success.Kpi<*>) }
+
+            // Should have at least the base KPIs + component KPIs
+            val expectedMinimumKpis =
+                4 +
+                    tlcDto.transitiveProduction.components.size +
+                    tlcDto.transitiveOptional.components.size +
+                    tlcDto.directProduction.components.size +
+                    tlcDto.directOptional.components.size
+            assertTrue(kpis.size >= expectedMinimumKpis)
+        }
     }
 }

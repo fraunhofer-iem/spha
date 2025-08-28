@@ -77,7 +77,9 @@ class ToolResultParserTest {
         tempOsvDir.toFile().deleteRecursively()
 
         assertTrue(results.isNotEmpty())
-        assertTrue(results.all { it is AdapterResult.Success })
+        results.forEach {
+            assertTrue(it.transformationResults.all { it is TransformationResult.Success<*> })
+        }
     }
 
     @Test
@@ -140,7 +142,29 @@ class ToolResultParserTest {
                 File("$testResourcesDir/osv-scanner.json"),
                 File("$testResourcesDir/trivy-result-v2.json"),
                 File("$testResourcesDir/trufflehog.json"),
-                File("$testResourcesDir/tlc-result-npm.json"),
+                File("$testResourcesDir/techLag-npm-vuejs.json"),
+            )
+
+        val results = ToolResultParser.getAdapterResultsFromJsonFiles(jsonFiles)
+
+        assertTrue(results.isNotEmpty())
+    }
+
+    @Test
+    fun testGetAdapterResultsFromJsonFilesTlcVue() {
+        val jsonFiles = listOf(File("$testResourcesDir/techLag-npm-vuejs.json"))
+
+        val results = ToolResultParser.getAdapterResultsFromJsonFiles(jsonFiles)
+
+        assertTrue(results.isNotEmpty())
+    }
+
+    @Test
+    fun testGetAdapterResultsFromJsonFilesTlcAngular() {
+        val jsonFiles =
+            listOf(
+                // breaks
+                File("$testResourcesDir/techLag-npm-angular.json")
             )
 
         val results = ToolResultParser.getAdapterResultsFromJsonFiles(jsonFiles)

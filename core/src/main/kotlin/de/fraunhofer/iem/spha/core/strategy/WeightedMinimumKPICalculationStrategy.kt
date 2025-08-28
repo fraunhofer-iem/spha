@@ -38,7 +38,7 @@ internal object WeightedMinimumKPICalculationStrategy : BaseKpiCalculationStrate
 
         if (node.edges.size == 1) {
             logger.warn {
-                "Maximum KPI calculation strategy for node $node is planned " +
+                "Weighted minimum KPI calculation strategy for node $node is planned " +
                     "for a single child."
             }
         }

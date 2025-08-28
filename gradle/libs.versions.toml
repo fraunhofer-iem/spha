@@ -1,8 +1,8 @@
 [versions]
-kotlin = "2.2.0"
+kotlin = "2.2.10"
 kotlinxSerialization = "1.9.0"
-kotlinPlugin = "2.2.0"
-kotlinLogging = "7.0.12"
+kotlinPlugin = "2.2.10"
+kotlinLogging = "7.0.13"
 slf4jApi = "2.0.17"
 junit = "5.13.4"
 mockk = "1.14.5"
@@ -11,7 +11,7 @@ kotlinDate = "0.7.1"
 ktfmtPlugin = "0.22.0"
 dokkatooPlugin = "2.0.0"
 publishPlugin = "0.33.0"
-aeSecurity = "0.141.2"
+aeSecurity = "0.142.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }

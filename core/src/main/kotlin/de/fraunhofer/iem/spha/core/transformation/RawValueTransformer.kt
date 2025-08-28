@@ -59,7 +59,6 @@ internal object DefaultRawValueTransformer : RawValueTransformer {
             }
         }
 
-        // Then in your main function:
         val score = calculateTechLagScore(node.score, highestThreshold.value)
 
         return KpiCalculationResult.Success(score)

@@ -37,7 +37,7 @@ dependencies {
 java {
     // Adds sources and javadoc to build artifacts. This is relevant for publishing
     withSourcesJar()
-    toolchain { languageVersion = JavaLanguageVersion.of(21) }
+    toolchain { languageVersion = JavaLanguageVersion.of(24) }
 }
 
 kotlin {

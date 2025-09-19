@@ -40,9 +40,7 @@ java {
     toolchain { languageVersion = JavaLanguageVersion.of(24) }
 }
 
-kotlin {
-    jvmToolchain(21)
-}
+kotlin { jvmToolchain(24) }
 
 configurations.all {
     resolutionStrategy {

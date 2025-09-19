@@ -40,6 +40,10 @@ java {
     toolchain { languageVersion = JavaLanguageVersion.of(21) }
 }
 
+kotlin {
+    jvmToolchain(21)
+}
+
 configurations.all {
     resolutionStrategy {
         // Ensure that all transitive versions of Kotlin libraries match our version of Kotlin.

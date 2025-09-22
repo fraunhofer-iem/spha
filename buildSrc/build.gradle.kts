@@ -14,6 +14,16 @@ private val Project.libs: LibrariesForLibs
 
 plugins { `kotlin-dsl` }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(24)
+    }
+}
+
+kotlin {
+    jvmToolchain(24)
+}
+
 repositories {
     mavenCentral()
     // Allow resolving external plugins from precompiled script plugins.

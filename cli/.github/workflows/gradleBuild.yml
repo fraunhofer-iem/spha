@@ -1,0 +1,53 @@
+name: Java CI with Gradle
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main", "dev" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          submodules: recursive
+      - name: Set up JDK 24
+        uses: actions/setup-java@v5
+        with:
+          java-version: '24'
+          distribution: 'corretto'
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@d156388eb19639ec20ade50009f3d199ce1e2808
+
+      - name: Execute Gradle assemble
+        run: ./gradlew assemble
+
+      - name: Execute tests
+        run: ./gradlew test
+      - name: Test Summary
+        uses: test-summary/action@31493c76ec9e7aa675f1585d3ed6f1da69269a86
+        with:
+          paths: "**/test-results/**/TEST-*.xml"
+        if: always()
+
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@1c2f98def10c04c100f43585e531356b19f7461f
+        if: success() || failure() # always run even if the previous step fails
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          comment: true
+          updateComment: true
+
+      - name: Code Coverage
+        id: jacoco
+        uses: madrapps/jacoco-report@cae93f61ea553f8babe9d8c1e365c1ce5cece922
+        with:
+          paths: ${{github.workspace}}/**/spha-cli/build/reports/tests/test/index.html
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: '75'
+          min-coverage-changed-files: '75'
+          title: Code Coverage
+          update-comment: true

@@ -1,0 +1,13 @@
+/* Global styling for reusable dashboard cards */
+.dashboard-card  {
+  border: none;
+  border-radius: 1.75rem;
+  transition: all 0.3s ease;
+  background-color: #F7F9FB;
+
+  .card-header {
+    background-color: #F7F9FB;
+    border: none;
+    border-radius: 1.75rem;
+  }
+}

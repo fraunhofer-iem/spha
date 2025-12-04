@@ -46,7 +46,7 @@ class KpiHierarchyTest {
                         ),
                     ),
             )
-        val hierarchy = KpiHierarchy.Companion.create(root)
+        val hierarchy = KpiHierarchy.create(root)
 
         assertSame(root, hierarchy.root)
         assertEquals(SCHEMA_VERSIONS.last(), hierarchy.schemaVersion)

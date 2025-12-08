@@ -8,7 +8,7 @@
  */
 
 plugins {
-    id("spha-kotlin-conventions")
+    id("spha-library-conventions")
     alias(libs.plugins.serialization)
 }
 

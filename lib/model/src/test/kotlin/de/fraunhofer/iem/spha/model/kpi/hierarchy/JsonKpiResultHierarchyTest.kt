@@ -29,8 +29,7 @@ class JsonKpiResultHierarchyTest {
                 edges = listOf(),
             )
         val edge = KpiResultEdge(actualWeight = 0.5, plannedWeight = 1.0, target = node)
-        val newEdge =
-            Json.decodeFromString<KpiResultEdge>(Json.encodeToString(edge))
+        val newEdge = Json.decodeFromString<KpiResultEdge>(Json.encodeToString(edge))
 
         kotlin.test.assertEquals(edge, newEdge)
     }
@@ -38,8 +37,7 @@ class JsonKpiResultHierarchyTest {
     @ParameterizedTest
     @MethodSource("testKpiResultNodes")
     fun serializeDeserializeKpiNode(resultNode: KpiResultNode) {
-        val newResultNode =
-            Json.decodeFromString<KpiResultNode>(Json.encodeToString(resultNode))
+        val newResultNode = Json.decodeFromString<KpiResultNode>(Json.encodeToString(resultNode))
 
         resultNode.assertEquals(newResultNode)
     }

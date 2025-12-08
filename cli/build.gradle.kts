@@ -11,26 +11,23 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 plugins {
     jacoco
-    alias(libs.plugins.kotlin)
+    id("spha-kotlin-conventions")
     alias(libs.plugins.serialization)
-    alias(libs.plugins.ktfmt)
     alias(libs.plugins.versions)
-    alias(libs.plugins.semver)
+    alias(libs.plugins.semverGit)
     application
 }
 
-group = "de.fraunhofer.iem"
-
-repositories { mavenCentral() }
-
 dependencies {
-    implementation(libs.bundles.kpiCalculator)
+    implementation(project(":lib:core"))
+    implementation(project(":lib:adapter"))
+    implementation(project(":lib:model"))
     implementation(libs.bundles.ktor)
 
     implementation(libs.kotlin.cli)
     implementation(libs.kotlin.logging)
 
-    implementation(libs.simpleLogger)
+    implementation(libs.slf4j.logger)
     implementation(libs.kotlin.serialization.json)
     implementation(libs.kotlin.di)
 
@@ -38,38 +35,14 @@ dependencies {
     testImplementation(libs.kotlin.test)
     testImplementation(libs.kotlin.di.test)
     testImplementation(libs.kotlin.di.junit5)
-    testImplementation(libs.test.mocking)
+    testImplementation(libs.test.mockk)
     testImplementation(libs.test.fileSystem)
-    testImplementation(libs.apache.commons)
     testImplementation(libs.test.junit5.params)
 }
 
-ktfmt {
-    // KotlinLang style - 4 space indentation - From kotlinlang.org/docs/coding-conventions.html
-    kotlinLangStyle()
-}
-
-tasks.test { useJUnitPlatform() }
-
-tasks.jacocoTestReport {
-    dependsOn(tasks.test)
-    reports { xml.required = true }
-}
-
-tasks.register("jacocoReport") {
-    description = "Generates code coverage reports for all test tasks."
-    group = "Reporting"
-
-    dependsOn(tasks.withType<JacocoReport>())
-}
-
-application { mainClass = "de.fraunhofer.iem.spha.cli.MainKt" }
-
-kotlin {
-    compilerOptions {
-        jvmToolchain(24)
-        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
-    }
+application {
+    applicationName = "spha-cli"
+    mainClass = "de.fraunhofer.iem.spha.cli.MainKt"
 }
 
 semver {

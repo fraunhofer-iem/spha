@@ -7,6 +7,6 @@
  * License-Filename: LICENSE
  */
 
-plugins { id("spha-kotlin-conventions") }
+plugins { id("spha-library-conventions") }
 
 dependencies { implementation(project(":lib:model")) }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Fraunhofer IEM. All rights reserved.
+ * Copyright (c) 2024-2025 Fraunhofer IEM. All rights reserved.
  *
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  *
@@ -16,8 +16,6 @@ if (project != rootProject) version = rootProject.version
 
 plugins {
     // Apply core plugins.
-    `java-library`
-    id("publish-conventions")
     jacoco
     id("org.jetbrains.dokka")
     id("org.jetbrains.dokka-javadoc")
@@ -35,12 +33,14 @@ dependencies {
 
 // kotlin
 java {
-    // Adds sources and javadoc to build artifacts. This is relevant for publishing
-    withSourcesJar()
     toolchain { languageVersion = JavaLanguageVersion.of(24) }
 }
 
-kotlin { jvmToolchain(24) }
+kotlin {
+    jvmToolchain(24)
+    compilerOptions { apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2) }
+}
+
 
 configurations.all {
     resolutionStrategy {
@@ -82,8 +82,3 @@ tasks.register("jacocoReport") {
     dependsOn(tasks.withType<JacocoReport>())
 }
 
-// javadoc
-tasks.register<Jar>("javadocJar") {
-    archiveClassifier.set("javadoc")
-    from(tasks.named("dokkaGeneratePublicationJavadoc"))
-}

@@ -14,12 +14,6 @@ private val Project.libs: LibrariesForLibs
 
 plugins { `kotlin-dsl` }
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
-    }
-}
-
 kotlin {
     jvmToolchain(25)
 }

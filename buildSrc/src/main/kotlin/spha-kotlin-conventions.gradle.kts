@@ -33,7 +33,7 @@ dependencies {
 
 // kotlin
 java {
-    toolchain { languageVersion = JavaLanguageVersion.of(24) }
+    toolchain { languageVersion = JavaLanguageVersion.of(25) }
 }
 
 kotlin {

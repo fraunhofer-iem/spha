@@ -31,7 +31,7 @@ import { config } from "@vue/test-utils";
 
 // Mock Chart.js completely to avoid canvas rendering issues in tests
 vi.mock("chart.js", () => {
-  const mockChart = {
+  const mockChartInstance = {
     destroy: vi.fn(),
     update: vi.fn(),
     resize: vi.fn(),
@@ -56,8 +56,20 @@ vi.mock("chart.js", () => {
     },
   };
 
+  const MockChart = function () {
+    return mockChartInstance;
+  } as any;
+  
+  MockChart.register = vi.fn();
+  MockChart.defaults = {
+      font: {
+        family: "Arial",
+        size: 12,
+      },
+  };
+
   return {
-    Chart: vi.fn(() => mockChart),
+    Chart: MockChart,
     DoughnutController: vi.fn(),
     BarController: vi.fn(),
     BarElement: vi.fn(),
@@ -423,8 +435,12 @@ beforeEach(() => {
 
   // Clear any global state
   if (typeof window !== "undefined") {
-    window.localStorage?.clear();
-    window.sessionStorage?.clear();
+    if (typeof window.localStorage?.clear === "function") {
+      window.localStorage.clear();
+    }
+    if (typeof window.sessionStorage?.clear === "function") {
+      window.sessionStorage.clear();
+    }
   }
 });
 

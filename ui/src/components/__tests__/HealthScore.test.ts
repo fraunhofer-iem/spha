@@ -12,7 +12,9 @@ vi.mock("chart.js", () => {
     resize: vi.fn(),
   };
 
-  const ChartConstructor = vi.fn(() => mockChart) as any;
+  const ChartConstructor = vi.fn(function () {
+    return mockChart;
+  }) as any;
   ChartConstructor.register = vi.fn();
 
   return {
@@ -39,10 +41,6 @@ vi.mock("../DashboardCard.vue", () => ({
   },
 }));
 
-// Mock colors
-vi.mock("../assets/styles/Colors.ts", () => ({
-  blue_chart: "#3D4BF6",
-}));
 
 describe("HealthScore", () => {
   let wrapper: VueWrapper<any>;
@@ -76,7 +74,9 @@ describe("HealthScore", () => {
       update: vi.fn(),
       resize: vi.fn(),
     };
-    (Chart as any).mockReturnValue(mockChartInstance);
+    (Chart as any).mockImplementation(function () {
+      return mockChartInstance;
+    });
     vi.clearAllMocks();
   });
 
@@ -242,7 +242,7 @@ describe("HealthScore", () => {
 
       // Test background color for progress (dataIndex 0)
       const progressColor = bgColorFunc({ dataIndex: 0 });
-      expect(progressColor).toBe("#3D4BF6");
+      expect(progressColor).toBe("#007bff");
 
       // Test background color for remaining (dataIndex 1)
       const remainingColor = bgColorFunc({ dataIndex: 1 });

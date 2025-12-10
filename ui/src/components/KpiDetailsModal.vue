@@ -2,7 +2,7 @@
 import Modal from './Modal.vue';
 import KpiAccordion from './KpiAccordion.vue';
 import type {Kpi} from '../model/Result.ts';
-import {computed} from 'vue';
+import {computed, ref} from 'vue';
 import {isCriticalKpi, isWarningKpi, useKpiFilters} from '../composables/kpiUtils.ts';
 
 interface Props {
@@ -32,6 +32,17 @@ const getCriticalCount = computed(() => {
 const getWarningCount = computed(() => {
   return sortedKpisBySeverity.value.filter(kpi => isWarningKpi(kpi)).length;
 });
+
+// Accordion state
+const expandedKpis = ref<Set<string>>(new Set());
+
+const handleAccordionToggle = (kpiId: string) => {
+  if (expandedKpis.value.has(kpiId)) {
+    expandedKpis.value.delete(kpiId);
+  } else {
+    expandedKpis.value.add(kpiId);
+  }
+};
 </script>
 
 <template>
@@ -58,8 +69,9 @@ const getWarningCount = computed(() => {
         <KpiAccordion
             :kpis="sortedKpisBySeverity"
             accordion-id="kpiDetailsAccordion"
-            :use-bootstrap-toggle="true"
             threshold-badge-class="bg-info"
+            :expanded-kpis="expandedKpis"
+            @toggle-accordion="handleAccordionToggle"
         />
       </div>
       <div v-else class="text-muted text-center py-4">

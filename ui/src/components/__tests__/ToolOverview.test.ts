@@ -1,7 +1,7 @@
-import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
-import {mount, type VueWrapper} from "@vue/test-utils";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { mount, type VueWrapper } from "@vue/test-utils";
 import ToolOverview from "../ToolOverview.vue";
-import type {Tool} from "../../model/Result";
+import type { Tool } from "../../model/Result";
 
 // Mock DashboardCard component
 vi.mock("../DashboardCard.vue", () => ({
@@ -25,23 +25,38 @@ vi.mock("../../assets/styles/Colors.ts", () => ({
 }));
 
 // Mock import.meta.glob for dynamic icon loading
+// Mock import.meta.glob for dynamic icon loading
+// Mock import.meta.glob for dynamic icon loading
 vi.stubGlobal('import', {
     meta: {
         glob: vi.fn(() => ({
-            '/src/assets/img/supportedTools/eslint.svg': true,
-            '/src/assets/img/supportedTools/sonarqube.svg': true,
-            '/src/assets/img/supportedTools/security-scanner.svg': true,
-            '/src/assets/img/supportedTools/performance-tool.svg': true,
-            '/src/assets/img/supportedTools/github.svg': true,
-            '/src/assets/img/supportedTools/gitlab.svg': true,
-            '/src/assets/img/supportedTools/ort.svg': true,
-            '/src/assets/img/supportedTools/osv.svg': true,
-            '/src/assets/img/supportedTools/trivy.svg': true,
-            '/src/assets/img/supportedTools/trufflehog.svg': true,
-            '/src/assets/img/supportedTools/technicallaganalyzer.svg': true,
+            '/src/assets/img/supportedTools/eslint.svg': '/src/assets/img/supportedTools/eslint.svg',
+            '/src/assets/img/supportedTools/sonarqube.svg': '/src/assets/img/supportedTools/sonarqube.svg',
+            '/src/assets/img/supportedTools/security-scanner.svg': '/src/assets/img/supportedTools/security-scanner.svg',
+            '/src/assets/img/supportedTools/performance-tool.svg': '/src/assets/img/supportedTools/performance-tool.svg',
+            '/src/assets/img/supportedTools/github.svg': '/src/assets/img/supportedTools/github.svg',
+            '/src/assets/img/supportedTools/gitlab.svg': '/src/assets/img/supportedTools/gitlab.svg',
+            '/src/assets/img/supportedTools/ort.svg': '/src/assets/img/supportedTools/ort.svg',
+            '/src/assets/img/supportedTools/osv.svg': '/src/assets/img/supportedTools/osv.svg',
+            '/src/assets/img/supportedTools/trivy.svg': '/src/assets/img/supportedTools/trivy.svg',
+            '/src/assets/img/supportedTools/trufflehog.svg': '/src/assets/img/supportedTools/trufflehog.svg',
+            '/src/assets/img/supportedTools/technicallaganalyzer.svg': '/src/assets/img/supportedTools/technicallaganalyzer.svg',
         }))
     }
 });
+
+// Mock SVG imports
+vi.mock("../../assets/img/supportedTools/eslint.svg", () => ({ default: "eslint.svg" }));
+vi.mock("../../assets/img/supportedTools/sonarqube.svg", () => ({ default: "sonarqube.svg" }));
+vi.mock("../../assets/img/supportedTools/security-scanner.svg", () => ({ default: "security-scanner.svg" }));
+vi.mock("../../assets/img/supportedTools/performance-tool.svg", () => ({ default: "performance-tool.svg" }));
+vi.mock("../../assets/img/supportedTools/github.svg", () => ({ default: "github.svg" }));
+vi.mock("../../assets/img/supportedTools/gitlab.svg", () => ({ default: "gitlab.svg" }));
+vi.mock("../../assets/img/supportedTools/ort.svg", () => ({ default: "ort.svg" }));
+vi.mock("../../assets/img/supportedTools/osv.svg", () => ({ default: "osv.svg" }));
+vi.mock("../../assets/img/supportedTools/trivy.svg", () => ({ default: "trivy.svg" }));
+vi.mock("../../assets/img/supportedTools/trufflehog.svg", () => ({ default: "trufflehog.svg" }));
+vi.mock("../../assets/img/supportedTools/technicallaganalyzer.svg", () => ({ default: "technicallaganalyzer.svg" }));
 
 describe("ToolOverview", () => {
     let wrapper: VueWrapper<any>;
@@ -54,14 +69,14 @@ describe("ToolOverview", () => {
                 name: "ESLint",
                 scanDate: "2024-01-15T10:30:00Z",
                 findings: [
-                    {rule: "no-unused-vars", file: "test.js"},
-                    {rule: "missing-semicolon", file: "app.js"},
+                    { rule: "no-unused-vars", file: "test.js" },
+                    { rule: "missing-semicolon", file: "app.js" },
                 ],
             },
             {
                 name: "SonarQube",
                 scanDate: "2024-01-14T15:45:00Z",
-                findings: [{issue: "code-smell", severity: "major"}],
+                findings: [{ issue: "code-smell", severity: "major" }],
             },
             {
                 name: "Security Scanner",
@@ -70,7 +85,7 @@ describe("ToolOverview", () => {
             },
             {
                 name: "Performance Tool",
-                findings: [{metric: "load-time", value: 2.5}],
+                findings: [{ metric: "load-time", value: 2.5 }],
             },
         ];
 
@@ -101,7 +116,7 @@ describe("ToolOverview", () => {
                 },
             });
 
-            const dashboardCard = wrapper.findComponent({name: "DashboardCard"});
+            const dashboardCard = wrapper.findComponent({ name: "DashboardCard" });
             expect(dashboardCard.exists()).toBe(true);
             expect(dashboardCard.props().title).toBe("Tool Results");
         });
@@ -113,7 +128,7 @@ describe("ToolOverview", () => {
                 },
             });
 
-            const dashboardCard = wrapper.findComponent({name: "DashboardCard"});
+            const dashboardCard = wrapper.findComponent({ name: "DashboardCard" });
             expect(dashboardCard.props().titleStyle).toBe("start");
             expect(dashboardCard.props().icon).toBe("tools");
             expect(dashboardCard.props().showButton).toBe(true);
@@ -167,7 +182,7 @@ describe("ToolOverview", () => {
             const mockToolsWithIcons = [
                 {
                     name: "ESLint",
-                    findings: [{rule: "no-unused-vars"}],
+                    findings: [{ rule: "no-unused-vars" }],
                     scanDate: "2024-01-15"
                 },
                 {
@@ -187,10 +202,10 @@ describe("ToolOverview", () => {
             // we should have at least one image for ESLint
             const images = wrapper.findAll("img");
             const fallbackIcons = wrapper.findAll(".bi-gear-fill");
-            
+
             // We should have either images or fallback icons (or both)
             expect(images.length + fallbackIcons.length).toBeGreaterThan(0);
-            
+
             // If images exist, check they have src attributes
             if (images.length > 0) {
                 expect(images[0]?.attributes("src")).toBeDefined();
@@ -478,7 +493,7 @@ describe("ToolOverview", () => {
                 {
                     name: "Tool A",
                     scanDate: "2024-01-01T00:00:00Z",
-                    findings: [{type: "error"}],
+                    findings: [{ type: "error" }],
                 },
                 {
                     name: "Tool B",
@@ -586,7 +601,7 @@ describe("ToolOverview", () => {
             // In the test environment, all tools use fallback icons since the mock 
             // icon resolution system doesn't return actual icon paths
             expect(fallbackIcons.length).toBe(toolsWithAndWithoutIcons.length);
-            
+
             // Total icon elements (images + fallback) should equal number of tools
             expect(images.length + fallbackIcons.length).toBe(toolsWithAndWithoutIcons.length);
         });
@@ -618,7 +633,7 @@ describe("ToolOverview", () => {
             let toolItems = wrapper.findAll(".list-group-item");
             expect(toolItems).toHaveLength(1);
 
-            await wrapper.setProps({tools: mockTools.slice(0, 2)});
+            await wrapper.setProps({ tools: mockTools.slice(0, 2) });
             toolItems = wrapper.findAll(".list-group-item");
             expect(toolItems).toHaveLength(2);
         });

@@ -1,8 +1,8 @@
-import {beforeEach, describe, expect, it, vi} from "vitest";
-import {mount, type VueWrapper} from "@vue/test-utils";
-import {createRouter, createWebHistory} from "vue-router";
-import {parse} from "../../util/Parser";
-import {createMockFileList, createMockResult} from "../../__tests__/setup";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { mount, type VueWrapper } from "@vue/test-utils";
+import { createRouter, createWebHistory } from "vue-router";
+import { parse } from "../../util/Parser";
+import { createMockFileList, createMockResult } from "../../__tests__/setup";
 import ResultUpload from "../ResultUpload.vue";
 
 // Mock the Parser module
@@ -42,8 +42,8 @@ describe("ResultSelection", () => {
     describe("File Validation", () => {
         it("should reject multiple files", async () => {
             const mockFiles = [
-                new File(["{}"], "file1.json", {type: "application/json"}),
-                new File(["{}"], "file2.json", {type: "application/json"}),
+                new File(["{}"], "file1.json", { type: "application/json" }),
+                new File(["{}"], "file2.json", { type: "application/json" }),
             ];
 
             const mockFileList = createMockFileList(mockFiles);
@@ -57,7 +57,7 @@ describe("ResultSelection", () => {
         });
 
         it("should reject non-JSON files by MIME type", async () => {
-            const txtFile = new File(["content"], "file.txt", {type: "text/plain"});
+            const txtFile = new File(["content"], "file.txt", { type: "text/plain" });
             const mockFileList = createMockFileList([txtFile]);
 
             (wrapper.vm as any).handleFile(mockFileList);
@@ -69,7 +69,7 @@ describe("ResultSelection", () => {
         });
 
         it("should reject non-JSON files by extension", async () => {
-            const txtFile = new File(["content"], "file.txt", {type: ""}); // No MIME type
+            const txtFile = new File(["content"], "file.txt", { type: "" }); // No MIME type
             const mockFileList = createMockFileList([txtFile]);
 
             (wrapper.vm as any).handleFile(mockFileList);
@@ -98,12 +98,14 @@ describe("ResultSelection", () => {
                 result: '{"test": true}',
             };
 
-            global.FileReader = vi.fn(() => mockFileReader) as any;
+            global.FileReader = vi.fn(function () {
+                return mockFileReader
+            }) as any;
 
             (wrapper.vm as any).handleFile(mockFileList);
 
             // Simulate FileReader onload
-            mockFileReader.onload({target: {result: '{"test": true}'}});
+            mockFileReader.onload({ target: { result: '{"test": true}' } });
 
             await wrapper.vm.$nextTick();
 
@@ -111,7 +113,7 @@ describe("ResultSelection", () => {
         });
 
         it("should accept JSON files with .json extension even without MIME type", async () => {
-            const jsonFile = new File(['{"test": true}'], "test.json", {type: ""});
+            const jsonFile = new File(['{"test": true}'], "test.json", { type: "" });
             const mockFileList = createMockFileList([jsonFile]);
 
             const mockResult = createMockResult();
@@ -124,11 +126,13 @@ describe("ResultSelection", () => {
                 result: '{"test": true}',
             };
 
-            global.FileReader = vi.fn(() => mockFileReader) as any;
+            global.FileReader = vi.fn(function () {
+                return mockFileReader
+            }) as any;
 
             (wrapper.vm as any).handleFile(mockFileList);
 
-            mockFileReader.onload({target: {result: '{"test": true}'}});
+            mockFileReader.onload({ target: { result: '{"test": true}' } });
 
             await wrapper.vm.$nextTick();
 
@@ -157,12 +161,14 @@ describe("ResultSelection", () => {
                 readAsText: vi.fn(),
             };
 
-            global.FileReader = vi.fn(() => mockFileReader) as any;
+            global.FileReader = vi.fn(function () {
+                return mockFileReader
+            }) as any;
 
             (wrapper.vm as any).handleFile(mockFileList);
 
             // Simulate successful file reading
-            mockFileReader.onload({target: {result: validJsonContent}});
+            mockFileReader.onload({ target: { result: validJsonContent } });
 
             await wrapper.vm.$nextTick();
 
@@ -183,12 +189,14 @@ describe("ResultSelection", () => {
                 readAsText: vi.fn(),
             };
 
-            global.FileReader = vi.fn(() => mockFileReader) as any;
+            global.FileReader = vi.fn(function () {
+                return mockFileReader
+            }) as any;
 
             (wrapper.vm as any).handleFile(mockFileList);
 
             // Simulate file reading with invalid JSON
-            mockFileReader.onload({target: {result: invalidJsonContent}});
+            mockFileReader.onload({ target: { result: invalidJsonContent } });
 
             await wrapper.vm.$nextTick();
 
@@ -213,11 +221,13 @@ describe("ResultSelection", () => {
                 readAsText: vi.fn(),
             };
 
-            global.FileReader = vi.fn(() => mockFileReader) as any;
+            global.FileReader = vi.fn(function () {
+                return mockFileReader
+            }) as any;
 
             (wrapper.vm as any).handleFile(mockFileList);
 
-            mockFileReader.onload({target: {result: validJsonContent}});
+            mockFileReader.onload({ target: { result: validJsonContent } });
 
             await wrapper.vm.$nextTick();
 
@@ -238,7 +248,9 @@ describe("ResultSelection", () => {
                 readAsText: vi.fn(),
             };
 
-            global.FileReader = vi.fn(() => mockFileReader) as any;
+            global.FileReader = vi.fn(function () {
+                return mockFileReader
+            }) as any;
 
             (wrapper.vm as any).handleFile(mockFileList);
 
@@ -263,12 +275,14 @@ describe("ResultSelection", () => {
                 readAsText: vi.fn(),
             };
 
-            global.FileReader = vi.fn(() => mockFileReader) as any;
+            global.FileReader = vi.fn(function () {
+                return mockFileReader
+            }) as any;
 
             (wrapper.vm as any).handleFile(mockFileList);
 
             // Simulate FileReader returning non-string result
-            mockFileReader.onload({target: {result: new ArrayBuffer(8)}});
+            mockFileReader.onload({ target: { result: new ArrayBuffer(8) } });
 
             await wrapper.vm.$nextTick();
 
@@ -314,7 +328,9 @@ describe("ResultSelection", () => {
                 readAsText: vi.fn(),
             };
 
-            global.FileReader = vi.fn(() => mockFileReader) as any;
+            global.FileReader = vi.fn(function () {
+                return mockFileReader
+            }) as any;
 
             const dropZone = wrapper.find('[data-testid="drop-zone"]');
 
@@ -326,7 +342,7 @@ describe("ResultSelection", () => {
             await dropZone.trigger("drop", {
                 dataTransfer: mockDataTransfer,
             });
-            mockFileReader.onload({target: {result: '{"test": true}'}});
+            mockFileReader.onload({ target: { result: '{"test": true}' } });
 
             await wrapper.vm.$nextTick();
 
@@ -338,7 +354,7 @@ describe("ResultSelection", () => {
     describe("File Input Click Functionality", () => {
         it("should trigger file input when drop zone is clicked", async () => {
             const clickSpy = vi.fn();
-            wrapper.vm.fileInput = {click: clickSpy};
+            wrapper.vm.fileInput = { click: clickSpy };
 
             const dropZone = wrapper.find('[data-testid="drop-zone"]');
             await dropZone.trigger("click");
@@ -359,7 +375,9 @@ describe("ResultSelection", () => {
                 readAsText: vi.fn(),
             };
 
-            global.FileReader = vi.fn(() => mockFileReader) as any;
+            global.FileReader = vi.fn(function () {
+                return mockFileReader
+            }) as any;
 
             const fileInput = wrapper.find('input[type="file"]');
 
@@ -370,7 +388,7 @@ describe("ResultSelection", () => {
             });
 
             await fileInput.trigger("change");
-            mockFileReader.onload({target: {result: '{"test": true}'}});
+            mockFileReader.onload({ target: { result: '{"test": true}' } });
 
             await wrapper.vm.$nextTick();
 
@@ -430,10 +448,12 @@ describe("ResultSelection", () => {
                 readAsText: vi.fn(),
             };
 
-            global.FileReader = vi.fn(() => mockFileReader) as any;
+            global.FileReader = vi.fn(function () {
+                return mockFileReader
+            }) as any;
 
             (wrapper.vm as any).handleFile(mockFileList);
-            mockFileReader.onload({target: {result: '{"test": true}'}});
+            mockFileReader.onload({ target: { result: '{"test": true}' } });
 
             await wrapper.vm.$nextTick();
 
@@ -467,7 +487,9 @@ describe("ResultSelection", () => {
                 readAsText: vi.fn(),
             };
 
-            global.FileReader = vi.fn(() => mockFileReader) as any;
+            global.FileReader = vi.fn(function () {
+                return mockFileReader
+            }) as any;
 
             (wrapper.vm as any).handleFile(mockFileList);
 
@@ -476,7 +498,7 @@ describe("ResultSelection", () => {
             expect(wrapper.vm.successMessage).toBe("");
             expect(wrapper.vm.fileName).toBe("new-file.json");
 
-            mockFileReader.onload({target: {result: '{"test": true}'}});
+            mockFileReader.onload({ target: { result: '{"test": true}' } });
 
             await wrapper.vm.$nextTick();
 
@@ -499,10 +521,12 @@ describe("ResultSelection", () => {
                 readAsText: vi.fn(),
             };
 
-            global.FileReader = vi.fn(() => mockFileReader) as any;
+            global.FileReader = vi.fn(function () {
+                return mockFileReader
+            }) as any;
 
             (wrapper.vm as any).handleFile(mockFileList);
-            mockFileReader.onload({target: {result: "invalid json"}});
+            mockFileReader.onload({ target: { result: "invalid json" } });
 
             await wrapper.vm.$nextTick();
 
@@ -524,10 +548,12 @@ describe("ResultSelection", () => {
                 readAsText: vi.fn(),
             };
 
-            global.FileReader = vi.fn(() => mockFileReader) as any;
+            global.FileReader = vi.fn(function () {
+                return mockFileReader
+            }) as any;
 
             (wrapper.vm as any).handleFile(mockFileList);
-            mockFileReader.onload({target: {result: '{"test": true}'}});
+            mockFileReader.onload({ target: { result: '{"test": true}' } });
 
             await wrapper.vm.$nextTick();
 

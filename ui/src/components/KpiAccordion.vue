@@ -44,7 +44,8 @@ const isAccordionExpanded = (kpiId: string): boolean => {
     >
       <h2 class="accordion-header" :id="`heading-${kpi.id}`">
         <button
-            class="accordion-button collapsed kpi-header"
+            class="accordion-button kpi-header"
+            :class="{ 'collapsed': useBootstrapToggle ? true : !isAccordionExpanded(kpi.id) }"
             type="button"
             :data-bs-toggle="useBootstrapToggle ? 'collapse' : undefined"
             :data-bs-target="useBootstrapToggle ? `#collapse-${kpi.id}` : undefined"

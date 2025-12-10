@@ -48,11 +48,11 @@ const formattedLastCommitDate = computed(() => {
                 <div
                     class="col pb-4 border-end d-flex justify-content-center stat-item"
                 >
-                    <div class="row">
-                        <div class="col">
-                            <i class="bi bi-star icon-circle me-4"></i>
+                    <div class="row w-100 align-items-center">
+                        <div class="col-6 d-flex justify-content-end">
+                            <i class="bi bi-star icon-circle me-3"></i>
                         </div>
-                        <div class="col text-center">
+                        <div class="col-6 text-start">
                             <div class="fs-4 fw-semibold">
                                 {{ formattedStars }}
                             </div>
@@ -63,12 +63,12 @@ const formattedLastCommitDate = computed(() => {
                 <!-- Last Commit -->
                 <div class="col pb-4 stat-item d-flex justify-content-center">
                     <div
-                        class="row d-flex justify-content-center align-items-center"
+                        class="row w-100 align-items-center"
                     >
-                        <div class="col">
-                            <i class="bi icon-circle bi-clock-history me-4"></i>
+                        <div class="col-6 d-flex justify-content-end">
+                            <i class="bi icon-circle bi-clock-history me-3"></i>
                         </div>
-                        <div class="col">
+                        <div class="col-6 text-start">
                             <div class="fs-5 fw-semibold">
                                 {{ formattedLastCommitDate }}
                             </div>
@@ -83,11 +83,11 @@ const formattedLastCommitDate = computed(() => {
                 <div
                     class="col border-end stat-item pt-4 d-flex justify-content-center"
                 >
-                    <div class="row">
-                        <div class="col">
-                            <i class="bi icon-circle bi-person me-4"></i>
+                    <div class="row w-100 align-items-center">
+                        <div class="col-6 d-flex justify-content-end">
+                            <i class="bi icon-circle bi-person me-3"></i>
                         </div>
-                        <div class="col">
+                        <div class="col-6 text-start">
                             <div class="fs-4 fw-semibold">
                                 {{ formattedContributors }}
                             </div>

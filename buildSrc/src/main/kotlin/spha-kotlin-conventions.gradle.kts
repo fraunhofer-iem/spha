@@ -31,10 +31,7 @@ dependencies {
     testImplementation(libs.kotlin.test)
 }
 
-// kotlin
-java {
-    toolchain { languageVersion = JavaLanguageVersion.of(25) }
-}
+
 
 kotlin {
     jvmToolchain(24)

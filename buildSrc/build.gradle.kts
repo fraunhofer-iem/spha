@@ -15,7 +15,7 @@ private val Project.libs: LibrariesForLibs
 plugins { `kotlin-dsl` }
 
 kotlin {
-    jvmToolchain(25)
+    jvmToolchain(24)
 }
 
 repositories {

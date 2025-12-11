@@ -32,6 +32,9 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2
 
+      - name: Package distribution
+        run: ./gradlew distZip
+
       - name: Publish to Maven Central
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_USER }}
@@ -47,4 +50,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create $SPHA_VERSION --notes-file RELEASE_NOTES.md 
+          gh release create $SPHA_VERSION --notes-file RELEASE_NOTES.md build/distributions/*.zip 

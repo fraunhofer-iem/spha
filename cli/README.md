@@ -1,7 +1,7 @@
-## SPHA-CLI Tool
+## SPHA CLI Tool
 
-This project contains SPHA's command line tool, a wrapper around our
-[core library](https://www.github.com/fraunhofer-iem/spha). The CLI-tool can `transform` tool results
+This module contains SPHA's command line tool, a wrapper around the
+[core library](../lib/). The CLI tool can `transform` tool results
 into `RawValueKpis`, `calculate` a given `KpiHierarchy` based on `RawValueKpis`, and
 generate a human-readable report.  
 A tool demo using our [GitHub Action](https://www.github.com/fraunhofer-iem/spha-action) can be
@@ -20,12 +20,12 @@ This repository contains a prebuild version of SPHA's docker image. To use it ju
 
 ### Build native
 
-SPHA is a 100% Kotlin project build with Gradle. You must have Kotlin installed on your
-system. To use Gradle either install it locally our use the included Gradle wrapper.
+SPHA is a 100% Kotlin project built with Gradle. You must have Kotlin installed on your
+system. To use Gradle either install it locally or use the included Gradle wrapper.
 We aim to always support the latest version of Kotlin and Gradle.
 
-To build the project using the wrapper run `./gradlew build`.  
-`./gradlew run` executes SPHA. We use CLIKT as a command line framework, see their
+From the repository root, build the CLI using the wrapper: `./gradlew :cli:build`.  
+Run the CLI with `./gradlew :cli:run`. We use CLIKT as a command line framework, see their
 [documentation](https://ajalt.github.io/clikt/quickstart/#developing-command-line-applications-with-gradle) on how to
 interact with CLIKT based tools. By default, it will print the `--help` output that further explains
 how to use SPHA.

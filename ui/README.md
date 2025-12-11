@@ -1,6 +1,6 @@
 # SPHA Visualization
 
-A web-based dashboard for visualizing Software Project Health Assistant (SPHA) results. This Vue.js application provides comprehensive insights into software project health metrics, security vulnerabilities, and quality indicators.
+This module contains a web-based dashboard for visualizing Software Project Health Assistant (SPHA) results. This Vue.js application provides comprehensive insights into software project health metrics, security vulnerabilities, and quality indicators.
 
 ## Features
 
@@ -30,10 +30,10 @@ Support for multiple analysis tools including:
 
 ### Installation
 
-1. Clone the repository:
+1. Clone the SPHA repository (if not already done):
 ```bash
-git clone https://github.com/fraunhofer-iem/spha-ui
-cd spha-ui
+git clone https://github.com/fraunhofer-iem/spha
+cd spha/ui
 ```
 
 2. Install dependencies:
@@ -179,11 +179,7 @@ Sample data files are available in the `example/` directory:
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/new-feature`
-3. Commit your changes: `git commit -am 'Add new feature'`
-4. Push to the branch: `git push origin feature/new-feature`
-5. Submit a pull request
+Please refer to the main repository's [Contributing Guidelines](../CONTRIBUTING.md) for information on how to contribute to SPHA.
 
 ### Development Guidelines
 
@@ -194,8 +190,5 @@ Sample data files are available in the `example/` directory:
 
 ## License
 
-This project is part of the SPHA (Software Project Health Analysis) suite developed by Fraunhofer IEM.
-
----
-
-For questions or support, please refer to the project documentation or open an issue in the repository.
+Copyright (C) Fraunhofer IEM.
+Software Product Health Assistant (SPHA) and all its components are published under the [MIT license](../LICENSE.md).

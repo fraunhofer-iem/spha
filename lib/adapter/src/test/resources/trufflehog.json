@@ -1,0 +1,19 @@
+{
+  "level": "info-0",
+  "ts": "2025-07-10T11:12:56+02:00",
+  "logger": "trufflehog",
+  "msg": "finished scanning",
+  "chunks": 14,
+  "bytes": 6959,
+  "verified_secrets": 4,
+  "unverified_secrets": 0,
+  "scan_duration": "1.802821959s",
+  "trufflehog_version": "3.89.2",
+  "verification_caching": {
+    "Hits": 0,
+    "Misses": 6,
+    "HitsWasted": 0,
+    "AttemptsSaved": 0,
+    "VerificationTimeSpentMS": 4639
+  }
+}

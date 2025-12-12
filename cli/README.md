@@ -1,0 +1,41 @@
+## SPHA CLI Tool
+
+This module contains SPHA's command line tool, a wrapper around the
+[core library](../lib/). The CLI tool can `transform` tool results
+into `RawValueKpis`, `calculate` a given `KpiHierarchy` based on `RawValueKpis`, and
+generate a human-readable report.  
+A tool demo using our [GitHub Action](https://www.github.com/fraunhofer-iem/spha-action) can be
+found [here](https://www.github.com/fraunhofer-iem/spha-demo).
+
+## Installation
+
+### Using Docker
+
+The easiest way to get started with SPHA is by using the included docker image. To
+build it locally run `docker build -t TAG_NAME .`. Afterward, you can run the container
+with `docker run TAG_NAME`. The default command will print the `--help` statement that
+further explains how to use SPHA.  
+This repository contains a prebuild version of SPHA's docker image. To use it just run
+`docker pull ghcr.io/fraunhofer-iem/spha-cli:latest` and then run `docker run fraunhofer-iem/spha-cli`.
+
+### Build native
+
+SPHA is a 100% Kotlin project built with Gradle. You must have Kotlin installed on your
+system. To use Gradle either install it locally or use the included Gradle wrapper.
+We aim to always support the latest version of Kotlin and Gradle.
+
+From the repository root, build the CLI using the wrapper: `./gradlew :cli:build`.  
+Run the CLI with `./gradlew :cli:run`. We use CLIKT as a command line framework, see their
+[documentation](https://ajalt.github.io/clikt/quickstart/#developing-command-line-applications-with-gradle) on how to
+interact with CLIKT based tools. By default, it will print the `--help` output that further explains
+how to use SPHA.
+
+## Usage
+
+After successfully building SPHA you can generally use one of the following three commands:
+* `transform` - transforms a given tool result into our internal `RawValueKpi` format
+* `calculate` - calculates a given `KpiHierarchy` by combining it with `RawValueKpi`
+* `report` - generates a human-readable report from a given `KpiResultHierarchy`
+
+For the most up-to-date documentation of each command run `--help`.
+

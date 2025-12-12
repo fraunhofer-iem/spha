@@ -20,17 +20,20 @@ jobs:
     runs-on: ubuntu-24.04
     environment: Deploy
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         with:
           ref: ${{ env.SPHA_VERSION }}
       - name: Set up Apache Maven Central
-        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00
+        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e
         with: # running setup-java again overwrites the settings.xml
           distribution: 'temurin'
           java-version: '24'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@ac638b010cf58a27ee6c972d7336334ccaf61c96 # v4
+        uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2
+
+      - name: Package distribution
+        run: ./gradlew distZip
 
       - name: Publish to Maven Central
         env:
@@ -47,4 +50,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create $SPHA_VERSION --notes-file RELEASE_NOTES.md 
+          gh release create $SPHA_VERSION --notes-file RELEASE_NOTES.md build/distributions/*.zip 

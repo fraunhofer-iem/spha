@@ -7,29 +7,37 @@ of software product quality. It does so by combining data about your projects
 from sources like ticketing systems, and static analysis tools. For more details
 see [software-product.health](https://www.software-product.health).
 
-## SPHA Library
+## Repository Structure
 
-This project contains SPHA's core library. Its main purpose is to calculate a products health score
-based on a given `KpiHierarchy` and `RawValueKPIs`. Further, SPHA provides the possibility to transform
-tool results into our internal `RawValueKPI` format. The transformation is handled by dedicated tool
-adapters.
-With the [SPHA CLI Tool](https://www.github.com/fraunhofer-iem/spha-cli) we have created an executable tool using this
-library and showcasing its possibilities.
+This monorepo contains all SPHA components:
+
+### Library (`lib/`)
+
+The core library is divided into three modules that are individually published:
+- **model** - Data models and interfaces for KPIs and tool results
+- **adapter** - Tool adapters to transform various analysis tool outputs into SPHA format
+- **core** - Calculation engine for computing health scores from KPI hierarchies
+
+### CLI (`cli/`)
+
+A command-line tool that wraps the core library, providing commands to:
+- `transform` - Convert tool results into SPHA's internal format
+- `calculate` - Compute health scores from KPI hierarchies
+- `report` - Generate human-readable reports
+
+### UI (`ui/`)
+
+A Vue.js web application for visualizing SPHA analysis results, featuring:
+- Interactive health score dashboard
+- KPI hierarchy visualization
+- Tool integration overview
+
+## Getting Started
+
+For detailed instructions on each component, please refer to their respective README files linked above.
+
 A tool demo using our [GitHub Action](https://www.github.com/fraunhofer-iem/spha-action) can be
 found [here](https://www.github.com/fraunhofer-iem/spha-demo).
-
-## Installation
-
-SPHA is a 100% Kotlin project build with Gradle. You must have Kotlin installed on your
-system. To use Gradle either install it locally our use the included Gradle wrapper.
-We aim to always support the latest version of Kotlin and Gradle.
-
-To build the project using the wrapper run `./gradlew build`.
-
-## Usage
-
-SPHA is divided into three modules `core`, `adapter`, and `model` that are individually published.
-To include one of the components use `implementation("de.fraunhofer.iem:spha-XXX:VERSION")`.
 
 ## Contribute
 

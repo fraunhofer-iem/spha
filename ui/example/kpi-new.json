@@ -1,0 +1,829 @@
+{
+  "resultHierarchy": {
+    "root": {
+      "typeId": "ROOT",
+      "result": {
+        "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Incomplete",
+        "score": 63,
+        "reason": "Incomplete results."
+      },
+      "strategy": "WEIGHTED_AVERAGE_STRATEGY",
+      "edges": [
+        {
+          "target": {
+            "typeId": "PROCESS_TRANSPARENCY",
+            "result": {
+              "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Empty"
+            },
+            "strategy": "WEIGHTED_AVERAGE_STRATEGY",
+            "edges": [
+              {
+                "target": {
+                  "typeId": "SIGNED_COMMITS_RATIO",
+                  "result": {
+                    "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Empty"
+                  },
+                  "strategy": "WEIGHTED_RATIO_STRATEGY",
+                  "edges": [
+                    {
+                      "target": {
+                        "typeId": "NUMBER_OF_COMMITS",
+                        "result": {
+                          "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Empty"
+                        },
+                        "strategy": "RAW_VALUE_STRATEGY",
+                        "metaInfo": {
+                          "description": "Measures the total number of commits in the repository",
+                          "displayName": "Number of Commits",
+                          "tags": ["version-control", "activity"]
+                        },
+                        "id": "7517ec3e-8e66-4dda-8b74-a1b0a1596e90"
+                      },
+                      "plannedWeight": 1.0,
+                      "actualWeight": 0.0
+                    },
+                    {
+                      "target": {
+                        "typeId": "NUMBER_OF_SIGNED_COMMITS",
+                        "result": {
+                          "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Empty"
+                        },
+                        "strategy": "RAW_VALUE_STRATEGY",
+                        "metaInfo": {
+                          "description": "Measures the number of commits that are cryptographically signed",
+                          "displayName": "Number of Signed Commits",
+                          "tags": ["version-control", "security", "authentication"]
+                        },
+                        "id": "d0400b30-8e79-4f48-b7bc-33d8b78107f8"
+                      },
+                      "plannedWeight": 1.0,
+                      "actualWeight": 0.0
+                    }
+                  ],
+                  "metaInfo": {
+                    "description": "Measures the ratio of signed commits to total commits",
+                    "displayName": "Signed Commits Ratio",
+                    "tags": ["version-control", "security", "authentication"]
+                  },
+                  "id": "b70db7e4-2611-4262-9998-9c37206c6af8"
+                },
+                "plannedWeight": 1.0,
+                "actualWeight": 0.0
+              }
+            ],
+            "metaInfo": {
+              "description": "Measures the transparency of the development process",
+              "displayName": "Process Transparency",
+              "tags": ["process", "transparency"]
+            },
+            "id": "0997ca39-d29c-44e6-a028-7006d81d721a"
+          },
+          "plannedWeight": 0.1,
+          "actualWeight": 0.0
+        },
+        {
+          "target": {
+            "typeId": "PROCESS_COMPLIANCE",
+            "result": {
+              "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Empty"
+            },
+            "strategy": "WEIGHTED_AVERAGE_STRATEGY",
+            "edges": [
+              {
+                "target": {
+                  "typeId": "SIGNED_COMMITS_RATIO",
+                  "result": {
+                    "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Empty"
+                  },
+                  "strategy": "WEIGHTED_RATIO_STRATEGY",
+                  "edges": [
+                    {
+                      "target": {
+                        "typeId": "NUMBER_OF_COMMITS",
+                        "result": {
+                          "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Empty"
+                        },
+                        "strategy": "RAW_VALUE_STRATEGY",
+                        "metaInfo": {
+                          "description": "Measures the total number of commits in the repository",
+                          "displayName": "Number of Commits",
+                          "tags": ["version-control", "activity"]
+                        },
+                        "id": "5805a845-7fcc-44b0-9267-c039dfe87437"
+                      },
+                      "plannedWeight": 1.0,
+                      "actualWeight": 0.0
+                    },
+                    {
+                      "target": {
+                        "typeId": "NUMBER_OF_SIGNED_COMMITS",
+                        "result": {
+                          "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Empty"
+                        },
+                        "strategy": "RAW_VALUE_STRATEGY",
+                        "metaInfo": {
+                          "description": "Measures the number of commits that are cryptographically signed",
+                          "displayName": "Number of Signed Commits",
+                          "tags": ["version-control", "security", "authentication"]
+                        },
+                        "id": "173f41dc-dbb8-4f55-bbb0-9ceb5c4b88cd"
+                      },
+                      "plannedWeight": 1.0,
+                      "actualWeight": 0.0
+                    }
+                  ],
+                  "metaInfo": {
+                    "description": "Measures the ratio of signed commits to total commits",
+                    "displayName": "Signed Commits Ratio",
+                    "tags": ["version-control", "security", "authentication"]
+                  },
+                  "id": "f90ab4b5-97c5-460f-9e4f-26c11307f14f"
+                },
+                "plannedWeight": 0.3,
+                "actualWeight": 0.0
+              },
+              {
+                "target": {
+                  "typeId": "IS_DEFAULT_BRANCH_PROTECTED",
+                  "result": {
+                    "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Empty"
+                  },
+                  "strategy": "RAW_VALUE_STRATEGY",
+                  "metaInfo": {
+                    "description": "Indicates whether the default branch has protection rules enabled",
+                    "displayName": "Is Default Branch Protected?",
+                    "tags": ["version-control", "security", "branch-protection"]
+                  },
+                  "id": "f029ca2f-1534-4066-8e62-3805b24e1128"
+                },
+                "plannedWeight": 0.7,
+                "actualWeight": 0.0
+              }
+            ],
+            "metaInfo": {
+              "description": "Measures compliance with development process best practices",
+              "displayName": "Process Compliance",
+              "tags": ["process", "compliance", "best-practices"]
+            },
+            "id": "8cdf7549-a428-438f-b743-6c163239d938"
+          },
+          "plannedWeight": 0.1,
+          "actualWeight": 0.0
+        },
+        {
+          "target": {
+            "typeId": "SECURITY",
+            "result": {
+              "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Incomplete",
+              "score": 76,
+              "reason": "Incomplete results."
+            },
+            "strategy": "WEIGHTED_AVERAGE_STRATEGY",
+            "edges": [
+              {
+                "target": {
+                  "typeId": "SECRETS",
+                  "result": {
+                    "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Empty"
+                  },
+                  "strategy": "RAW_VALUE_STRATEGY",
+                  "metaInfo": {
+                    "description": "Measures the presence of secrets or sensitive information in the codebase",
+                    "displayName": "Secrets",
+                    "tags": ["security", "sensitive-data"]
+                  },
+                  "id": "e5b88841-7fd3-40cd-bd1b-0ee9097a3276"
+                },
+                "plannedWeight": 0.3,
+                "actualWeight": 0.0
+              },
+              {
+                "target": {
+                  "typeId": "MAXIMAL_VULNERABILITY",
+                  "result": {
+                    "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success",
+                    "score": 77
+                  },
+                  "strategy": "MINIMUM_STRATEGY",
+                  "edges": [
+                    {
+                      "target": {
+                        "typeId": "CODE_VULNERABILITY_SCORE",
+                        "result": {
+                          "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success",
+                          "score": 77
+                        },
+                        "strategy": "RAW_VALUE_STRATEGY",
+                        "originId": "ee480cc8-ffa2-458d-8855-f414ea0dc68a",
+                        "metaInfo": {
+                          "description": "Measures the presence of vulnerabilities in the code",
+                          "displayName": "Code Vulnerabilities",
+                          "tags": ["security", "vulnerabilities", "code"]
+                        },
+                        "id": "7ca32370-410d-4d2f-ba41-07fff6d73959"
+                      },
+                      "plannedWeight": 0.5,
+                      "actualWeight": 0.5
+                    },
+                    {
+                      "target": {
+                        "typeId": "CODE_VULNERABILITY_SCORE",
+                        "result": {
+                          "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success",
+                          "score": 77
+                        },
+                        "strategy": "RAW_VALUE_STRATEGY",
+                        "originId": "c837ec51-4ea0-4deb-8ff3-07f8812e8960",
+                        "metaInfo": {
+                          "description": "Measures the presence of vulnerabilities in the code",
+                          "displayName": "Code Vulnerabilities",
+                          "tags": ["security", "vulnerabilities", "code"]
+                        },
+                        "id": "bb2c8474-0f58-4f3e-a722-569e53bdd4fc"
+                      },
+                      "plannedWeight": 0.5,
+                      "actualWeight": 0.5
+                    }
+                  ],
+                  "metaInfo": {
+                    "description": "Measures the most severe vulnerability in dependencies",
+                    "displayName": "Maximal Dependency Vulnerability",
+                    "tags": ["security", "vulnerabilities", "dependencies"]
+                  },
+                  "id": "c97b45a4-b039-414a-82d2-fd123c507353"
+                },
+                "plannedWeight": 0.35,
+                "actualWeight": 0.9999999999999999
+              },
+              {
+                "target": {
+                  "typeId": "MAXIMAL_VULNERABILITY",
+                  "result": {
+                    "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Empty"
+                  },
+                  "strategy": "MAXIMUM_STRATEGY",
+                  "edges": [
+                    {
+                      "target": {
+                        "typeId": "CONTAINER_VULNERABILITY_SCORE",
+                        "result": {
+                          "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Empty"
+                        },
+                        "strategy": "RAW_VALUE_STRATEGY",
+                        "metaInfo": {
+                          "description": "Measures the presence of vulnerabilities in containers",
+                          "displayName": "Container Vulnerabilities",
+                          "tags": ["security", "vulnerabilities", "containers"]
+                        },
+                        "id": "f0dc4e00-f55d-4fbc-a6f4-c7caf8c30f66"
+                      },
+                      "plannedWeight": 1.0,
+                      "actualWeight": 0.0
+                    }
+                  ],
+                  "metaInfo": {
+                    "description": "Measures the most severe vulnerability in containers",
+                    "displayName": "Maximal Container Vulnerability",
+                    "tags": ["security", "vulnerabilities", "containers"]
+                  },
+                  "id": "b35962b9-a8c9-4da4-a0dc-5921c4042399"
+                },
+                "plannedWeight": 0.35,
+                "actualWeight": 0.0
+              }
+            ],
+            "metaInfo": {
+              "description": "Measures the overall security of the project",
+              "displayName": "Security",
+              "tags": ["security", "overall"]
+            },
+            "id": "a1054a0e-c6ba-409a-9fa7-9d743e415739"
+          },
+          "plannedWeight": 0.4,
+          "actualWeight": 0.5
+        },
+        {
+          "target": {
+            "typeId": "QUALITY",
+            "result": {
+              "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Incomplete",
+              "score": 100,
+              "reason": "Incomplete results."
+            },
+            "strategy": "WEIGHTED_AVERAGE_STRATEGY",
+            "edges": [
+              {
+                "target": {
+                  "typeId": "TECHNICAL_LAG",
+                  "result": {
+                    "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Incomplete",
+                    "score": 100,
+                    "reason": "Incomplete results."
+                  },
+                  "strategy": "WEIGHTED_AVERAGE_STRATEGY",
+                  "edges": [
+                    {
+                      "target": {
+                        "typeId": "TECHNICAL_LAG_PROD",
+                        "result": {
+                          "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Empty"
+                        },
+                        "strategy": "WEIGHTED_AVERAGE_STRATEGY",
+                        "edges": [
+                          {
+                            "target": {
+                              "typeId": "TECHNICAL_LAG_PROD_DIRECT",
+                              "result": {
+                                "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Empty"
+                              },
+                              "strategy": "WEIGHTED_AVERAGE_STRATEGY",
+                              "edges": [
+                                {
+                                  "target": {
+                                    "typeId": "HIGHEST_LIB_DAYS_PROD_DIRECT",
+                                    "result": {
+                                      "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Empty"
+                                    },
+                                    "strategy": "RAW_VALUE_STRATEGY",
+                                    "thresholds": [{ "name": "maximum", "value": 60 }],
+                                    "metaInfo": {
+                                      "description": "Measures the highest number of days since the last update for direct production dependencies",
+                                      "displayName": "Highest Library Days (Production Direct)",
+                                      "tags": [
+                                        "technical-lag",
+                                        "dependencies",
+                                        "production",
+                                        "direct"
+                                      ]
+                                    },
+                                    "id": "b5ca637d-869c-46ee-8cd5-3112d82010fd"
+                                  },
+                                  "plannedWeight": 0.5,
+                                  "actualWeight": 0.0
+                                },
+                                {
+                                  "target": {
+                                    "typeId": "TECHNICAL_LAG_PROD_DIRECT_COMPONENT",
+                                    "result": {
+                                      "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Empty"
+                                    },
+                                    "strategy": "RAW_VALUE_STRATEGY",
+                                    "thresholds": [{ "name": "maximum", "value": 30 }],
+                                    "metaInfo": {
+                                      "description": "Measures the technical lag in days for direct production dependencies by component",
+                                      "displayName": "Technical Lag Production Direct Component",
+                                      "tags": [
+                                        "technical-lag",
+                                        "dependencies",
+                                        "production",
+                                        "direct",
+                                        "component"
+                                      ]
+                                    },
+                                    "id": "201f5ac7-5f4d-4676-a67f-7444cab0693b"
+                                  },
+                                  "plannedWeight": 0.5,
+                                  "actualWeight": 0.0
+                                }
+                              ],
+                              "metaInfo": {
+                                "description": "Measures the technical lag for direct production dependencies",
+                                "displayName": "Technical Lag Production Direct",
+                                "tags": ["technical-lag", "dependencies", "production", "direct"]
+                              },
+                              "id": "2ab586e0-26df-4469-bfe2-4e6b01469928"
+                            },
+                            "plannedWeight": 0.7,
+                            "actualWeight": 0.0
+                          },
+                          {
+                            "target": {
+                              "typeId": "TECHNICAL_LAG_PROD_TRANSITIVE",
+                              "result": {
+                                "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Empty"
+                              },
+                              "strategy": "WEIGHTED_AVERAGE_STRATEGY",
+                              "edges": [
+                                {
+                                  "target": {
+                                    "typeId": "HIGHEST_LIB_DAYS_PROD_TRANSITIVE",
+                                    "result": {
+                                      "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Empty"
+                                    },
+                                    "strategy": "RAW_VALUE_STRATEGY",
+                                    "thresholds": [{ "name": "maximum", "value": 180 }],
+                                    "metaInfo": {
+                                      "description": "Measures the highest number of days since the last update for transitive production dependencies",
+                                      "displayName": "Highest Library Days (Production Transitive)",
+                                      "tags": [
+                                        "technical-lag",
+                                        "dependencies",
+                                        "production",
+                                        "transitive"
+                                      ]
+                                    },
+                                    "id": "75f28036-7fae-4664-ae5e-c2d2d1f7677e"
+                                  },
+                                  "plannedWeight": 0.5,
+                                  "actualWeight": 0.0
+                                },
+                                {
+                                  "target": {
+                                    "typeId": "TECHNICAL_LAG_PROD_TRANSITIVE_COMPONENT",
+                                    "result": {
+                                      "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Empty"
+                                    },
+                                    "strategy": "RAW_VALUE_STRATEGY",
+                                    "thresholds": [{ "name": "maximum", "value": 90 }],
+                                    "metaInfo": {
+                                      "description": "Measures the technical lag in days for transitive production dependencies by component",
+                                      "displayName": "Technical Lag Production Transitive Component",
+                                      "tags": [
+                                        "technical-lag",
+                                        "dependencies",
+                                        "production",
+                                        "transitive",
+                                        "component"
+                                      ]
+                                    },
+                                    "id": "3e646473-3fd7-402b-a665-32990bbdffaf"
+                                  },
+                                  "plannedWeight": 0.5,
+                                  "actualWeight": 0.0
+                                }
+                              ],
+                              "metaInfo": {
+                                "description": "Measures the technical lag for transitive production dependencies",
+                                "displayName": "Technical Lag Production Transitive",
+                                "tags": [
+                                  "technical-lag",
+                                  "dependencies",
+                                  "production",
+                                  "transitive"
+                                ]
+                              },
+                              "id": "9cd7a34e-381a-494c-8502-53bc0bdc4e92"
+                            },
+                            "plannedWeight": 0.3,
+                            "actualWeight": 0.0
+                          }
+                        ],
+                        "metaInfo": {
+                          "description": "Measures the overall technical lag for production dependencies",
+                          "displayName": "Technical Lag Production",
+                          "tags": ["technical-lag", "dependencies", "production"]
+                        },
+                        "id": "502a7cc6-191c-423f-b7f1-920f1c9c31d3"
+                      },
+                      "plannedWeight": 0.9,
+                      "actualWeight": 0.0
+                    },
+                    {
+                      "target": {
+                        "typeId": "TECHNICAL_LAG_DEV",
+                        "result": {
+                          "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Incomplete",
+                          "score": 100,
+                          "reason": "Incomplete results."
+                        },
+                        "strategy": "WEIGHTED_AVERAGE_STRATEGY",
+                        "edges": [
+                          {
+                            "target": {
+                              "typeId": "TECHNICAL_LAG_DEV_DIRECT",
+                              "result": {
+                                "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Incomplete",
+                                "score": 100,
+                                "reason": "Incomplete results."
+                              },
+                              "strategy": "WEIGHTED_AVERAGE_STRATEGY",
+                              "edges": [
+                                {
+                                  "target": {
+                                    "typeId": "HIGHEST_LIB_DAYS_DEV_DIRECT",
+                                    "result": {
+                                      "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Empty"
+                                    },
+                                    "strategy": "RAW_VALUE_STRATEGY",
+                                    "thresholds": [{ "name": "maximum", "value": 60 }],
+                                    "metaInfo": {
+                                      "description": "Measures the highest number of days since the last update for direct development dependencies",
+                                      "displayName": "Highest Library Days (Development Direct)",
+                                      "tags": [
+                                        "technical-lag",
+                                        "dependencies",
+                                        "development",
+                                        "direct"
+                                      ]
+                                    },
+                                    "id": "92d48eef-3dbc-4153-a807-83a796dc15b1"
+                                  },
+                                  "plannedWeight": 0.5,
+                                  "actualWeight": 0.0
+                                },
+                                {
+                                  "target": {
+                                    "typeId": "TECHNICAL_LAG_DEV_DIRECT_COMPONENT",
+                                    "result": {
+                                      "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success",
+                                      "score": 100
+                                    },
+                                    "strategy": "RAW_VALUE_STRATEGY",
+                                    "thresholds": [{ "name": "maximum", "value": 30 }],
+                                    "metaInfo": {
+                                      "description": "Measures the technical lag in days for direct development dependencies by component",
+                                      "displayName": "Technical Lag Development Direct Component",
+                                      "tags": [
+                                        "technical-lag",
+                                        "dependencies",
+                                        "development",
+                                        "direct",
+                                        "component"
+                                      ]
+                                    },
+                                    "id": "1dbf7a51-fa71-494b-8a67-1828436fcb18"
+                                  },
+                                  "plannedWeight": 0.5,
+                                  "actualWeight": 1.0
+                                }
+                              ],
+                              "metaInfo": {
+                                "description": "Measures the technical lag for direct development dependencies",
+                                "displayName": "Technical Lag Development Direct",
+                                "tags": ["technical-lag", "dependencies", "development", "direct"]
+                              },
+                              "id": "3d72c255-f6cc-4ef1-9339-adaff3dfe5d2"
+                            },
+                            "plannedWeight": 0.7,
+                            "actualWeight": 1.0
+                          },
+                          {
+                            "target": {
+                              "typeId": "TECHNICAL_LAG_DEV_TRANSITIVE",
+                              "result": {
+                                "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Empty"
+                              },
+                              "strategy": "WEIGHTED_AVERAGE_STRATEGY",
+                              "edges": [
+                                {
+                                  "target": {
+                                    "typeId": "HIGHEST_LIB_DAYS_DEV_TRANSITIVE",
+                                    "result": {
+                                      "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Empty"
+                                    },
+                                    "strategy": "RAW_VALUE_STRATEGY",
+                                    "thresholds": [{ "name": "maximum", "value": 180 }],
+                                    "metaInfo": {
+                                      "description": "Measures the highest number of days since the last update for transitive development dependencies",
+                                      "displayName": "Highest Library Days (Development Transitive)",
+                                      "tags": [
+                                        "technical-lag",
+                                        "dependencies",
+                                        "development",
+                                        "transitive"
+                                      ]
+                                    },
+                                    "id": "e48f47fc-43a6-43c8-95b7-78c8e158bee4"
+                                  },
+                                  "plannedWeight": 0.5,
+                                  "actualWeight": 0.0
+                                },
+                                {
+                                  "target": {
+                                    "typeId": "TECHNICAL_LAG_DEV_TRANSITIVE_COMPONENT",
+                                    "result": {
+                                      "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Empty"
+                                    },
+                                    "strategy": "RAW_VALUE_STRATEGY",
+                                    "thresholds": [{ "name": "maximum", "value": 90 }],
+                                    "metaInfo": {
+                                      "description": "Measures the technical lag in days for transitive development dependencies by component",
+                                      "displayName": "Technical Lag Development Transitive Component",
+                                      "tags": [
+                                        "technical-lag",
+                                        "dependencies",
+                                        "development",
+                                        "transitive",
+                                        "component"
+                                      ]
+                                    },
+                                    "id": "46ae26c4-3a49-4883-b6e2-11f7b9f23e36"
+                                  },
+                                  "plannedWeight": 0.5,
+                                  "actualWeight": 0.0
+                                }
+                              ],
+                              "metaInfo": {
+                                "description": "Measures the technical lag for transitive development dependencies",
+                                "displayName": "Technical Lag Development Transitive",
+                                "tags": [
+                                  "technical-lag",
+                                  "dependencies",
+                                  "development",
+                                  "transitive"
+                                ]
+                              },
+                              "id": "d09e1c6f-4c5f-4c18-bdf7-a53662e731e0"
+                            },
+                            "plannedWeight": 0.3,
+                            "actualWeight": 0.0
+                          }
+                        ],
+                        "metaInfo": {
+                          "description": "Measures the overall technical lag for development dependencies",
+                          "displayName": "Technical Lag Development",
+                          "tags": ["technical-lag", "dependencies", "development"]
+                        },
+                        "id": "78a314cb-ed23-4de7-896a-61dc636057bd"
+                      },
+                      "plannedWeight": 0.1,
+                      "actualWeight": 1.0
+                    }
+                  ],
+                  "metaInfo": {
+                    "description": "Measures the overall technical lag of the project's dependencies",
+                    "displayName": "Technical Lag",
+                    "tags": ["technical-lag", "dependencies", "quality"]
+                  },
+                  "id": "7ae0b293-a984-45fe-b943-0bc8ef7bb953"
+                },
+                "plannedWeight": 1.0,
+                "actualWeight": 1.0
+              }
+            ],
+            "metaInfo": {
+              "description": "Measures the quality and maintainability aspects of the project",
+              "displayName": "Quality",
+              "tags": ["quality"]
+            },
+            "id": "ca156076-8e90-4bbe-bdd6-b043a79c361f"
+          },
+          "plannedWeight": 0.15,
+          "actualWeight": 0.25
+        }
+      ],
+      "metaInfo": {
+        "description": "Overall health score of the software product",
+        "displayName": "Software Product Health Score",
+        "tags": ["health", "overall", "root"]
+      },
+      "id": "87ffe83f-c934-47e7-ad47-336e9da69203"
+    },
+    "schemaVersion": "1.1.0",
+    "timestamp": "2025-09-24T08:32:50.628872381Z"
+  },
+  "origins": [
+    {
+      "toolInfo": { "name": "OSV", "description": "Open Source Vulnerability Scanner" },
+      "origins": [
+        {
+          "type": "de.fraunhofer.iem.spha.model.adapter.OsvVulnerabilityDto",
+          "affected": [
+            {
+              "package": { "ecosystem": "npm", "name": "vite" },
+              "ranges": [
+                { "events": [{ "introduced": "7.1.0" }, { "fixed": "7.1.5" }], "type": "SEMVER" }
+              ]
+            },
+            {
+              "package": { "ecosystem": "npm", "name": "vite" },
+              "ranges": [
+                { "events": [{ "introduced": "7.0.0" }, { "fixed": "7.0.7" }], "type": "SEMVER" }
+              ]
+            },
+            {
+              "package": { "ecosystem": "npm", "name": "vite" },
+              "ranges": [
+                { "events": [{ "introduced": "6.0.0" }, { "fixed": "6.3.6" }], "type": "SEMVER" }
+              ]
+            },
+            {
+              "package": { "ecosystem": "npm", "name": "vite" },
+              "ranges": [
+                { "events": [{ "introduced": "0" }, { "fixed": "5.4.20" }], "type": "SEMVER" }
+              ]
+            }
+          ],
+          "severity": [
+            {
+              "type": "CVSS_V4",
+              "score": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:P/VC:L/VI:N/VA:N/SC:N/SI:N/SA:N"
+            }
+          ],
+          "details": "### Summary\nFiles starting with the same name with the public directory were served bypassing the `server.fs` settings.\n\n### Impact\nOnly apps that match the following conditions are affected:\n\n- explicitly exposes the Vite dev server to the network (using --host or [`server.host` config option](https://vitejs.dev/config/server-options.html#server-host))\n- uses [the public directory feature](https://vite.dev/guide/assets.html#the-public-directory) (enabled by default)\n- a symlink exists in the public directory\n\n### Details\nThe [servePublicMiddleware](https://github.com/vitejs/vite/blob/9719497adec4ad5ead21cafa19a324bb1d480194/packages/vite/src/node/server/middlewares/static.ts#L79) function is in charge of serving public files from the server. It returns the [viteServePublicMiddleware](https://github.com/vitejs/vite/blob/9719497adec4ad5ead21cafa19a324bb1d480194/packages/vite/src/node/server/middlewares/static.ts#L106) function which runs the needed tests and serves the page. The viteServePublicMiddleware function [checks if the publicFiles variable is defined](https://github.com/vitejs/vite/blob/9719497adec4ad5ead21cafa19a324bb1d480194/packages/vite/src/node/server/middlewares/static.ts#L111), and then uses it to determine if the requested page is public. In the case that the publicFiles is undefined, the code will treat the requested page as a public page, and go on with the serving function. [publicFiles may be undefined if there is a symbolic link anywhere inside the public directory](https://github.com/vitejs/vite/blob/9719497adec4ad5ead21cafa19a324bb1d480194/packages/vite/src/node/publicDir.ts#L21). In that case, every requested page will be passed to the public serving function. The serving function is based on the [sirv](https://github.com/lukeed/sirv) library. Vite patches the library to add the possibility to test loading access to pages, but when the public page middleware [disables this functionality](https://github.com/vitejs/vite/blob/9719497adec4ad5ead21cafa19a324bb1d480194/packages/vite/src/node/server/middlewares/static.ts#L89) since public pages are meant to be available always, regardless of whether they are in the allow or deny list.\n\nIn the case of public pages, the serving function is [provided with the path to the public directory](https://github.com/vitejs/vite/blob/9719497adec4ad5ead21cafa19a324bb1d480194/packages/vite/src/node/server/middlewares/static.ts#L85) as a root directory. The code of the sirv library [uses the join function to get the full path to the requested file](https://github.com/lukeed/sirv/blob/d061616827dd32d53b61ec9530c9445c8f592620/packages/sirv/index.mjs#L42). For example, if the public directory is \"/www/public\", and the requested file is \"myfile\", the code will join them to the string \"/www/public/myfile\". The code will then pass this string to the normalize function. Afterwards, the code will [use the string's startsWith function](https://github.com/lukeed/sirv/blob/d061616827dd32d53b61ec9530c9445c8f592620/packages/sirv/index.mjs#L43) to determine whether the created path is within the given directory or not. Only if it is, it will be served.\n\nSince [sirv trims the trailing slash of the public directory](https://github.com/lukeed/sirv/blob/d061616827dd32d53b61ec9530c9445c8f592620/packages/sirv/index.mjs#L119), the string's startsWith function may return true even if the created path is not within the public directory. For example, if the server's root is at \"/www\", and the public directory is at \"/www/p\", if the created path will be \"/www/private.txt\", the startsWith function will still return true, because the string \"/www/private.txt\" starts with  \"/www/p\". To achieve this, the attacker will use \"..\" to ask for the file \"../private.txt\". The code will then join it to the \"/www/p\" string, and will receive \"/www/p/../private.txt\". Then, the normalize function will return \"/www/private.txt\", which will then be passed to the startsWith function, which will return true, and the processing of the page will continue without checking the deny list (since this is the public directory middleware which doesn't check that).\n\n### PoC\nExecute the following shell commands:\n\n```\nnpm  create  vite@latest\ncd vite-project/\nmkdir p\ncd p\nln -s a b\ncd ..\necho  'import path from \"node:path\"; import { defineConfig } from \"vite\"; export default defineConfig({publicDir: path.resolve(__dirname, \"p/\"), server: {fs: {deny: [path.resolve(__dirname, \"private.txt\")]}}})' > vite.config.js\necho  \"secret\" > private.txt\nnpm install\nnpm run dev\n```\n\nThen, in a different shell, run the following command:\n\n`curl -v --path-as-is 'http://localhost:5173/private.txt'`\n\nYou will receive a 403 HTTP Response,  because private.txt is denied.\n\nNow in the same shell run the following command:\n\n`curl -v --path-as-is 'http://localhost:5173/../private.txt'`\n\nYou will receive the contents of private.txt.\n\n### Related links\n- https://github.com/lukeed/sirv/commit/f0113f3f8266328d804ee808f763a3c11f8997eb",
+          "id": "GHSA-g4jq-h2w9-997c",
+          "modified": "2025-09-09T21:42:24Z",
+          "published": "2025-09-09T20:55:56Z",
+          "references": [
+            {
+              "type": "WEB",
+              "url": "https://github.com/vitejs/vite/security/advisories/GHSA-g4jq-h2w9-997c"
+            },
+            { "type": "ADVISORY", "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-58751" },
+            {
+              "type": "WEB",
+              "url": "https://github.com/lukeed/sirv/commit/f0113f3f8266328d804ee808f763a3c11f8997eb"
+            },
+            {
+              "type": "WEB",
+              "url": "https://github.com/vitejs/vite/commit/09f2b52e8d5907f26602653caf41b3a56692600d"
+            },
+            {
+              "type": "WEB",
+              "url": "https://github.com/vitejs/vite/commit/4f1c35bcbb5830290c694aa14b6789e07450f069"
+            },
+            {
+              "type": "WEB",
+              "url": "https://github.com/vitejs/vite/commit/63e2a5d232218f3f8d852056751e609a5367aaec"
+            },
+            {
+              "type": "WEB",
+              "url": "https://github.com/vitejs/vite/commit/e11d24008b97d4ca731ecc1a3b95260a6d12e7e0"
+            },
+            { "type": "PACKAGE", "url": "https://github.com/vitejs/vite" }
+          ],
+          "schema_version": "1.7.3",
+          "summary": "Vite middleware may serve files starting with the same name with the public directory"
+        },
+        {
+          "type": "de.fraunhofer.iem.spha.model.adapter.OsvVulnerabilityDto",
+          "affected": [
+            {
+              "package": { "ecosystem": "npm", "name": "vite" },
+              "ranges": [
+                { "events": [{ "introduced": "7.1.0" }, { "fixed": "7.1.5" }], "type": "SEMVER" }
+              ]
+            },
+            {
+              "package": { "ecosystem": "npm", "name": "vite" },
+              "ranges": [
+                { "events": [{ "introduced": "7.0.0" }, { "fixed": "7.0.7" }], "type": "SEMVER" }
+              ]
+            },
+            {
+              "package": { "ecosystem": "npm", "name": "vite" },
+              "ranges": [
+                { "events": [{ "introduced": "6.0.0" }, { "fixed": "6.3.6" }], "type": "SEMVER" }
+              ]
+            },
+            {
+              "package": { "ecosystem": "npm", "name": "vite" },
+              "ranges": [
+                { "events": [{ "introduced": "0" }, { "fixed": "5.4.20" }], "type": "SEMVER" }
+              ]
+            }
+          ],
+          "severity": [
+            {
+              "type": "CVSS_V4",
+              "score": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:P/VC:L/VI:N/VA:N/SC:N/SI:N/SA:N"
+            }
+          ],
+          "details": "### Summary\nAny HTML files on the machine were served regardless of the `server.fs` settings.\n\n### Impact\n\nOnly apps that match the following conditions are affected:\n\n- explicitly exposes the Vite dev server to the network (using --host or [server.host config option](https://vitejs.dev/config/server-options.html#server-host))\n- `appType: 'spa'` (default) or `appType: 'mpa'` is used\n\nThis vulnerability also affects the preview server. The preview server allowed HTML files not under the output directory to be served.\n\n### Details\nThe [serveStaticMiddleware](https://github.com/vitejs/vite/blob/9719497adec4ad5ead21cafa19a324bb1d480194/packages/vite/src/node/server/middlewares/static.ts#L123) function is in charge of serving static files from the server. It returns the [viteServeStaticMiddleware](https://github.com/vitejs/vite/blob/9719497adec4ad5ead21cafa19a324bb1d480194/packages/vite/src/node/server/middlewares/static.ts#L136) function which runs the needed tests and serves the page. The viteServeStaticMiddleware function [checks if the extension of the requested file is \".html\"](https://github.com/vitejs/vite/blob/9719497adec4ad5ead21cafa19a324bb1d480194/packages/vite/src/node/server/middlewares/static.ts#L144). If so, it doesn't serve the page. Instead, the server will go on to the next middlewares, in this case [htmlFallbackMiddleware](https://github.com/vitejs/vite/blob/9719497adec4ad5ead21cafa19a324bb1d480194/packages/vite/src/node/server/middlewares/htmlFallback.ts#L14), and then to [indexHtmlMiddleware](https://github.com/vitejs/vite/blob/9719497adec4ad5ead21cafa19a324bb1d480194/packages/vite/src/node/server/middlewares/indexHtml.ts#L438). These middlewares don't perform any test against allow or deny rules, and they don't make sure that the accessed file is in the root directory of the server. They just find the file and send back its contents to the client.\n\n### PoC\nExecute the following shell commands:\n\n```\nnpm  create  vite@latest\ncd vite-project/\necho  \"secret\" > /tmp/secret.html\nnpm install\nnpm run dev\n```\n\nThen, in a different shell, run the following command:\n\n`curl  -v  --path-as-is  'http://localhost:5173/../../../../../../../../../../../tmp/secret.html'`\n\nThe contents of /tmp/secret.html will be returned.\n\nThis will also work for HTML files that are in the root directory of the project, but are in the deny list (or not in the allow list). Test that by stopping the running server (CTRL+C), and running the following commands in the server's shell:\n\n```\necho  'import path from \"node:path\"; import { defineConfig } from \"vite\"; export default defineConfig({server: {fs: {deny: [path.resolve(__dirname, \"secret_files/*\")]}}})'  >  [vite.config.js](http://vite.config.js)\nmkdir secret_files\necho \"secret txt\" > secret_files/secret.txt\necho \"secret html\" > secret_files/secret.html\nnpm run dev\n\n```\n\nThen, in a different shell, run the following command:\n\n`curl  -v  --path-as-is  'http://localhost:5173/secret_files/secret.txt'`\n\nYou will receive a 403 HTTP Response,  because everything in the secret_files directory is denied.\n\nNow in the same shell run the following command:\n\n`curl  -v  --path-as-is  'http://localhost:5173/secret_files/secret.html'`\n\nYou will receive the contents of secret_files/secret.html.",
+          "id": "GHSA-jqfw-vq24-v9c3",
+          "modified": "2025-09-09T21:42:25Z",
+          "published": "2025-09-09T20:54:42Z",
+          "references": [
+            {
+              "type": "WEB",
+              "url": "https://github.com/vitejs/vite/security/advisories/GHSA-jqfw-vq24-v9c3"
+            },
+            { "type": "ADVISORY", "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-58752" },
+            {
+              "type": "WEB",
+              "url": "https://github.com/vitejs/vite/commit/0ab19ea9fcb66f544328f442cf6e70f7c0528d5f"
+            },
+            {
+              "type": "WEB",
+              "url": "https://github.com/vitejs/vite/commit/14015d794f69accba68798bd0e15135bc51c9c1e"
+            },
+            {
+              "type": "WEB",
+              "url": "https://github.com/vitejs/vite/commit/482000f57f56fe6ff2e905305100cfe03043ddea"
+            },
+            {
+              "type": "WEB",
+              "url": "https://github.com/vitejs/vite/commit/6f01ff4fe072bcfcd4e2a84811772b818cd51fe6"
+            },
+            { "type": "PACKAGE", "url": "https://github.com/vitejs/vite" },
+            {
+              "type": "WEB",
+              "url": "https://github.com/vitejs/vite/blob/v7.1.5/packages/vite/CHANGELOG.md"
+            }
+          ],
+          "schema_version": "1.7.3",
+          "summary": "Vite's `server.fs` settings were not applied to HTML files"
+        }
+      ]
+    }
+  ],
+  "projectInfo": {
+    "name": "Currently no data available",
+    "usedLanguages": [{ "name": "Currently no data available", "size": 100 }],
+    "url": "https://github.com/fraunhofer-iem/spha",
+    "stars": -1,
+    "numberOfContributors": -1,
+    "numberOfCommits": -1,
+    "lastCommitDate": "Currently no data available"
+  }
+}

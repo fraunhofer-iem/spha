@@ -1,0 +1,432 @@
+{
+  "projectInfo": {
+    "name": "Awesome Project",
+    "usedLanguages": [
+      {
+        "name": "TypeScript",
+        "size": 65.2
+      },
+      {
+        "name": "JavaScript",
+        "size": 20.8
+      },
+      {
+        "name": "CSS",
+        "size": 10.5
+      },
+      {
+        "name": "HTML",
+        "size": 3.5
+      }
+    ],
+    "url": "https://github.com/example/awesome-project",
+    "stars": 127,
+    "version": "1.5.2",
+    "numberOfContributors": 8,
+    "numberOfCommits": 342,
+    "lastCommitDate": "2024-01-15T10:30:00Z"
+  },
+  "origins": [
+    {
+      "toolInfo": {
+        "name": "ESLint",
+        "description": "JavaScript and TypeScript linter"
+      },
+      "origins": [
+        {
+          "id": "eslint-1",
+          "message": "Missing semicolon"
+        },
+        {
+          "id": "eslint-2",
+          "message": "Unused variable"
+        }
+      ]
+    },
+    {
+      "toolInfo": {
+        "name": "SonarQube",
+        "description": "Code quality and security analysis"
+      },
+      "origins": [
+        {
+          "id": "sonar-1",
+          "message": "Code duplication detected"
+        }
+      ]
+    },
+    {
+      "toolInfo": {
+        "name": "Jest",
+        "description": "JavaScript testing framework"
+      },
+      "origins": [
+        {
+          "id": "jest-1",
+          "message": "Low test coverage"
+        }
+      ]
+    }
+  ],
+  "resultHierarchy": {
+    "root": {
+      "typeId": "software-quality-root",
+      "result": {
+        "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success",
+        "score": 73
+      },
+      "strategy": "WEIGHTED_AVERAGE",
+      "edges": [
+        {
+          "target": {
+            "typeId": "code-quality",
+            "result": {
+              "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success",
+              "score": 78
+            },
+            "strategy": "WEIGHTED_AVERAGE",
+            "edges": [
+              {
+                "target": {
+                  "typeId": "complexity",
+                  "result": {
+                    "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success",
+                    "score": 82
+                  },
+                  "strategy": "DIRECT_MEASUREMENT",
+                  "edges": [],
+                  "thresholds": [
+                    {
+                      "name": "low",
+                      "value": 80
+                    }
+                  ],
+                  "metaInfo": {
+                    "displayName": "Cyclomatic Complexity"
+                  }
+                },
+                "plannedWeight": 0.6,
+                "actualWeight": 0.6
+              },
+              {
+                "target": {
+                  "typeId": "duplication",
+                  "result": {
+                    "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success",
+                    "score": 74
+                  },
+                  "strategy": "DIRECT_MEASUREMENT",
+                  "edges": [],
+                  "thresholds": [
+                    {
+                      "name": "acceptable",
+                      "value": 70
+                    }
+                  ],
+                  "metaInfo": {
+                    "displayName": "Code Duplication"
+                  }
+                },
+                "plannedWeight": 0.4,
+                "actualWeight": 0.4
+              }
+            ],
+            "thresholds": [
+              {
+                "name": "acceptable",
+                "value": 60
+              },
+              {
+                "name": "good",
+                "value": 75
+              }
+            ],
+            "metaInfo": {
+              "displayName": "Code Quality"
+            }
+          },
+          "plannedWeight": 0.25,
+          "actualWeight": 0.25
+        },
+        {
+          "target": {
+            "typeId": "test-coverage",
+            "result": {
+              "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success",
+              "score": 86
+            },
+            "strategy": "WEIGHTED_AVERAGE",
+            "edges": [
+              {
+                "target": {
+                  "typeId": "unit-coverage",
+                  "result": {
+                    "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success",
+                    "score": 89
+                  },
+                  "strategy": "DIRECT_MEASUREMENT",
+                  "edges": [],
+                  "thresholds": [
+                    {
+                      "name": "minimum",
+                      "value": 75
+                    }
+                  ],
+                  "metaInfo": {
+                    "displayName": "Unit Test Coverage"
+                  }
+                },
+                "plannedWeight": 0.7,
+                "actualWeight": 0.7
+              },
+              {
+                "target": {
+                  "typeId": "integration-coverage",
+                  "result": {
+                    "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success",
+                    "score": 67
+                  },
+                  "strategy": "DIRECT_MEASUREMENT",
+                  "edges": [],
+                  "thresholds": [
+                    {
+                      "name": "minimum",
+                      "value": 60
+                    }
+                  ],
+                  "metaInfo": {
+                    "displayName": "Integration Test Coverage"
+                  }
+                },
+                "plannedWeight": 0.3,
+                "actualWeight": 0.3
+              }
+            ],
+            "thresholds": [
+              {
+                "name": "minimum",
+                "value": 70
+              },
+              {
+                "name": "good",
+                "value": 80
+              }
+            ],
+            "metaInfo": {
+              "displayName": "Test Coverage"
+            }
+          },
+          "plannedWeight": 0.2,
+          "actualWeight": 0.2
+        },
+        {
+          "target": {
+            "typeId": "security",
+            "result": {
+              "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success",
+              "score": 91
+            },
+            "strategy": "WEIGHTED_AVERAGE",
+            "edges": [
+              {
+                "target": {
+                  "typeId": "vulnerabilities",
+                  "result": {
+                    "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success",
+                    "score": 96
+                  },
+                  "strategy": "DIRECT_MEASUREMENT",
+                  "edges": [],
+                  "thresholds": [
+                    {
+                      "name": "critical",
+                      "value": 95
+                    }
+                  ],
+                  "metaInfo": {
+                    "displayName": "Known Vulnerabilities"
+                  }
+                },
+                "plannedWeight": 1.0,
+                "actualWeight": 1.0
+              }
+            ],
+            "thresholds": [
+              {
+                "name": "acceptable",
+                "value": 80
+              },
+              {
+                "name": "excellent",
+                "value": 90
+              }
+            ],
+            "metaInfo": {
+              "displayName": "Security"
+            }
+          },
+          "plannedWeight": 0.3,
+          "actualWeight": 0.3
+        },
+        {
+          "target": {
+            "typeId": "maintainability",
+            "result": {
+              "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Incomplete",
+              "score": 55,
+              "reason": "Some maintainability metrics could not be calculated"
+            },
+            "strategy": "WEIGHTED_AVERAGE",
+            "edges": [
+              {
+                "target": {
+                  "typeId": "technical-debt",
+                  "result": {
+                    "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success",
+                    "score": 48
+                  },
+                  "strategy": "DIRECT_MEASUREMENT",
+                  "edges": [],
+                  "thresholds": [
+                    {
+                      "name": "acceptable",
+                      "value": 60
+                    }
+                  ],
+                  "metaInfo": {
+                    "displayName": "Technical Debt"
+                  }
+                },
+                "plannedWeight": 0.6,
+                "actualWeight": 0.6
+              },
+              {
+                "target": {
+                  "typeId": "documentation",
+                  "result": {
+                    "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success",
+                    "score": 61
+                  },
+                  "strategy": "DIRECT_MEASUREMENT",
+                  "edges": [],
+                  "thresholds": [
+                    {
+                      "name": "minimum",
+                      "value": 50
+                    }
+                  ],
+                  "metaInfo": {
+                    "displayName": "Documentation Coverage"
+                  }
+                },
+                "plannedWeight": 0.4,
+                "actualWeight": 0.4
+              }
+            ],
+            "thresholds": [
+              {
+                "name": "minimum",
+                "value": 50
+              },
+              {
+                "name": "good",
+                "value": 70
+              }
+            ],
+            "metaInfo": {
+              "displayName": "Maintainability"
+            }
+          },
+          "plannedWeight": 0.15,
+          "actualWeight": 0.15
+        },
+        {
+          "target": {
+            "typeId": "performance",
+            "result": {
+              "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success",
+              "score": 77
+            },
+            "strategy": "WEIGHTED_AVERAGE",
+            "edges": [
+              {
+                "target": {
+                  "typeId": "load-time",
+                  "result": {
+                    "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success",
+                    "score": 79
+                  },
+                  "strategy": "DIRECT_MEASUREMENT",
+                  "edges": [],
+                  "thresholds": [
+                    {
+                      "name": "fast",
+                      "value": 75
+                    }
+                  ],
+                  "metaInfo": {
+                    "displayName": "Page Load Time"
+                  }
+                },
+                "plannedWeight": 0.6,
+                "actualWeight": 0.6
+              },
+              {
+                "target": {
+                  "typeId": "bundle-size",
+                  "result": {
+                    "type": "de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiCalculationResult.Success",
+                    "score": 74
+                  },
+                  "strategy": "DIRECT_MEASUREMENT",
+                  "edges": [],
+                  "thresholds": [
+                    {
+                      "name": "optimized",
+                      "value": 70
+                    }
+                  ],
+                  "metaInfo": {
+                    "displayName": "Bundle Size Optimization"
+                  }
+                },
+                "plannedWeight": 0.4,
+                "actualWeight": 0.4
+              }
+            ],
+            "thresholds": [
+              {
+                "name": "acceptable",
+                "value": 70
+              },
+              {
+                "name": "excellent",
+                "value": 85
+              }
+            ],
+            "metaInfo": {
+              "displayName": "Performance"
+            }
+          },
+          "plannedWeight": 0.1,
+          "actualWeight": 0.1
+        }
+      ],
+      "thresholds": [
+        {
+          "name": "good",
+          "value": 70
+        },
+        {
+          "name": "excellent",
+          "value": 85
+        }
+      ],
+      "metaInfo": {
+        "displayName": "Software Quality Assessment"
+      }
+    },
+    "schemaVersion": "1.0.0",
+    "timestamp": "2024-01-15T10:30:00.000Z"
+  }
+}

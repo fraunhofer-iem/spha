@@ -21,3 +21,10 @@ tasks.register<Jar>("javadocJar") {
     archiveClassifier.set("javadoc")
     from(tasks.named("dokkaGeneratePublicationJavadoc"))
 }
+
+var sphaLibVersion: String = rootProject.version.toString()
+sphaLibVersion = (
+    findProperty("sphaLibVersion") as String?
+        ?: System.getenv("SPHA_LIB_VERSION")
+) ?: sphaLibVersion
+version = sphaLibVersion

@@ -12,8 +12,6 @@ import org.gradle.accessors.dm.LibrariesForLibs
 private val Project.libs: LibrariesForLibs
     get() = extensions.getByType()
 
-if (project != rootProject) version = rootProject.version
-
 plugins {
     // Apply core plugins.
     jacoco

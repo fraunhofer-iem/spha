@@ -1,20 +1,22 @@
 name: Release
 
 on:
-  push:
-    tags:
-      - "[0-9]+.[0-9]+.[0-9]+"
   workflow_dispatch:
     inputs:
-      tag:
-        description: "Git tag to release from"
+      SPHA_LIB_VERSION:
+        description: "LIB version and tag"
+        required: true
+        type: string
+      SPHA_CLI_VERSION:
+        description: "CLI version"
         required: true
         type: string
 
 jobs:
-  publish:
+  publish-lib:
     env:
-      SPHA_VERSION: ${{ inputs.tag || github.ref_name }}
+      SPHA_LIB_VERSION: ${{ inputs.SPHA_LIB_VERSION }}
+      SPHA_CLI_VERSION: ${{ inputs.SPHA_CLI_VERSION }}
     permissions:
       contents: write
     runs-on: ubuntu-24.04
@@ -22,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         with:
-          ref: ${{ env.SPHA_VERSION }}
+          ref: ${{ env.SPHA_LIB_VERSION }}
       - name: Set up Apache Maven Central
         uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e
         with: # running setup-java again overwrites the settings.xml
@@ -32,22 +34,26 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2
 
-      - name: Package distribution
-        run: ./gradlew distZip
-
-      - name: Publish to Maven Central
+      - name: Publish lib to Maven Central
         env:
+          SPHA_LIB_VERSION: ${{ env.SPHA_LIB_VERSION }}
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_USER }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_PW }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_PRIVATE_KEY }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
-        run: ./gradlew publishToMavenCentral --no-configuration-cache
+        run: ./gradlew :lib:core:publishToMavenCentral :lib:adapter:publishToMavenCentral :lib:model:publishToMavenCentral --no-configuration-cache
 
-      - name: Generate Release Notes
-        run: ./gradlew -q printChangeLog > RELEASE_NOTES.md
+      - name: Package cli distribution
+        env:
+          SPHA_CLI_VERSION: ${{ env.SPHA_CLI_VERSION }}
+        run: |
+          ./gradlew distZip
+          mkdir -p release
+          cp cli/build/distributions/*.zip release
 
       - name: Create GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ env.SPHA_LIB_VERSION}}
         run: |
-          gh release create $SPHA_VERSION --notes-file RELEASE_NOTES.md build/distributions/*.zip 
+          gh release create "$TAG" --generate-notes release/*

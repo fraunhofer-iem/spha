@@ -284,6 +284,7 @@ class CalculateKpiCommandTest : KoinTest {
 
     class TestKpiCalculatorService : KpiCalculatorService {
         var handler: ((KpiHierarchy, List<RawValueKpi>) -> KpiResultHierarchy)? = null
+
         override fun calculateKpis(
             hierarchy: KpiHierarchy,
             rawValues: List<RawValueKpi>,

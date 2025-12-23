@@ -12,7 +12,6 @@ package de.fraunhofer.iem.spha.cli.commands
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import de.fraunhofer.iem.spha.cli.SphaToolCommandBase
-import de.fraunhofer.iem.spha.core.KpiCalculator
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.DefaultHierarchy
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiHierarchy
@@ -42,6 +41,7 @@ internal class CalculateKpiCommand :
     KoinComponent {
 
     private val fileSystem by inject<FileSystem>()
+    private val kpiCalculatorService by inject<KpiCalculatorService>()
 
     private val sourceDir by
         option(
@@ -72,7 +72,7 @@ internal class CalculateKpiCommand :
         }
 
         val hierarchyModel = getHierarchy()
-        val kpiResult = KpiCalculator.calculateKpis(hierarchyModel, rawValueKpis)
+        val kpiResult = kpiCalculatorService.calculateKpis(hierarchyModel, rawValueKpis)
         writeHierarchy(kpiResult)
     }
 
@@ -101,7 +101,7 @@ internal class CalculateKpiCommand :
 
         val result = mutableListOf<RawValueKpi>()
 
-        for (file in location.walk()) {
+        for (file in location.walk().sorted()) {
             if (file.extension.equals("json", true)) {
                 readRawValueKpiFile(file, result)
             }

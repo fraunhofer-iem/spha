@@ -17,6 +17,8 @@ import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import de.fraunhofer.iem.spha.cli.commands.AnalyzeRepositoryCommand
 import de.fraunhofer.iem.spha.cli.commands.CalculateKpiCommand
+import de.fraunhofer.iem.spha.cli.commands.DefaultKpiCalculatorService
+import de.fraunhofer.iem.spha.cli.commands.KpiCalculatorService
 import de.fraunhofer.iem.spha.cli.commands.ReportCommand
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.nio.file.FileSystem
@@ -27,7 +29,10 @@ import org.koin.core.context.GlobalContext.startKoin
 import org.koin.dsl.module
 import org.slf4j.simple.SimpleLogger
 
-internal val appModules = module { single<FileSystem> { FileSystems.getDefault() } }
+internal val appModules = module {
+    single<FileSystem> { FileSystems.getDefault() }
+    single<KpiCalculatorService> { DefaultKpiCalculatorService() }
+}
 
 suspend fun main(args: Array<String>) {
     startKoin { modules(appModules) }

@@ -9,7 +9,7 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 plugins {
-    id("com.github.jmongard.git-semver-plugin") version "0.17.1"
+    id("com.github.jmongard.git-semver-plugin") version "0.18.0"
     id("com.github.ben-manes.versions") version "0.53.0"
 }
 

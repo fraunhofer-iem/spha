@@ -206,6 +206,10 @@ class AnalyzeRepositoryCommandTest : KoinTest {
             val sphaResult = receivedResult.await()
             assertNotNull(sphaResult.projectInfo, "Project info should not be null")
             assertEquals("https://github.com/fraunhofer-iem/spha", sphaResult.projectInfo.url)
+            assertEquals("..", sphaResult.projectInfo.name)
+            assertTrue(sphaResult.projectInfo.usedLanguages.any { it.name == "Kotlin" }, "Should detect Kotlin language")
+            // origins might be empty if no tool results were parsed
+            assertNotNull(sphaResult.resultHierarchy.root, "KPI result root should not be null")
         } finally {
             server.stop(100, 100)
         }

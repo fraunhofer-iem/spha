@@ -82,8 +82,7 @@ class HttpResultSenderTest {
         try {
             sender.send(result, url)
             val captured = receivedResult.await()
-            assertEquals(result.projectInfo.name, captured.projectInfo.name)
-            assertEquals(result.projectInfo.url, captured.projectInfo.url)
+            assertEquals(result, captured, "The received SphaToolResult should be identical to the sent one")
         } finally {
             server.stop(100, 100)
         }

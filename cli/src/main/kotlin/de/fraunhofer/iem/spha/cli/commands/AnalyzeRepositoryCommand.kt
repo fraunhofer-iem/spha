@@ -21,11 +21,8 @@ import de.fraunhofer.iem.spha.cli.vcs.ProjectInfoFetcherFactory
 import de.fraunhofer.iem.spha.core.KpiCalculator
 import de.fraunhofer.iem.spha.model.SphaToolResult
 import de.fraunhofer.iem.spha.model.ToolInfoAndOrigin
-import de.fraunhofer.iem.spha.model.adapter.Origin
-import de.fraunhofer.iem.spha.model.adapter.ToolInfo
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.DefaultHierarchy
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiHierarchy
-import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiResultHierarchy
 import de.fraunhofer.iem.spha.model.project.Language
 import de.fraunhofer.iem.spha.model.project.ProjectInfo
 import java.nio.file.FileSystem
@@ -33,7 +30,6 @@ import kotlin.io.path.createDirectories
 import kotlin.io.path.inputStream
 import kotlin.io.path.outputStream
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
@@ -60,25 +56,25 @@ internal class AnalyzeRepositoryCommand :
 
     private val repoOrigin by
         option(
-                "-r",
-                "--repoOrigin",
-                help =
-                    "The project's repository URL. This is used to gather project information, such as the project's name and used technologies. If not specified, attempts to detect from the current git repository.",
-            )
+            "-r",
+            "--repoOrigin",
+            help =
+                "The project's repository URL. This is used to gather project information, such as the project's name and used technologies. If not specified, attempts to detect from the current git repository.",
+        )
 
     private val repositoryType by
         option(
-                "--repositoryType",
-                help =
-                    "Override the auto-detected repository type. Valid values: github, gitlab, local. Use this for self-hosted instances.",
-            )
+            "--repositoryType",
+            help =
+                "Override the auto-detected repository type. Valid values: github, gitlab, local. Use this for self-hosted instances.",
+        )
 
     private val token by
         option(
-                "--token",
-                help =
-                    "Authentication token for the VCS platform. Overrides environment variables (GITHUB_TOKEN, GITLAB_TOKEN, etc.).",
-            )
+            "--token",
+            help =
+                "Authentication token for the VCS platform. Overrides environment variables (GITHUB_TOKEN, GITLAB_TOKEN, etc.).",
+        )
 
     private val hierarchy by
         option(
@@ -88,9 +84,19 @@ internal class AnalyzeRepositoryCommand :
                 "Optional kpi hierarchy definition file. When not specified the default kpi hierarchy is used.",
         )
 
-    private val output by option("-o", "--output", help = "The result file path. Required when --reportUri is not specified.")
+    private val output by
+        option(
+            "-o",
+            "--output",
+            help = "The result file path. Required when --reportUri is not specified.",
+        )
 
-    private val reportUri by option("--reportUri", help = "The server endpoint to POST the result as JSON (e.g., http://server:port/report). When specified, result is sent to server instead of writing to file.")
+    private val reportUri by
+        option(
+            "--reportUri",
+            help =
+                "The server endpoint to POST the result as JSON (e.g., http://server:port/report). When specified, result is sent to server instead of writing to file.",
+        )
 
     override suspend fun run() {
         super.run()
@@ -103,13 +109,15 @@ internal class AnalyzeRepositoryCommand :
         // Determine repository URL or path
         val resolvedRepoUrl = repoOrigin ?: GitUtils.detectGitRepositoryUrl()
         if (resolvedRepoUrl == null) {
-            Logger.error { "No repository URL/path specified and unable to detect from git. Use --repoOrigin option." }
+            Logger.error {
+                "No repository URL/path specified and unable to detect from git. Use --repoOrigin option."
+            }
             return
         }
         Logger.debug { "Using repository URL/path: $resolvedRepoUrl" }
 
         val provider = getRepositoryFetcher(resolvedRepoUrl, repositoryType)
-        
+
         val projectInfoRes = provider.use { it.getProjectInfo(resolvedRepoUrl, token) }
         val projectInfo =
             when (projectInfoRes) {
@@ -176,7 +184,7 @@ internal class AnalyzeRepositoryCommand :
                 throw e
             }
         }
-        if (!output.isNullOrBlank()){
+        if (!output.isNullOrBlank()) {
             writeToFile(result, output)
         }
     }

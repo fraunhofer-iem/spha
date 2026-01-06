@@ -9,7 +9,6 @@
 
 package de.fraunhofer.iem.spha.cli.vcs
 
-import de.fraunhofer.iem.spha.model.project.ProjectInfo
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.net.URI
 import java.nio.file.Path
@@ -32,7 +31,6 @@ enum class RepositoryType {
 /** Factory for creating the appropriate ProjectInfoFetcher based on repository URL/path. */
 object ProjectInfoFetcherFactory {
     private val logger = KotlinLogging.logger {}
-
 
     /**
      * Creates a repository info provider based on an explicit repository type.
@@ -58,8 +56,11 @@ object ProjectInfoFetcherFactory {
      * @throws IllegalArgumentException if repositoryType is invalid
      */
     fun createFetcher(repositoryType: String): ProjectInfoFetcher {
-        val type = RepositoryType.fromString(repositoryType)
-            ?: throw IllegalArgumentException("Invalid repository type: $repositoryType. Valid values: github, gitlab, local")
+        val type =
+            RepositoryType.fromString(repositoryType)
+                ?: throw IllegalArgumentException(
+                    "Invalid repository type: $repositoryType. Valid values: github, gitlab, local"
+                )
         return createFetcher(type)
     }
 
@@ -92,11 +93,13 @@ object ProjectInfoFetcherFactory {
                         RepositoryType.GITLAB
                     }
                     host != null -> {
-                        logger.error { "Unknown remote repository host '$host'. Use --repositoryType to specify the repository type." }
+                        logger.error {
+                            "Unknown remote repository host '$host'. Use --repositoryType to specify the repository type."
+                        }
                         throw IllegalArgumentException(
                             "Unable to determine repository type for '$repoUrlOrPath'. " +
-                            "Unknown host: '$host'. " +
-                            "Please specify the repository type using --repositoryType option (github, gitlab, or local)."
+                                "Unknown host: '$host'. " +
+                                "Please specify the repository type using --repositoryType option (github, gitlab, or local)."
                         )
                     }
                     else -> {
@@ -109,7 +112,8 @@ object ProjectInfoFetcherFactory {
     }
 
     /**
-     * Creates the appropriate repository info provider based on the repository URL or path (auto-detection).
+     * Creates the appropriate repository info provider based on the repository URL or path
+     * (auto-detection).
      *
      * @param repoUrlOrPath The repository URL or local path
      * @return ProjectInfoFetcher instance for the detected repository type

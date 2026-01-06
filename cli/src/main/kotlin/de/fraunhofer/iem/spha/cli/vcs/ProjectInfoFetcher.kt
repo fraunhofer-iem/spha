@@ -13,7 +13,8 @@ import de.fraunhofer.iem.spha.model.project.ProjectInfo
 import io.ktor.utils.io.core.Closeable
 
 /**
- * Interface for fetching project information from various sources (GitHub, GitLab, local repositories).
+ * Interface for fetching project information from various sources (GitHub, GitLab, local
+ * repositories).
  */
 interface ProjectInfoFetcher : Closeable {
     /**
@@ -23,5 +24,8 @@ interface ProjectInfoFetcher : Closeable {
      * @param tokenOverride Optional token to override environment variable token
      * @return NetworkResponse containing ProjectInfo or error
      */
-    suspend fun getProjectInfo(repoUrl: String, tokenOverride: String? = null): NetworkResponse<ProjectInfo>
+    suspend fun getProjectInfo(
+        repoUrl: String,
+        tokenOverride: String? = null,
+    ): NetworkResponse<ProjectInfo>
 }

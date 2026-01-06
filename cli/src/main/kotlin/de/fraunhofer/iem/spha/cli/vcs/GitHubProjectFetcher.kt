@@ -85,9 +85,16 @@ class GitHubProjectFetcher(
      * @param tokenOverride Optional token to override environment variable token
      * @return ProjectInfo containing repository details
      */
-    override suspend fun getProjectInfo(repoUrl: String, tokenOverride: String?): NetworkResponse<ProjectInfo> {
-        val token = tokenOverride ?: getToken()
-            ?: return NetworkResponse.Failed("GitHub token is required. Set GITHUB_TOKEN or GH_TOKEN environment variable, or use --token option.")
+    override suspend fun getProjectInfo(
+        repoUrl: String,
+        tokenOverride: String?,
+    ): NetworkResponse<ProjectInfo> {
+        val token =
+            tokenOverride
+                ?: getToken()
+                ?: return NetworkResponse.Failed(
+                    "GitHub token is required. Set GITHUB_TOKEN or GH_TOKEN environment variable, or use --token option."
+                )
         logger.info { "Fetching project information from GitHub for repository: $repoUrl" }
 
         val (owner, repo) =
@@ -218,8 +225,8 @@ class GitHubProjectFetcher(
     }
 
     /**
-     * Gets the GitHub authentication token from environment variables.
-     * Checks GITHUB_TOKEN first, then falls back to GH_TOKEN.
+     * Gets the GitHub authentication token from environment variables. Checks GITHUB_TOKEN first,
+     * then falls back to GH_TOKEN.
      *
      * @return The GitHub token or null if not available
      */

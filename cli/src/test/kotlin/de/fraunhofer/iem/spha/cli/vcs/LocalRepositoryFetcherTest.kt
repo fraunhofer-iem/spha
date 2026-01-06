@@ -9,7 +9,6 @@
 
 package de.fraunhofer.iem.spha.cli.vcs
 
-import de.fraunhofer.iem.spha.model.project.ProjectInfo
 import java.nio.file.Files
 import kotlin.io.path.writeText
 import kotlin.test.Test
@@ -64,7 +63,8 @@ class LocalRepositoryFetcherTest : ProjectInfoFetcherTestBase() {
         return path.substringAfterLast("/").substringAfterLast("\\")
     }
 
-    override fun getAlternativeUrlFormats(): List<String> = emptyList() // No alternative formats for local paths
+    override fun getAlternativeUrlFormats(): List<String> =
+        emptyList() // No alternative formats for local paths
 
     override fun getNonExistentRepositoryUrl(): String = "/non/existent/path"
 
@@ -122,7 +122,11 @@ class LocalRepositoryFetcherTest : ProjectInfoFetcherTestBase() {
             val result = LocalRepositoryFetcher().getProjectInfo(repoPath)
 
             assertTrue(result is NetworkResponse.Success)
-            assertEquals(result.data.lastCommitDate?.isNotEmpty(), true, "Should have last commit date")
+            assertEquals(
+                result.data.lastCommitDate?.isNotEmpty(),
+                true,
+                "Should have last commit date",
+            )
         } finally {
             cleanup()
         }
@@ -156,7 +160,10 @@ class LocalRepositoryFetcherTest : ProjectInfoFetcherTestBase() {
             val result = LocalRepositoryFetcher().getProjectInfo(tempDir.toString())
 
             assertTrue(result is NetworkResponse.Failed, "Should fail for non-git directory")
-            assertTrue(result.msg.contains("Not a git repository"), "Error should mention not a git repo")
+            assertTrue(
+                result.msg.contains("Not a git repository"),
+                "Error should mention not a git repo",
+            )
         } finally {
             tempDir.toFile().deleteRecursively()
         }
@@ -177,7 +184,11 @@ class LocalRepositoryFetcherTest : ProjectInfoFetcherTestBase() {
             val result = LocalRepositoryFetcher().getProjectInfo(tempDir.toString())
 
             assertTrue(result is NetworkResponse.Success, "Should succeed even without remote")
-            assertEquals(tempDir.toString(), result.data.url, "URL should be the local path when no remote")
+            assertEquals(
+                tempDir.toString(),
+                result.data.url,
+                "URL should be the local path when no remote",
+            )
         } finally {
             tempDir.toFile().deleteRecursively()
         }
@@ -199,7 +210,7 @@ class LocalRepositoryFetcherTest : ProjectInfoFetcherTestBase() {
             val languages = result.data.usedLanguages.associateBy { it.name }
             assertTrue(languages.containsKey("Java"), "Should detect Java")
             assertTrue(languages.containsKey("JavaScript"), "Should detect JavaScript")
-            
+
             val javaSize = languages["Java"]?.size ?: 0
             val jsSize = languages["JavaScript"]?.size ?: 0
             assertTrue(javaSize > jsSize, "Java file should be larger than JS file")

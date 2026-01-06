@@ -32,7 +32,28 @@ A Vue.js web application for visualizing SPHA analysis results, featuring:
 - KPI hierarchy visualization
 - Tool integration overview
 
+### Server (`server/`)
+
+A Ktor-based REST API server providing backend services for SPHA.
+
 ## Getting Started
+
+### Running with Docker Compose
+
+To run the server with a PostgreSQL database using Docker Compose:
+
+```bash
+docker compose up
+```
+
+This will:
+- Start a PostgreSQL database container
+- Build and start the SPHA server connected to the database
+- Expose the server on `http://localhost:8080`
+
+The database data is persisted in `./tmp/db/`.
+
+### Running Locally
 
 For detailed instructions on each component, please refer to their respective README files linked above.
 

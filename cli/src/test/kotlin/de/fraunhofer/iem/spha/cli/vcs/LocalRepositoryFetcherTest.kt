@@ -121,7 +121,7 @@ class LocalRepositoryFetcherTest : ProjectInfoFetcherTestBase() {
             val result = LocalRepositoryFetcher().getProjectInfo(repoPath)
 
             assertTrue(result is NetworkResponse.Success)
-            assertTrue(result.data.lastCommitDate?.isNotEmpty() == true, "Should have last commit date")
+            assertEquals(result.data.lastCommitDate?.isNotEmpty(), true, "Should have last commit date")
         } finally {
             cleanup()
         }

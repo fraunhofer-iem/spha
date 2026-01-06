@@ -25,12 +25,9 @@ class GitUtilsTest {
     fun `detectGitRepositoryUrl returns URL from actual git repository`() {
         // Test with the actual project repository
         val url = GitUtils.detectGitRepositoryUrl()
-        
-        // If we're in a git repository, we should get a URL
-        // This test will pass in the actual SPHA project
+
         if (url != null) {
             assertTrue(url.isNotEmpty(), "Detected URL should not be empty")
-            // Basic validation that it looks like a git URL
             assertTrue(
                 url.contains("git") || url.contains("http") || url.contains("@"),
                 "Detected URL should look like a git URL: $url"
@@ -43,17 +40,15 @@ class GitUtilsTest {
         // Create a temporary directory without git
         val tempDir = Files.createTempDirectory("non-git-test")
         try {
-            // Change to temp directory and try to detect
-            val process = ProcessBuilder("git", "config", "--get", "remote.origin.url")
-                .directory(tempDir.toFile())
-                .redirectErrorStream(true)
-                .start()
-            
-            process.waitFor()
-            val exitCode = process.exitValue()
-            
-            // Git should fail in a non-git directory
-            assertTrue(exitCode != 0, "Git command should fail in non-git directory")
+            // Change to the non-git directory
+            val originalDir = System.getProperty("user.dir")
+            try {
+                System.setProperty("user.dir", tempDir.toAbsolutePath().toString())
+                val url = GitUtils.detectGitRepositoryUrl()
+                assertNull(url, "detectGitRepositoryUrl should return null in non-git directory")
+            } finally {
+                System.setProperty("user.dir", originalDir)
+            }
         } finally {
             tempDir.toFile().deleteRecursively()
         }
@@ -71,29 +66,21 @@ class GitUtilsTest {
     fun `detectGitRepositoryUrl works with various git URL formats`(remoteUrl: String) {
         val tempDir = Files.createTempDirectory("git-test")
         try {
-            // Initialize git repo
-            ProcessBuilder("git", "init")
-                .directory(tempDir.toFile())
-                .start()
-                .waitFor()
+            // Initialize git repo using GitUtils
+            GitUtils.runGitCommand(tempDir.toFile(), "init")
+            GitUtils.runGitCommand(tempDir.toFile(), "remote", "add", "origin", remoteUrl)
 
-            // Add remote with the test URL
-            ProcessBuilder("git", "remote", "add", "origin", remoteUrl)
-                .directory(tempDir.toFile())
-                .start()
-                .waitFor()
+            // Change to the git directory
+            val originalDir = System.getProperty("user.dir")
+            try {
+                System.setProperty("user.dir", tempDir.toAbsolutePath().toString())
 
-            // Verify the URL was set in config
-            val process = ProcessBuilder("git", "config", "--get", "remote.origin.url")
-                .directory(tempDir.toFile())
-                .redirectErrorStream(true)
-                .start()
-
-            val output = process.inputStream.bufferedReader().readText().trim()
-            process.waitFor()
-
-            assertEquals(0, process.exitValue(), "Git command should succeed")
-            assertEquals(remoteUrl, output, "Remote URL should match the configured value")
+                val detectedUrl = GitUtils.detectGitRepositoryUrl()
+                assertNotNull(detectedUrl, "detectGitRepositoryUrl should return a URL")
+                assertEquals(remoteUrl, detectedUrl, "Detected URL should match the configured remote URL")
+            } finally {
+                System.setProperty("user.dir", originalDir)
+            }
         } finally {
             tempDir.toFile().deleteRecursively()
         }

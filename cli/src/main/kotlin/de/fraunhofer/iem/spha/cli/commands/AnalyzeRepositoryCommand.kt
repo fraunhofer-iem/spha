@@ -14,6 +14,7 @@ import de.fraunhofer.iem.spha.adapter.ToolInfo
 import de.fraunhofer.iem.spha.adapter.ToolResultParser
 import de.fraunhofer.iem.spha.adapter.TransformationResult
 import de.fraunhofer.iem.spha.cli.SphaToolCommandBase
+import de.fraunhofer.iem.spha.cli.reporting.HttpResultSender
 import de.fraunhofer.iem.spha.cli.vcs.GitUtils
 import de.fraunhofer.iem.spha.cli.vcs.Language
 import de.fraunhofer.iem.spha.cli.vcs.NetworkResponse
@@ -25,15 +26,6 @@ import de.fraunhofer.iem.spha.model.adapter.Origin
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.DefaultHierarchy
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiHierarchy
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiResultHierarchy
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
-import io.ktor.serialization.kotlinx.json.json
 import java.nio.file.FileSystem
 import kotlin.io.path.createDirectories
 import kotlin.io.path.inputStream
@@ -184,39 +176,10 @@ internal class AnalyzeRepositoryCommand :
         val reportUri = this.reportUri
 
         if (!reportUri.isNullOrBlank()) {
-            sendResultToServer(result, reportUri)
+            HttpResultSender().send(result, reportUri)
         }
         if (!output.isNullOrBlank()){
             writeToFile(result, output)
-        }
-    }
-
-    private suspend fun sendResultToServer(result: SphaToolResult, uri: String) {
-        Logger.info { "Sending result to server: $uri" }
-        
-        val client = HttpClient(CIO) {
-            install(ContentNegotiation) {
-                json(Json {
-                    prettyPrint = false
-                    ignoreUnknownKeys = true
-                })
-            }
-        }
-
-        try {
-            val response = client.post(uri) {
-                contentType(ContentType.Application.Json)
-                setBody(result)
-            }
-            
-            val responseBody = response.bodyAsText()
-            Logger.info { "Server response: ${response.status}" }
-            Logger.debug { "Response body: $responseBody" }
-        } catch (e: Exception) {
-            Logger.error(e) { "Failed to send result to server: ${e.message}" }
-            throw e
-        } finally {
-            client.close()
         }
     }
 

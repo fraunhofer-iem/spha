@@ -80,10 +80,8 @@ abstract class ProjectInfoFetcherTestBase {
                 assertTrue(result is NetworkResponse.Success, "Expected successful response for URL: $url")
                 val projectInfo = result.data
 
-                // Assert on repository name and URL
                 assertEquals(getExpectedRepositoryName(), projectInfo.name)
 
-                // Configurable assertions
                 if (assertStarsNonNegative) {
                     assertTrue(projectInfo.stars >= 0, "Stars must be >= 0, got ${projectInfo.stars}")
                 }
@@ -111,7 +109,6 @@ abstract class ProjectInfoFetcherTestBase {
     @Test
     fun `getProjectInfo returns failure when token is not provided`() = runBlocking {
         if (!requiresAuthentication) {
-            // Skip test for fetchers that don't require authentication
             return@runBlocking
         }
 
@@ -119,7 +116,6 @@ abstract class ProjectInfoFetcherTestBase {
         fetcher.use {
             val result = it.getProjectInfo(getTestRepositoryUrl(), tokenOverride = null)
 
-            // Only test failure if no environment token is available
             val hasEnvToken = getAuthToken() != null
             if (!hasEnvToken) {
                 assertTrue(result is NetworkResponse.Failed, "Expected failure when no token provided")
@@ -131,7 +127,6 @@ abstract class ProjectInfoFetcherTestBase {
     @Test
     fun `getProjectInfo returns failure for invalid token`() = runBlocking {
         if (!requiresAuthentication) {
-            // Skip test for fetchers that don't require authentication
             return@runBlocking
         }
 
@@ -161,7 +156,6 @@ abstract class ProjectInfoFetcherTestBase {
     @Test
     fun `getProjectInfo returns failure for malformed URL`() = runBlocking {
         if (!validatesUrlFormat) {
-            // Skip test for fetchers that don't validate URL format (e.g., path-based fetchers)
             return@runBlocking
         }
 

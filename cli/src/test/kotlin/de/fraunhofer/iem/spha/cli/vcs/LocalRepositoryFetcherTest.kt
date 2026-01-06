@@ -9,6 +9,7 @@
 
 package de.fraunhofer.iem.spha.cli.vcs
 
+import de.fraunhofer.iem.spha.model.project.ProjectInfo
 import java.nio.file.Files
 import kotlin.io.path.writeText
 import kotlin.test.Test

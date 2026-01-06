@@ -12,11 +12,11 @@ package de.fraunhofer.iem.spha.adapter.tools.tlc
 import de.fraunhofer.iem.spha.adapter.AdapterResult
 import de.fraunhofer.iem.spha.adapter.ErrorType
 import de.fraunhofer.iem.spha.adapter.KpiAdapter
-import de.fraunhofer.iem.spha.adapter.ToolInfo
 import de.fraunhofer.iem.spha.adapter.TransformationResult
 import de.fraunhofer.iem.spha.model.adapter.ComponentLag
 import de.fraunhofer.iem.spha.model.adapter.TlcDto
 import de.fraunhofer.iem.spha.model.adapter.TlcOrigin
+import de.fraunhofer.iem.spha.model.adapter.ToolInfo
 import de.fraunhofer.iem.spha.model.kpi.KpiType
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 

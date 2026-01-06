@@ -9,6 +9,8 @@
 
 package de.fraunhofer.iem.spha.cli.vcs
 
+import de.fraunhofer.iem.spha.model.project.Language
+import de.fraunhofer.iem.spha.model.project.ProjectInfo
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*

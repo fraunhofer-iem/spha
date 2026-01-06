@@ -9,6 +9,7 @@
 
 package de.fraunhofer.iem.spha.cli.vcs
 
+import de.fraunhofer.iem.spha.model.project.ProjectInfo
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.EnumSource

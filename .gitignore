@@ -153,3 +153,5 @@ gradle/**
 .kotlin
 
 **/bin
+
+tmp/**

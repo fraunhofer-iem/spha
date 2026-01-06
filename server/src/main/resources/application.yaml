@@ -1,0 +1,16 @@
+ktor:
+    application:
+        modules:
+            - de.fraunhofer.iem.spha.ApplicationKt.module
+    deployment:
+        port: 8080
+jwt:
+  domain: "https://jwt-provider-domain/"
+  audience: "jwt-audience"
+  realm: "ktor sample app"
+database:
+  embedded: true
+postgres:
+  url: "jdbc:postgresql://localhost:5432/spha_db"
+  user: postgres
+  password: postgres

@@ -9,9 +9,8 @@
 
 package de.fraunhofer.iem.spha
 
-import de.fraunhofer.iem.spha.adapter.ToolInfo
-import de.fraunhofer.iem.spha.model.adapter.Origin
-import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiResultHierarchy
+import de.fraunhofer.iem.spha.model.SphaToolResult
+import de.fraunhofer.iem.spha.model.project.ProjectInfo
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -22,31 +21,7 @@ import java.sql.DriverManager
 import java.sql.Statement
 import java.sql.Timestamp
 import kotlinx.coroutines.*
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-
-@Serializable
-data class SphaToolResult(
-    val resultHierarchy: KpiResultHierarchy,
-    val origins: List<ToolInfoAndOrigin>,
-    val projectInfo: ProjectInfo,
-)
-
-@Serializable data class ToolInfoAndOrigin(val toolInfo: ToolInfo, val origins: List<Origin>)
-
-@Serializable
-data class ProjectInfo(
-    val name: String,
-    val usedLanguages: List<Language>,
-    val url: String,
-    val stars: Int,
-    val numberOfContributors: Int,
-    val numberOfCommits: Int?,
-    val lastCommitDate: String?,
-)
-
-@Serializable data class Language(val name: String, val size: Int)
 
 class ResultService(private val connection: Connection) {
     companion object {
@@ -127,7 +102,7 @@ class ResultService(private val connection: Connection) {
             insertStmt.setInt(3, projectInfo.stars)
             insertStmt.setInt(4, projectInfo.numberOfContributors)
             if (projectInfo.numberOfCommits != null) {
-                insertStmt.setInt(5, projectInfo.numberOfCommits)
+                insertStmt.setInt(5, projectInfo.numberOfCommits!!)
             } else {
                 insertStmt.setNull(5, java.sql.Types.INTEGER)
             }

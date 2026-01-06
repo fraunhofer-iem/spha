@@ -148,8 +148,8 @@ class ProjectInfoFetcherFactoryTest {
         val exception = assertFailsWith<IllegalArgumentException> {
             ProjectInfoFetcherFactory.createFetcherFromUrl("https://unknown-host.com/owner/repo")
         }
-        assertTrue(exception.message?.contains("Unable to determine repository type") == true)
-        assertTrue(exception.message?.contains("--repositoryType") == true)
+        assertEquals(exception.message?.contains("Unable to determine repository type"), true)
+        assertEquals(exception.message?.contains("--repositoryType"), true)
     }
 
     @ParameterizedTest

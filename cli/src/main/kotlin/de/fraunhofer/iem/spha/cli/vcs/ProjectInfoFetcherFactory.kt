@@ -9,6 +9,7 @@
 
 package de.fraunhofer.iem.spha.cli.vcs
 
+import de.fraunhofer.iem.spha.model.project.ProjectInfo
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.net.URI
 import java.nio.file.Path

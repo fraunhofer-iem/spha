@@ -12,11 +12,11 @@ package de.fraunhofer.iem.spha.adapter.tools.osv
 import de.fraunhofer.iem.spha.adapter.AdapterResult
 import de.fraunhofer.iem.spha.adapter.ErrorType
 import de.fraunhofer.iem.spha.adapter.KpiAdapter
-import de.fraunhofer.iem.spha.adapter.ToolInfo
 import de.fraunhofer.iem.spha.adapter.TransformationResult
 import de.fraunhofer.iem.spha.adapter.kpis.cve.transformVulnerabilityToKpi
 import de.fraunhofer.iem.spha.model.adapter.OsvScannerDto
 import de.fraunhofer.iem.spha.model.adapter.OsvVulnerabilityDto
+import de.fraunhofer.iem.spha.model.adapter.ToolInfo
 import de.fraunhofer.iem.spha.model.kpi.KpiType
 import org.metaeffekt.core.security.cvss.CvssVector
 

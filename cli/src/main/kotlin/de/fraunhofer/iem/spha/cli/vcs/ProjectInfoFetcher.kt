@@ -9,6 +9,7 @@
 
 package de.fraunhofer.iem.spha.cli.vcs
 
+import de.fraunhofer.iem.spha.model.project.ProjectInfo
 import io.ktor.utils.io.core.Closeable
 
 /**

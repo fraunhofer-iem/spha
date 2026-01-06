@@ -9,6 +9,7 @@
 
 package de.fraunhofer.iem.spha.cli.vcs
 
+import de.fraunhofer.iem.spha.model.project.ProjectInfo
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assumptions.assumeTrue
 import org.junit.jupiter.api.Test
@@ -91,8 +92,9 @@ abstract class ProjectInfoFetcherTestBase {
                 }
 
                 if (assertCommitsNonNegative) {
-                    assertNotNull(projectInfo.numberOfCommits, "Number of commits should not be null")
-                    assertTrue(projectInfo.numberOfCommits >= 0, "Commits must be >= 0, got ${projectInfo.numberOfCommits}")
+                    val commits = projectInfo.numberOfCommits
+                    assertNotNull(commits, "Number of commits should not be null")
+                    assertTrue(commits >= 0, "Commits must be >= 0, got $commits")
                 }
 
                 if (assertLastCommitDateNotNull) {

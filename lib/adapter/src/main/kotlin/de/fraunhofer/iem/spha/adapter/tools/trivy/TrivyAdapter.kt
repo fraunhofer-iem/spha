@@ -12,10 +12,10 @@ package de.fraunhofer.iem.spha.adapter.tools.trivy
 import de.fraunhofer.iem.spha.adapter.AdapterResult
 import de.fraunhofer.iem.spha.adapter.ErrorType
 import de.fraunhofer.iem.spha.adapter.KpiAdapter
-import de.fraunhofer.iem.spha.adapter.ToolInfo
 import de.fraunhofer.iem.spha.adapter.TransformationResult
 import de.fraunhofer.iem.spha.adapter.kpis.cve.transformVulnerabilityToKpi
 import de.fraunhofer.iem.spha.model.adapter.CVSSData
+import de.fraunhofer.iem.spha.model.adapter.ToolInfo
 import de.fraunhofer.iem.spha.model.adapter.TrivyDtoV2
 import de.fraunhofer.iem.spha.model.adapter.TrivyVulnerabilityDto
 import de.fraunhofer.iem.spha.model.kpi.KpiType

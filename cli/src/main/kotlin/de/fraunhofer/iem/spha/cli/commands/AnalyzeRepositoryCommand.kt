@@ -10,22 +10,24 @@
 package de.fraunhofer.iem.spha.cli.commands
 
 import com.github.ajalt.clikt.parameters.options.option
-import de.fraunhofer.iem.spha.adapter.ToolInfo
 import de.fraunhofer.iem.spha.adapter.ToolResultParser
 import de.fraunhofer.iem.spha.adapter.TransformationResult
 import de.fraunhofer.iem.spha.cli.SphaToolCommandBase
 import de.fraunhofer.iem.spha.cli.reporting.HttpResultSender
 import de.fraunhofer.iem.spha.cli.vcs.GitUtils
-import de.fraunhofer.iem.spha.cli.vcs.Language
 import de.fraunhofer.iem.spha.cli.vcs.NetworkResponse
-import de.fraunhofer.iem.spha.cli.vcs.ProjectInfo
 import de.fraunhofer.iem.spha.cli.vcs.ProjectInfoFetcher
 import de.fraunhofer.iem.spha.cli.vcs.ProjectInfoFetcherFactory
 import de.fraunhofer.iem.spha.core.KpiCalculator
+import de.fraunhofer.iem.spha.model.SphaToolResult
+import de.fraunhofer.iem.spha.model.ToolInfoAndOrigin
 import de.fraunhofer.iem.spha.model.adapter.Origin
+import de.fraunhofer.iem.spha.model.adapter.ToolInfo
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.DefaultHierarchy
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiHierarchy
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiResultHierarchy
+import de.fraunhofer.iem.spha.model.project.Language
+import de.fraunhofer.iem.spha.model.project.ProjectInfo
 import java.nio.file.FileSystem
 import kotlin.io.path.createDirectories
 import kotlin.io.path.inputStream
@@ -37,15 +39,6 @@ import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-
-@Serializable
-data class SphaToolResult(
-    val resultHierarchy: KpiResultHierarchy,
-    val origins: List<ToolInfoAndOrigin>,
-    val projectInfo: ProjectInfo,
-)
-
-@Serializable data class ToolInfoAndOrigin(val toolInfo: ToolInfo, val origins: List<Origin>)
 
 internal class AnalyzeRepositoryCommand :
     SphaToolCommandBase(

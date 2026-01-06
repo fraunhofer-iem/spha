@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Fraunhofer IEM. All rights reserved.
+ * Copyright (c) 2024-2026 Fraunhofer IEM. All rights reserved.
  *
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  *
@@ -17,6 +17,8 @@ include(":lib:model")
 include(":lib:adapter")
 
 include(":cli")
+
+include(":server")
 
 pluginManagement {
     repositories {

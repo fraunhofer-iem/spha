@@ -23,9 +23,7 @@ import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-/**
- * A class responsible for sending analysis results to a remote server via HTTP.
- */
+/** A class responsible for sending analysis results to a remote server via HTTP. */
 class HttpResultSender {
     private val logger = KotlinLogging.logger {}
 
@@ -39,25 +37,30 @@ class HttpResultSender {
     suspend fun send(result: SphaToolResult, uri: String) {
         logger.info { "Sending result to server: $uri" }
 
-        val client = HttpClient(CIO) {
-            install(ContentNegotiation) {
-                json(Json {
-                    prettyPrint = false
-                    ignoreUnknownKeys = true
-                })
+        val client =
+            HttpClient(CIO) {
+                install(ContentNegotiation) {
+                    json(
+                        Json {
+                            prettyPrint = false
+                            ignoreUnknownKeys = true
+                        }
+                    )
+                }
             }
-        }
 
         try {
-            val response = client.post(uri) {
-                contentType(ContentType.Application.Json)
-                setBody(result)
-            }
+            val response =
+                client.post(uri) {
+                    contentType(ContentType.Application.Json)
+                    setBody(result)
+                }
 
             val responseBody = response.bodyAsText()
 
             if (!response.status.isSuccess()) {
-                val errorMessage = "Server returned error status ${response.status.value}: $responseBody"
+                val errorMessage =
+                    "Server returned error status ${response.status.value}: $responseBody"
                 logger.error { errorMessage }
                 throw Exception(errorMessage)
             }

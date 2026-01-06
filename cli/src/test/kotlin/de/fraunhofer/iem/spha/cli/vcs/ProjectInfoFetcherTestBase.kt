@@ -9,17 +9,16 @@
 
 package de.fraunhofer.iem.spha.cli.vcs
 
-import de.fraunhofer.iem.spha.model.project.ProjectInfo
-import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Assumptions.assumeTrue
-import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import kotlinx.coroutines.runBlocking
+import org.junit.jupiter.api.Assumptions.assumeTrue
+import org.junit.jupiter.api.Test
 
 /**
- * Base test class for ProjectInfoFetcher implementations.
- * Concrete test classes should extend this and implement the abstract methods.
+ * Base test class for ProjectInfoFetcher implementations. Concrete test classes should extend this
+ * and implement the abstract methods.
  */
 abstract class ProjectInfoFetcherTestBase {
 
@@ -78,17 +77,26 @@ abstract class ProjectInfoFetcherTestBase {
             urls.forEach { url ->
                 val result = it.getProjectInfo(url, token)
 
-                assertTrue(result is NetworkResponse.Success, "Expected successful response for URL: $url")
+                assertTrue(
+                    result is NetworkResponse.Success,
+                    "Expected successful response for URL: $url",
+                )
                 val projectInfo = result.data
 
                 assertEquals(getExpectedRepositoryName(), projectInfo.name)
 
                 if (assertStarsNonNegative) {
-                    assertTrue(projectInfo.stars >= 0, "Stars must be >= 0, got ${projectInfo.stars}")
+                    assertTrue(
+                        projectInfo.stars >= 0,
+                        "Stars must be >= 0, got ${projectInfo.stars}",
+                    )
                 }
 
                 if (assertContributorsNonNegative) {
-                    assertTrue(projectInfo.numberOfContributors >= 0, "Contributors must be >= 0, got ${projectInfo.numberOfContributors}")
+                    assertTrue(
+                        projectInfo.numberOfContributors >= 0,
+                        "Contributors must be >= 0, got ${projectInfo.numberOfContributors}",
+                    )
                 }
 
                 if (assertCommitsNonNegative) {
@@ -102,7 +110,10 @@ abstract class ProjectInfoFetcherTestBase {
                 }
 
                 if (assertLanguagesNotEmpty) {
-                    assertTrue(projectInfo.usedLanguages.isNotEmpty(), "Languages should not be empty")
+                    assertTrue(
+                        projectInfo.usedLanguages.isNotEmpty(),
+                        "Languages should not be empty",
+                    )
                 }
             }
         }
@@ -120,7 +131,10 @@ abstract class ProjectInfoFetcherTestBase {
 
             val hasEnvToken = getAuthToken() != null
             if (!hasEnvToken) {
-                assertTrue(result is NetworkResponse.Failed, "Expected failure when no token provided")
+                assertTrue(
+                    result is NetworkResponse.Failed,
+                    "Expected failure when no token provided",
+                )
                 assertTrue(result.msg.contains("token", ignoreCase = true))
             }
         }
@@ -151,7 +165,10 @@ abstract class ProjectInfoFetcherTestBase {
         fetcher.use {
             val result = it.getProjectInfo(getNonExistentRepositoryUrl(), token)
 
-            assertTrue(result is NetworkResponse.Failed, "Expected failure for non-existent repository")
+            assertTrue(
+                result is NetworkResponse.Failed,
+                "Expected failure for non-existent repository",
+            )
         }
     }
 
@@ -172,9 +189,11 @@ abstract class ProjectInfoFetcherTestBase {
 
             assertTrue(result is NetworkResponse.Failed, "Expected failure for malformed URL")
             val msg = result.msg
-            assertTrue(msg.contains("Invalid", ignoreCase = true) ||
-                      msg.contains("parse", ignoreCase = true) ||
-                      msg.contains("error", ignoreCase = true))
+            assertTrue(
+                msg.contains("Invalid", ignoreCase = true) ||
+                    msg.contains("parse", ignoreCase = true) ||
+                    msg.contains("error", ignoreCase = true)
+            )
         }
     }
 }

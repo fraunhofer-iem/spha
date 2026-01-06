@@ -22,6 +22,9 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.mockk.mockkClass
+import java.nio.file.Files
+import kotlin.io.path.Path
+import kotlin.test.*
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -34,9 +37,6 @@ import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.junit5.KoinTestExtension
 import org.koin.test.junit5.mock.MockProviderExtension
-import java.nio.file.Files
-import kotlin.io.path.Path
-import kotlin.test.*
 
 class AnalyzeRepositoryCommandTest : KoinTest {
 
@@ -73,9 +73,10 @@ class AnalyzeRepositoryCommandTest : KoinTest {
     @Test
     fun `command fails with invalid repository type`() = runTest {
         val command = AnalyzeRepositoryCommand()
-        val e = assertThrows<IllegalArgumentException> {
-            command.test("--output \"${OUTPUT_FILE}\" --repositoryType invalid-type")
-        }
+        val e =
+            assertThrows<IllegalArgumentException> {
+                command.test("--output \"${OUTPUT_FILE}\" --repositoryType invalid-type")
+            }
         assertContains(e.message!!, "Invalid repository type:")
     }
 
@@ -83,10 +84,16 @@ class AnalyzeRepositoryCommandTest : KoinTest {
     @Test
     fun `command succeeds with local repository`() = runTest {
         val command = AnalyzeRepositoryCommand()
-        val result = command.test(
-            "--repoOrigin \"$CURRENT_REPO_LOCAL\" --output \"$OUTPUT_FILE\" --repositoryType local --toolResultDir \"$SAMPLE_RESULT_DIR\"")
+        val result =
+            command.test(
+                "--repoOrigin \"$CURRENT_REPO_LOCAL\" --output \"$OUTPUT_FILE\" --repositoryType local --toolResultDir \"$SAMPLE_RESULT_DIR\""
+            )
 
-        assertEquals(0, result.statusCode, "Command should succeed with local repository. Output: ${result.stdout}\n${result.stderr}")
+        assertEquals(
+            0,
+            result.statusCode,
+            "Command should succeed with local repository. Output: ${result.stdout}\n${result.stderr}",
+        )
         assertTrue(Files.exists(Path(OUTPUT_FILE)), "Output file should be created at $OUTPUT_FILE")
 
         Files.newInputStream(Path(OUTPUT_FILE)).use { inputStream ->
@@ -94,7 +101,10 @@ class AnalyzeRepositoryCommandTest : KoinTest {
             assertNotNull(sphaResult.projectInfo, "Project info should not be null")
             assertEquals("..", sphaResult.projectInfo.name)
             assertEquals("https://github.com/fraunhofer-iem/spha", sphaResult.projectInfo.url)
-            assertTrue(sphaResult.projectInfo.usedLanguages.any { it.name == "Kotlin" }, "Should detect Kotlin language")
+            assertTrue(
+                sphaResult.projectInfo.usedLanguages.any { it.name == "Kotlin" },
+                "Should detect Kotlin language",
+            )
         }
     }
 
@@ -103,9 +113,16 @@ class AnalyzeRepositoryCommandTest : KoinTest {
     fun `command uses detected git repository when repoUrl not specified`() = runTest {
         val command = AnalyzeRepositoryCommand()
 
-        val result = command.test("--output \"$OUTPUT_FILE\" --repositoryType local --toolResultDir \"$SAMPLE_RESULT_DIR\"")
+        val result =
+            command.test(
+                "--output \"$OUTPUT_FILE\" --repositoryType local --toolResultDir \"$SAMPLE_RESULT_DIR\""
+            )
 
-        assertEquals(0, result.statusCode, "Command should auto-detect git repository. Output: ${result.stdout}\n${result.stderr}")
+        assertEquals(
+            0,
+            result.statusCode,
+            "Command should auto-detect git repository. Output: ${result.stdout}\n${result.stderr}",
+        )
         assertTrue(Files.exists(Path(OUTPUT_FILE)), "Output file should be created")
 
         Files.newInputStream(Path(OUTPUT_FILE)).use { inputStream ->
@@ -118,8 +135,10 @@ class AnalyzeRepositoryCommandTest : KoinTest {
     @Test
     fun `command respects token override`() = runTest {
         val command = AnalyzeRepositoryCommand()
-        val result = command.test(
-            "--repoOrigin \"$CURRENT_REPO_LOCAL\" --output \"$OUTPUT_FILE\" --repositoryType local --token test-token-123 --toolResultDir \"$SAMPLE_RESULT_DIR\"")
+        val result =
+            command.test(
+                "--repoOrigin \"$CURRENT_REPO_LOCAL\" --output \"$OUTPUT_FILE\" --repositoryType local --token test-token-123 --toolResultDir \"$SAMPLE_RESULT_DIR\""
+            )
 
         // Should succeed - local repos don't need tokens anyway
         assertEquals(0, result.statusCode)
@@ -130,15 +149,17 @@ class AnalyzeRepositoryCommandTest : KoinTest {
     fun `command fails when invalid token supplied for github`() = runTest {
         val repoUrl = "https://github.com/fraunhofer-iem/spha"
         val command = AnalyzeRepositoryCommand()
-        
-        val result = command.test(
-            "--repoOrigin \"$repoUrl\" --output \"$OUTPUT_FILE\" --repositoryType github --token invalid-token-xyz")
-            
+
+        val result =
+            command.test(
+                "--repoOrigin \"$repoUrl\" --output \"$OUTPUT_FILE\" --repositoryType github --token invalid-token-xyz"
+            )
+
         // When GitHub fetching fails, it logs a warning and uses default info.
         // It does NOT return a non-zero exit code currently in the implementation.
         // However, it should have logged the error.
         assertEquals(0, result.statusCode)
-        
+
         // Verify that the output file contains the default "Currently no data available" info
         assertTrue(Files.exists(Path(OUTPUT_FILE)))
         Files.newInputStream(Path(OUTPUT_FILE)).use { inputStream ->
@@ -153,27 +174,34 @@ class AnalyzeRepositoryCommandTest : KoinTest {
         val toolResultDir = "../ui/example"
         val receivedResult = CompletableDeferred<SphaToolResult>()
 
-        val server = embeddedServer(Netty, port = 0) {
-            install(ContentNegotiation) {
-                json()
-            }
-            routing {
-                post("/report") {
-                    val result = call.receive<SphaToolResult>()
-                    receivedResult.complete(result)
-                    call.respond(HttpStatusCode.OK)
+        val server =
+            embeddedServer(Netty, port = 0) {
+                    install(ContentNegotiation) { json() }
+                    routing {
+                        post("/report") {
+                            val result = call.receive<SphaToolResult>()
+                            receivedResult.complete(result)
+                            call.respond(HttpStatusCode.OK)
+                        }
+                    }
                 }
-            }
-        }.start(wait = false)
+                .start(wait = false)
 
         val port = server.engine.resolvedConnectors().first().port
         val reportUri = "http://127.0.0.1:$port/report"
 
         try {
             val command = AnalyzeRepositoryCommand()
-            val result = command.test("--repoOrigin \"$repoDir\" --reportUri $reportUri --repositoryType local --toolResultDir \"$toolResultDir\"")
+            val result =
+                command.test(
+                    "--repoOrigin \"$repoDir\" --reportUri $reportUri --repositoryType local --toolResultDir \"$toolResultDir\""
+                )
 
-            assertEquals(0, result.statusCode, "Command should succeed sending to reportUri. Output: ${result.stdout}\n${result.stderr}")
+            assertEquals(
+                0,
+                result.statusCode,
+                "Command should succeed sending to reportUri. Output: ${result.stdout}\n${result.stderr}",
+            )
 
             val sphaResult = receivedResult.await()
             assertNotNull(sphaResult.projectInfo, "Project info should not be null")
@@ -188,24 +216,29 @@ class AnalyzeRepositoryCommandTest : KoinTest {
         val repoDir = ".."
         val toolResultDir = "../ui/example"
 
-        val server = embeddedServer(Netty, port = 0) {
-            routing {
-                post("/report") {
-                    call.respond(HttpStatusCode.InternalServerError, "Server error")
+        val server =
+            embeddedServer(Netty, port = 0) {
+                    routing {
+                        post("/report") {
+                            call.respond(HttpStatusCode.InternalServerError, "Server error")
+                        }
+                    }
                 }
-            }
-        }.start(wait = false)
+                .start(wait = false)
 
         val port = server.engine.resolvedConnectors().first().port
         val reportUri = "http://127.0.0.1:$port/report"
 
         try {
             val command = AnalyzeRepositoryCommand()
-            val exception = assertThrows<Exception> {
-                command.test("--repoOrigin \"$repoDir\" --reportUri $reportUri --repositoryType local --toolResultDir \"$toolResultDir\"")
-            }
+            val exception =
+                assertThrows<Exception> {
+                    command.test(
+                        "--repoOrigin \"$repoDir\" --reportUri $reportUri --repositoryType local --toolResultDir \"$toolResultDir\""
+                    )
+                }
             assertContains(exception.message!!, "Server returned error status 500")
-        }  finally {
+        } finally {
             server.stop(100, 100)
         }
     }

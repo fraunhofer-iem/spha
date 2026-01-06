@@ -19,30 +19,34 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.Json
-import org.junit.jupiter.api.Test
 import java.nio.file.Path
 import kotlin.io.path.readText
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
+import org.junit.jupiter.api.Test
 
 class HttpResultSenderTest {
 
     private fun loadTestResult(): SphaToolResult {
         // Search for the example file in likely locations
-        val possiblePaths = listOf(
-            Path.of("ui/example/kpi-results.json"),
-            Path.of("../ui/example/kpi-results.json"),
-            Path.of("cli/ui/example/kpi-results.json"),
-            Path.of("../../ui/example/kpi-results.json")
-        )
-        
-        val jsonPath = possiblePaths.find { java.nio.file.Files.exists(it) }
-            ?: throw java.io.FileNotFoundException("Could not find kpi-results.json in any of: $possiblePaths")
-            
+        val possiblePaths =
+            listOf(
+                Path.of("ui/example/kpi-results.json"),
+                Path.of("../ui/example/kpi-results.json"),
+                Path.of("cli/ui/example/kpi-results.json"),
+                Path.of("../../ui/example/kpi-results.json"),
+            )
+
+        val jsonPath =
+            possiblePaths.find { java.nio.file.Files.exists(it) }
+                ?: throw java.io.FileNotFoundException(
+                    "Could not find kpi-results.json in any of: $possiblePaths"
+                )
+
         val jsonContent = jsonPath.readText()
 
         val json = Json {
@@ -59,18 +63,18 @@ class HttpResultSenderTest {
         val result = loadTestResult()
         val receivedResult = CompletableDeferred<SphaToolResult>()
 
-        val server = embeddedServer(Netty, port = 0) {
-            install(ContentNegotiation) {
-                json()
-            }
-            routing {
-                post("/report") {
-                    val body = call.receive<SphaToolResult>()
-                    receivedResult.complete(body)
-                    call.respond(HttpStatusCode.OK)
+        val server =
+            embeddedServer(Netty, port = 0) {
+                    install(ContentNegotiation) { json() }
+                    routing {
+                        post("/report") {
+                            val body = call.receive<SphaToolResult>()
+                            receivedResult.complete(body)
+                            call.respond(HttpStatusCode.OK)
+                        }
+                    }
                 }
-            }
-        }.start(wait = false)
+                .start(wait = false)
 
         val port = server.engine.resolvedConnectors().first().port
         val url = "http://127.0.0.1:$port/report"
@@ -90,21 +94,24 @@ class HttpResultSenderTest {
         val sender = HttpResultSender()
         val result = loadTestResult()
 
-        val server = embeddedServer(Netty, port = 0) {
-            routing {
-                post("/report") {
-                    call.respond(HttpStatusCode.InternalServerError, "Internal server error occurred")
+        val server =
+            embeddedServer(Netty, port = 0) {
+                    routing {
+                        post("/report") {
+                            call.respond(
+                                HttpStatusCode.InternalServerError,
+                                "Internal server error occurred",
+                            )
+                        }
+                    }
                 }
-            }
-        }.start(wait = false)
+                .start(wait = false)
 
         val port = server.engine.resolvedConnectors().first().port
         val url = "http://127.0.0.1:$port/report"
 
         try {
-            val exception = assertFailsWith<Exception> {
-                sender.send(result, url)
-            }
+            val exception = assertFailsWith<Exception> { sender.send(result, url) }
             assertContains(exception.message!!, "Server returned error status 500")
             assertContains(exception.message!!, "Internal server error occurred")
         } finally {
@@ -117,9 +124,7 @@ class HttpResultSenderTest {
         val sender = HttpResultSender()
         val result = loadTestResult()
 
-        assertFailsWith<Exception> {
-            sender.send(result, "http://127.0.0.1:19999/nonexistent")
-        }
+        assertFailsWith<Exception> { sender.send(result, "http://127.0.0.1:19999/nonexistent") }
     }
 
     @Test
@@ -127,9 +132,7 @@ class HttpResultSenderTest {
         val sender = HttpResultSender()
         val result = loadTestResult()
 
-        assertFailsWith<Exception> {
-            sender.send(result, "not-a-valid-url")
-        }
+        assertFailsWith<Exception> { sender.send(result, "not-a-valid-url") }
     }
 
     @Test

@@ -18,23 +18,23 @@ object GitUtils {
     /**
      * Executes a git command in a specific directory.
      *
-     * @param workingDirectory The directory to execute the git command in, or null for current directory
+     * @param workingDirectory The directory to execute the git command in, or null for current
+     *   directory
      * @param args The git command arguments (without "git" prefix)
      * @return The command output or null if command failed
      */
     fun runGitCommand(workingDirectory: java.io.File? = null, vararg args: String): String? {
         return try {
-            val processBuilder = ProcessBuilder("git", *args)
-                .redirectErrorStream(true)
-            
+            val processBuilder = ProcessBuilder("git", *args).redirectErrorStream(true)
+
             if (workingDirectory != null) {
                 processBuilder.directory(workingDirectory)
             }
-            
+
             val process = processBuilder.start()
             val output = process.inputStream.bufferedReader().readText().trim()
             process.waitFor()
-            
+
             if (process.exitValue() == 0 && output.isNotBlank()) {
                 output
             } else {
@@ -47,14 +47,21 @@ object GitUtils {
     }
 
     /**
-     * Detects the repository URL from the current git repository.
-     * Executes `git config --get remote.origin.url` to get the URL.
+     * Detects the repository URL from the current git repository. Executes `git config --get
+     * remote.origin.url` to get the URL.
      *
-     * @param workingDirectory The directory to detect the repository URL in, or null for current directory
+     * @param workingDirectory The directory to detect the repository URL in, or null for current
+     *   directory
      * @return The repository URL or null if unable to detect
      */
     fun detectGitRepositoryUrl(workingDirectory: java.io.File? = null): String? {
-        val url = runGitCommand(workingDirectory = workingDirectory, "config", "--get", "remote.origin.url")
+        val url =
+            runGitCommand(
+                workingDirectory = workingDirectory,
+                "config",
+                "--get",
+                "remote.origin.url",
+            )
         if (url != null) {
             logger.info { "Detected repository URL from git: $url" }
         } else {

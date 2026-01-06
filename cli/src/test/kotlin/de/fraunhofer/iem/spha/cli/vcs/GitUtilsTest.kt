@@ -10,7 +10,6 @@
 package de.fraunhofer.iem.spha.cli.vcs
 
 import java.nio.file.Files
-import kotlin.io.path.writeText
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -30,7 +29,7 @@ class GitUtilsTest {
             assertTrue(url.isNotEmpty(), "Detected URL should not be empty")
             assertTrue(
                 url.contains("git") || url.contains("http") || url.contains("@"),
-                "Detected URL should look like a git URL: $url"
+                "Detected URL should look like a git URL: $url",
             )
         }
     }
@@ -48,14 +47,17 @@ class GitUtilsTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = [
-        "https://github.com/test/repo.git",
-        "https://gitlab.com/test/repo.git",
-        "git@github.com:test/repo.git",
-        "git@gitlab.com:test/repo.git",
-        "https://github.company.com/org/project.git",
-        "ssh://git@bitbucket.org/user/repo.git"
-    ])
+    @ValueSource(
+        strings =
+            [
+                "https://github.com/test/repo.git",
+                "https://gitlab.com/test/repo.git",
+                "git@github.com:test/repo.git",
+                "git@gitlab.com:test/repo.git",
+                "https://github.company.com/org/project.git",
+                "ssh://git@bitbucket.org/user/repo.git",
+            ]
+    )
     fun `detectGitRepositoryUrl works with various git URL formats`(remoteUrl: String) {
         val tempDir = Files.createTempDirectory("git-test")
         try {
@@ -65,7 +67,11 @@ class GitUtilsTest {
 
             val detectedUrl = GitUtils.detectGitRepositoryUrl(tempDir.toFile())
             assertNotNull(detectedUrl, "detectGitRepositoryUrl should return a URL")
-            assertEquals(remoteUrl, detectedUrl, "Detected URL should match the configured remote URL")
+            assertEquals(
+                remoteUrl,
+                detectedUrl,
+                "Detected URL should match the configured remote URL",
+            )
         } finally {
             tempDir.toFile().deleteRecursively()
         }

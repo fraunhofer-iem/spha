@@ -13,16 +13,13 @@ import de.fraunhofer.iem.spha.model.project.Language
 import de.fraunhofer.iem.spha.model.project.ProjectInfo
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
-import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.exists
 import kotlin.io.path.isDirectory
 
 /** A class responsible for fetching project information from local git repositories. */
-class LocalRepositoryFetcher(
-    val logger: KLogger = KotlinLogging.logger {},
-) : ProjectInfoFetcher {
+class LocalRepositoryFetcher(val logger: KLogger = KotlinLogging.logger {}) : ProjectInfoFetcher {
 
     /**
      * Fetches project information from a local git repository.
@@ -31,27 +28,35 @@ class LocalRepositoryFetcher(
      * @param tokenOverride Not used for local repositories
      * @return ProjectInfo containing repository details
      */
-    override suspend fun getProjectInfo(repoUrl: String, tokenOverride: String?): NetworkResponse<ProjectInfo> {
+    override suspend fun getProjectInfo(
+        repoUrl: String,
+        tokenOverride: String?,
+    ): NetworkResponse<ProjectInfo> {
         logger.info { "Fetching project information from local repository: $repoUrl" }
 
-        val repoPath = try {
-            if (repoUrl.startsWith("file:/")) {
-                Path.of(java.net.URI.create(repoUrl)).toAbsolutePath()
-            } else {
-                Path.of(repoUrl).toAbsolutePath()
+        val repoPath =
+            try {
+                if (repoUrl.startsWith("file:/")) {
+                    Path.of(java.net.URI.create(repoUrl)).toAbsolutePath()
+                } else {
+                    Path.of(repoUrl).toAbsolutePath()
+                }
+            } catch (e: Exception) {
+                logger.error(e) { "Invalid repository path: $repoUrl" }
+                return NetworkResponse.Failed("Invalid repository path: $repoUrl")
             }
-        } catch (e: Exception) {
-            logger.error(e) { "Invalid repository path: $repoUrl" }
-            return NetworkResponse.Failed("Invalid repository path: $repoUrl")
-        }
-        
+
         if (!repoPath.exists() || !repoPath.isDirectory()) {
-            return NetworkResponse.Failed("Repository path does not exist or is not a directory: $repoPath")
+            return NetworkResponse.Failed(
+                "Repository path does not exist or is not a directory: $repoPath"
+            )
         }
 
         val gitDir = repoPath.resolve(".git")
         if (!gitDir.exists()) {
-            return NetworkResponse.Failed("Not a git repository (no .git directory found): $repoPath")
+            return NetworkResponse.Failed(
+                "Not a git repository (no .git directory found): $repoPath"
+            )
         }
 
         try {
@@ -90,12 +95,14 @@ class LocalRepositoryFetcher(
     }
 
     private fun getContributorCount(repoPath: Path): Int {
-        val output = GitUtils.runGitCommand(repoPath.toFile(), "shortlog", "-s", "-n", "--all") ?: return -1
+        val output =
+            GitUtils.runGitCommand(repoPath.toFile(), "shortlog", "-s", "-n", "--all") ?: return -1
         return output.lines().filter { it.isNotBlank() }.size
     }
 
     private fun getCommitCount(repoPath: Path): Int? {
-        val output = GitUtils.runGitCommand(repoPath.toFile(), "rev-list", "--all", "--count") ?: return null
+        val output =
+            GitUtils.runGitCommand(repoPath.toFile(), "rev-list", "--all", "--count") ?: return null
         return output.trim().toIntOrNull()
     }
 
@@ -105,24 +112,25 @@ class LocalRepositoryFetcher(
 
     private fun detectLanguages(repoPath: Path): List<Language> {
         val languageMap = mutableMapOf<String, Long>()
-        
+
         // File extensions to language mapping (simplified)
-        val extensionMap = mapOf(
-            "kt" to "Kotlin",
-            "java" to "Java",
-            "py" to "Python",
-            "js" to "JavaScript",
-            "ts" to "TypeScript",
-            "go" to "Go",
-            "rs" to "Rust",
-            "cpp" to "C++",
-            "c" to "C",
-            "cs" to "C#",
-            "rb" to "Ruby",
-            "php" to "PHP",
-            "swift" to "Swift",
-            "scala" to "Scala",
-        )
+        val extensionMap =
+            mapOf(
+                "kt" to "Kotlin",
+                "java" to "Java",
+                "py" to "Python",
+                "js" to "JavaScript",
+                "ts" to "TypeScript",
+                "go" to "Go",
+                "rs" to "Rust",
+                "cpp" to "C++",
+                "c" to "C",
+                "cs" to "C#",
+                "rb" to "Ruby",
+                "php" to "PHP",
+                "swift" to "Swift",
+                "scala" to "Scala",
+            )
 
         try {
             Files.walk(repoPath)

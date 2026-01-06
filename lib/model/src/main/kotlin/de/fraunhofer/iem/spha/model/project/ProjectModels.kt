@@ -22,5 +22,4 @@ data class ProjectInfo(
     val lastCommitDate: String?,
 )
 
-@Serializable 
-data class Language(val name: String, val size: Int)
+@Serializable data class Language(val name: String, val size: Int)

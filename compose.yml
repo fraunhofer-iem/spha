@@ -1,0 +1,28 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_EMBEDDED=false
+      - POSTGRES_URL=jdbc:postgresql://db:5432/spha_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: postgres:18.1-alpine
+    volumes:
+      - ./tmp/db:/var/lib/postgresql
+    environment:
+      POSTGRES_DB: spha_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 1s

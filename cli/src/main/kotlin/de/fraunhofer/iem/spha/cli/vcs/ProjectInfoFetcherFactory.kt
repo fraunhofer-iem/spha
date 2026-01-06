@@ -66,9 +66,10 @@ object ProjectInfoFetcherFactory {
      * Detects the repository type based on the repository URL or path.
      *
      * @param repoUrlOrPath The repository URL or local path
-     * @return RepositoryType or null if unable to detect
+     * @return RepositoryType
+     * @throws IllegalArgumentException if unable to detect repository type
      */
-    fun detectRepositoryType(repoUrlOrPath: String): RepositoryType? {
+    fun detectRepositoryType(repoUrlOrPath: String): RepositoryType {
         logger.debug { "Determining repository type for: $repoUrlOrPath" }
 
         return when {
@@ -90,8 +91,12 @@ object ProjectInfoFetcherFactory {
                         RepositoryType.GITLAB
                     }
                     host != null -> {
-                        logger.warn { "Unknown remote repository host '$host', defaulting to GitHub" }
-                        RepositoryType.GITHUB
+                        logger.error { "Unknown remote repository host '$host'. Use --repositoryType to specify the repository type." }
+                        throw IllegalArgumentException(
+                            "Unable to determine repository type for '$repoUrlOrPath'. " +
+                            "Unknown host: '$host'. " +
+                            "Please specify the repository type using --repositoryType option (github, gitlab, or local)."
+                        )
                     }
                     else -> {
                         logger.info { "Unable to parse as URL, assuming local repository path" }
@@ -107,9 +112,10 @@ object ProjectInfoFetcherFactory {
      *
      * @param repoUrlOrPath The repository URL or local path
      * @return ProjectInfoFetcher instance for the detected repository type
+     * @throws IllegalArgumentException if repository type cannot be determined
      */
     fun createFetcherFromUrl(repoUrlOrPath: String): ProjectInfoFetcher {
-        val repositoryType = detectRepositoryType(repoUrlOrPath) ?: RepositoryType.LOCAL
+        val repositoryType = detectRepositoryType(repoUrlOrPath)
         return createFetcher(repositoryType)
     }
 

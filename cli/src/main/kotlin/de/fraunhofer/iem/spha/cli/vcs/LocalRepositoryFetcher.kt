@@ -75,21 +75,21 @@ class LocalRepositoryFetcher(
     }
 
     private fun getRemoteUrl(repoPath: Path): String? {
-        return runGitCommand(repoPath, "config", "--get", "remote.origin.url")
+        return GitUtils.runGitCommand(repoPath.toFile(), "config", "--get", "remote.origin.url")
     }
 
     private fun getContributorCount(repoPath: Path): Int {
-        val output = runGitCommand(repoPath, "shortlog", "-s", "-n", "--all") ?: return -1
+        val output = GitUtils.runGitCommand(repoPath.toFile(), "shortlog", "-s", "-n", "--all") ?: return -1
         return output.lines().filter { it.isNotBlank() }.size
     }
 
     private fun getCommitCount(repoPath: Path): Int? {
-        val output = runGitCommand(repoPath, "rev-list", "--all", "--count") ?: return null
+        val output = GitUtils.runGitCommand(repoPath.toFile(), "rev-list", "--all", "--count") ?: return null
         return output.trim().toIntOrNull()
     }
 
     private fun getLastCommitDate(repoPath: Path): String? {
-        return runGitCommand(repoPath, "log", "-1", "--format=%cI")
+        return GitUtils.runGitCommand(repoPath.toFile(), "log", "-1", "--format=%cI")
     }
 
     private fun detectLanguages(repoPath: Path): List<Language> {
@@ -134,27 +134,6 @@ class LocalRepositoryFetcher(
             .sortedByDescending { it.value }
             .take(10)
             .map { Language(it.key, it.value.toInt()) }
-    }
-
-    private fun runGitCommand(repoPath: Path, vararg args: String): String? {
-        return try {
-            val process = ProcessBuilder("git", *args)
-                .directory(repoPath.toFile())
-                .redirectErrorStream(true)
-                .start()
-
-            val output = process.inputStream.bufferedReader().readText().trim()
-            process.waitFor()
-
-            if (process.exitValue() == 0 && output.isNotBlank()) {
-                output
-            } else {
-                null
-            }
-        } catch (e: Exception) {
-            logger.debug(e) { "Git command failed: ${e.message}" }
-            null
-        }
     }
 
     override fun close() {

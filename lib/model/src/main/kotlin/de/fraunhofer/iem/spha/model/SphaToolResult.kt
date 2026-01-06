@@ -22,5 +22,4 @@ data class SphaToolResult(
     val projectInfo: ProjectInfo,
 )
 
-@Serializable
-data class ToolInfoAndOrigin(val toolInfo: ToolInfo, val origins: List<Origin>)
+@Serializable data class ToolInfoAndOrigin(val toolInfo: ToolInfo, val origins: List<Origin>)

@@ -9,19 +9,27 @@
 
 package de.fraunhofer.iem.spha.cli.reporting
 
-import de.fraunhofer.iem.spha.cli.commands.SphaToolResult
+import de.fraunhofer.iem.spha.model.SphaToolResult
+import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
+import io.ktor.server.application.*
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
+import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Test
 import java.nio.file.Path
 import kotlin.io.path.readText
+import kotlin.test.assertContains
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class HttpResultSenderTest {
-
-    companion object {
-        private const val TEST_REPORT_URL = "http://10.10.79.10:8080/report"
-    }
 
     private fun loadTestResult(): SphaToolResult {
         // Search for the example file in likely locations
@@ -49,11 +57,58 @@ class HttpResultSenderTest {
     fun `send successfully posts result to test server`(): Unit = runBlocking {
         val sender = HttpResultSender()
         val result = loadTestResult()
+        val receivedResult = CompletableDeferred<SphaToolResult>()
+
+        val server = embeddedServer(Netty, port = 0) {
+            install(ContentNegotiation) {
+                json()
+            }
+            routing {
+                post("/report") {
+                    val body = call.receive<SphaToolResult>()
+                    receivedResult.complete(body)
+                    call.respond(HttpStatusCode.OK)
+                }
+            }
+        }.start(wait = false)
+
+        val port = server.engine.resolvedConnectors().first().port
+        val url = "http://127.0.0.1:$port/report"
 
         try {
-            sender.send(result, TEST_REPORT_URL)
-        } catch (e: Exception) {
-            println("Skipping test because test server is not reachable: $e")
+            sender.send(result, url)
+            val captured = receivedResult.await()
+            assertEquals(result.projectInfo.name, captured.projectInfo.name)
+            assertEquals(result.projectInfo.url, captured.projectInfo.url)
+        } finally {
+            server.stop(100, 100)
+        }
+    }
+
+    @Test
+    fun `send throws exception for 500 error`(): Unit = runBlocking {
+        val sender = HttpResultSender()
+        val result = loadTestResult()
+
+        val server = embeddedServer(Netty, port = 0) {
+            routing {
+                post("/report") {
+                    call.respond(HttpStatusCode.InternalServerError, "Internal server error occurred")
+                }
+            }
+        }.start(wait = false)
+
+        val port = server.engine.resolvedConnectors().first().port
+        val url = "http://127.0.0.1:$port/report"
+
+        try {
+            val exception = assertFailsWith<Exception> {
+                sender.send(result, url)
+            }
+            assertContains(exception.message!!, "Server returned error status 500")
+            assertContains(exception.message!!, "Internal server error occurred")
+        } finally {
+            server.stop(100, 100)
         }
     }
 
@@ -81,8 +136,8 @@ class HttpResultSenderTest {
     fun `send can load and serialize real test data`(): Unit = runBlocking {
         val result = loadTestResult()
 
-        kotlin.test.assertEquals("Currently no data available", result.projectInfo.name)
-        kotlin.test.assertEquals(-1, result.projectInfo.stars)
-        kotlin.test.assertEquals("https://github.com/fraunhofer-iem/spha", result.projectInfo.url)
+        assertEquals("spha", result.projectInfo.name)
+        assertEquals(7, result.projectInfo.stars)
+        assertEquals("https://github.com/fraunhofer-iem/spha", result.projectInfo.url)
     }
 }

@@ -37,6 +37,11 @@ dependencies {
     testImplementation(libs.test.mockk)
     testImplementation(libs.test.fileSystem)
     testImplementation(libs.test.junit5.params)
+
+    testImplementation(libs.ktor.server.core)
+    testImplementation(libs.ktor.server.netty)
+    testImplementation(libs.ktor.server.content.negotiation)
+    testImplementation(libs.http.ktor.serialization)
 }
 
 application {

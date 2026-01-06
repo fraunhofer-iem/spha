@@ -34,8 +34,8 @@ dependencies {
 
 
 kotlin {
-    jvmToolchain(25)
-    compilerOptions { apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_3) }
+    (25)
+    compilerOptions { apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2) }
 }
 
 

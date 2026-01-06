@@ -9,7 +9,7 @@
 
 package de.fraunhofer.iem.spha.cli.reporting
 
-import de.fraunhofer.iem.spha.cli.commands.SphaToolResult
+import de.fraunhofer.iem.spha.model.SphaToolResult
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO

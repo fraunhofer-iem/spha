@@ -58,10 +58,10 @@ internal class AnalyzeRepositoryCommand :
                 "The directory to read in JSON tool result files. Default is the current working directory.",
         )
 
-    private val repoUrl by
+    private val repoOrigin by
         option(
                 "-r",
-                "--repoUrl",
+                "--repoOrigin",
                 help =
                     "The project's repository URL. This is used to gather project information, such as the project's name and used technologies. If not specified, attempts to detect from the current git repository.",
             )
@@ -101,9 +101,9 @@ internal class AnalyzeRepositoryCommand :
         }
 
         // Determine repository URL or path
-        val resolvedRepoUrl = repoUrl ?: GitUtils.detectGitRepositoryUrl()
+        val resolvedRepoUrl = repoOrigin ?: GitUtils.detectGitRepositoryUrl()
         if (resolvedRepoUrl == null) {
-            Logger.error { "No repository URL/path specified and unable to detect from git. Use --repoUrl option." }
+            Logger.error { "No repository URL/path specified and unable to detect from git. Use --repoOrigin option." }
             return
         }
         Logger.debug { "Using repository URL/path: $resolvedRepoUrl" }
@@ -169,7 +169,12 @@ internal class AnalyzeRepositoryCommand :
         val reportUri = this.reportUri
 
         if (!reportUri.isNullOrBlank()) {
-            HttpResultSender().send(result, reportUri)
+            try {
+                HttpResultSender().send(result, reportUri)
+            } catch (e: Exception) {
+                Logger.error(e) { "Failed to send result to $reportUri: ${e.message}" }
+                throw e
+            }
         }
         if (!output.isNullOrBlank()){
             writeToFile(result, output)

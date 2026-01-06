@@ -50,10 +50,11 @@ object GitUtils {
      * Detects the repository URL from the current git repository.
      * Executes `git config --get remote.origin.url` to get the URL.
      *
+     * @param workingDirectory The directory to detect the repository URL in, or null for current directory
      * @return The repository URL or null if unable to detect
      */
-    fun detectGitRepositoryUrl(): String? {
-        val url = runGitCommand(workingDirectory = null, "config", "--get", "remote.origin.url")
+    fun detectGitRepositoryUrl(workingDirectory: java.io.File? = null): String? {
+        val url = runGitCommand(workingDirectory = workingDirectory, "config", "--get", "remote.origin.url")
         if (url != null) {
             logger.info { "Detected repository URL from git: $url" }
         } else {

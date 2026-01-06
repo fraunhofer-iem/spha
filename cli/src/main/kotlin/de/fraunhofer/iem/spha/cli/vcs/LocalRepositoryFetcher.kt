@@ -34,7 +34,16 @@ class LocalRepositoryFetcher(
     override suspend fun getProjectInfo(repoUrl: String, tokenOverride: String?): NetworkResponse<ProjectInfo> {
         logger.info { "Fetching project information from local repository: $repoUrl" }
 
-        val repoPath = Path.of(repoUrl).toAbsolutePath()
+        val repoPath = try {
+            if (repoUrl.startsWith("file:/")) {
+                Path.of(java.net.URI.create(repoUrl)).toAbsolutePath()
+            } else {
+                Path.of(repoUrl).toAbsolutePath()
+            }
+        } catch (e: Exception) {
+            logger.error(e) { "Invalid repository path: $repoUrl" }
+            return NetworkResponse.Failed("Invalid repository path: $repoUrl")
+        }
         
         if (!repoPath.exists() || !repoPath.isDirectory()) {
             return NetworkResponse.Failed("Repository path does not exist or is not a directory: $repoPath")

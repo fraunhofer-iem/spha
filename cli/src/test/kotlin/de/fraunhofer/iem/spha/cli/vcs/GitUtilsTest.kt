@@ -40,15 +40,8 @@ class GitUtilsTest {
         // Create a temporary directory without git
         val tempDir = Files.createTempDirectory("non-git-test")
         try {
-            // Change to the non-git directory
-            val originalDir = System.getProperty("user.dir")
-            try {
-                System.setProperty("user.dir", tempDir.toAbsolutePath().toString())
-                val url = GitUtils.detectGitRepositoryUrl()
-                assertNull(url, "detectGitRepositoryUrl should return null in non-git directory")
-            } finally {
-                System.setProperty("user.dir", originalDir)
-            }
+            val url = GitUtils.detectGitRepositoryUrl(tempDir.toFile())
+            assertNull(url, "detectGitRepositoryUrl should return null in non-git directory")
         } finally {
             tempDir.toFile().deleteRecursively()
         }
@@ -70,17 +63,9 @@ class GitUtilsTest {
             GitUtils.runGitCommand(tempDir.toFile(), "init")
             GitUtils.runGitCommand(tempDir.toFile(), "remote", "add", "origin", remoteUrl)
 
-            // Change to the git directory
-            val originalDir = System.getProperty("user.dir")
-            try {
-                System.setProperty("user.dir", tempDir.toAbsolutePath().toString())
-
-                val detectedUrl = GitUtils.detectGitRepositoryUrl()
-                assertNotNull(detectedUrl, "detectGitRepositoryUrl should return a URL")
-                assertEquals(remoteUrl, detectedUrl, "Detected URL should match the configured remote URL")
-            } finally {
-                System.setProperty("user.dir", originalDir)
-            }
+            val detectedUrl = GitUtils.detectGitRepositoryUrl(tempDir.toFile())
+            assertNotNull(detectedUrl, "detectGitRepositoryUrl should return a URL")
+            assertEquals(remoteUrl, detectedUrl, "Detected URL should match the configured remote URL")
         } finally {
             tempDir.toFile().deleteRecursively()
         }

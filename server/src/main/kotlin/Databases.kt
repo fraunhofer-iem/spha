@@ -180,6 +180,18 @@ fun Application.configureDatabases() {
                     HttpStatusCode.Created,
                     mapOf("id" to resultId, "projectId" to projectId),
                 )
+            } catch (e: io.ktor.server.plugins.BadRequestException) {
+                log.error("Error storing result", e)
+                call.respond(
+                    HttpStatusCode.BadRequest,
+                    mapOf("error" to (e.message ?: "Invalid request body")),
+                )
+            } catch (e: io.ktor.server.plugins.CannotTransformContentToTypeException) {
+                log.error("Error storing result", e)
+                call.respond(
+                    HttpStatusCode.UnsupportedMediaType,
+                    mapOf("error" to (e.message ?: "Unsupported media type")),
+                )
             } catch (e: Exception) {
                 log.error("Error storing result", e)
                 call.respond(

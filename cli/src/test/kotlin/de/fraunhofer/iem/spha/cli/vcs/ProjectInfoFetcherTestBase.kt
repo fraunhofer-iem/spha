@@ -40,6 +40,9 @@ abstract class ProjectInfoFetcherTestBase {
     /** Returns a URL for a non-existent repository */
     protected abstract fun getNonExistentRepositoryUrl(): String
 
+    /** Returns a list of URLs that have a wrong origin for this fetcher */
+    protected abstract fun getWrongOriginUrls(): List<String>
+
     /** Whether to skip tests if token is not available (default: true) */
     protected open val skipTestsIfNoToken: Boolean = true
 
@@ -83,39 +86,46 @@ abstract class ProjectInfoFetcherTestBase {
                 )
                 val projectInfo = result.data
 
-                assertEquals(getExpectedRepositoryName(), projectInfo.name)
-
-                if (assertStarsNonNegative) {
-                    assertTrue(
-                        projectInfo.stars >= 0,
-                        "Stars must be >= 0, got ${projectInfo.stars}",
-                    )
-                }
-
-                if (assertContributorsNonNegative) {
-                    assertTrue(
-                        projectInfo.numberOfContributors >= 0,
-                        "Contributors must be >= 0, got ${projectInfo.numberOfContributors}",
-                    )
-                }
-
-                if (assertCommitsNonNegative) {
-                    val commits = projectInfo.numberOfCommits
-                    assertNotNull(commits, "Number of commits should not be null")
-                    assertTrue(commits >= 0, "Commits must be >= 0, got $commits")
-                }
-
-                if (assertLastCommitDateNotNull) {
-                    assertNotNull(projectInfo.lastCommitDate, "Last commit date should not be null")
-                }
-
-                if (assertLanguagesNotEmpty) {
-                    assertTrue(
-                        projectInfo.usedLanguages.isNotEmpty(),
-                        "Languages should not be empty",
-                    )
-                }
+                verifyProjectInfo(getExpectedRepositoryName(), projectInfo)
             }
+        }
+    }
+
+    /**
+     * Verifies the fetched project information.
+     */
+    protected fun verifyProjectInfo(expectedName: String, projectInfo: de.fraunhofer.iem.spha.model.project.ProjectInfo) {
+        assertEquals(expectedName, projectInfo.name)
+
+        if (assertStarsNonNegative) {
+            assertTrue(
+                projectInfo.stars >= 0,
+                "Stars must be >= 0, got ${projectInfo.stars}",
+            )
+        }
+
+        if (assertContributorsNonNegative) {
+            assertTrue(
+                projectInfo.numberOfContributors >= 0,
+                "Contributors must be >= 0, got ${projectInfo.numberOfContributors}",
+            )
+        }
+
+        if (assertCommitsNonNegative) {
+            val commits = projectInfo.numberOfCommits
+            assertNotNull(commits, "Number of commits should not be null")
+            assertTrue(commits >= 0, "Commits must be >= 0, got $commits")
+        }
+
+        if (assertLastCommitDateNotNull) {
+            assertNotNull(projectInfo.lastCommitDate, "Last commit date should not be null")
+        }
+
+        if (assertLanguagesNotEmpty) {
+            assertTrue(
+                projectInfo.usedLanguages.isNotEmpty(),
+                "Languages should not be empty",
+            )
         }
     }
 
@@ -194,6 +204,26 @@ abstract class ProjectInfoFetcherTestBase {
                     msg.contains("parse", ignoreCase = true) ||
                     msg.contains("error", ignoreCase = true)
             )
+        }
+    }
+
+    @Test
+    fun `getProjectInfo returns failure for wrong origin URL`() = runBlocking {
+        val token = getAuthToken()
+        if (skipTestsIfNoToken && requiresAuthentication) {
+            assumeTrue(token != null, "Authentication token not available - skipping test")
+        }
+
+        val fetcher = createFetcher()
+        fetcher.use {
+            getWrongOriginUrls().forEach { url ->
+                val result = it.getProjectInfo(url, token)
+
+                assertTrue(
+                    result is NetworkResponse.Failed,
+                    "Expected failure for URL with wrong origin: $url",
+                )
+            }
         }
     }
 }

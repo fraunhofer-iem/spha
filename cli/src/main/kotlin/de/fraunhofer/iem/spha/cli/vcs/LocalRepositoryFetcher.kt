@@ -16,7 +16,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import java.net.URI
 import java.nio.file.Files
 import java.nio.file.Path
-import kotlin.io.path.Path
 import kotlin.io.path.exists
 import kotlin.io.path.isDirectory
 
@@ -38,24 +37,15 @@ class LocalRepositoryFetcher(val logger: KLogger = KotlinLogging.logger {}) : Pr
 
         val repoPath =
             try {
-                try {
                     val uri = URI.create(repoOrigin)
-                    if (uri.scheme == "file") {
-                        Path.of(uri).toAbsolutePath()
-                    } else if (uri.scheme == null)
-                        Path.of(repoOrigin).toAbsolutePath()
-                    else {
-                        // the specified repoOrigin is not a local path.
-                        // Thus, we assume it's a remote path' for the given current working directory
-                        Path.of(System.getProperty("user.dir")).toAbsolutePath()
-                    }
-                } catch (e : IllegalArgumentException){
-                    Path.of(repoOrigin).toAbsolutePath()
+                    if (uri.scheme == "file") Path.of(uri)
+                    else if (uri.scheme == null) Path.of(repoOrigin)
+                    else Path.of(System.getProperty("user.dir"))
+                } catch (e: Exception) {
+                    Path.of(repoOrigin)
                 }
-            } catch (e: Exception) {
-                logger.error(e) { "Invalid repository path: $repoOrigin" }
-                return NetworkResponse.Failed("Invalid repository path: $repoOrigin")
-            }
+                .toAbsolutePath()
+                .normalize()
 
         if (!repoPath.exists() || !repoPath.isDirectory()) {
             return NetworkResponse.Failed(
@@ -98,7 +88,7 @@ class LocalRepositoryFetcher(val logger: KLogger = KotlinLogging.logger {}) : Pr
     }
 
     private fun getRepositoryName(repoPath: Path): String {
-        return repoPath.toRealPath().toString()
+        return repoPath.toString()
     }
 
     private fun getRemoteUrl(repoPath: Path): String? {

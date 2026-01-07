@@ -9,13 +9,14 @@
 
 package de.fraunhofer.iem.spha.cli.vcs
 
+import kotlinx.coroutines.test.runTest
 import java.nio.file.Files
+import kotlin.io.path.Path
+import kotlin.io.path.deleteIfExists
 import kotlin.io.path.writeText
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-import kotlinx.coroutines.test.runTest
-import kotlin.io.path.Path
 
 class LocalRepositoryFetcherTest : ProjectInfoFetcherTestBase() {
 
@@ -60,14 +61,26 @@ class LocalRepositoryFetcherTest : ProjectInfoFetcherTestBase() {
     }
 
     override fun getExpectedRepositoryName(): String {
-        val path = getTestRepositoryUrl()
-        return Path(path).toRealPath().toString()
+        return getTestRepositoryUrl()
     }
 
-    override fun getAlternativeUrlFormats(): List<String> =
-        emptyList() // No alternative formats for local paths
+    override fun getAlternativeUrlFormats(): List<String> {
+        val repoPath = Path(getTestRepositoryUrl())
+        val uri = repoPath.toUri().toString()
+        val formats = mutableListOf(uri)
+
+        // Add a variant with trailing slash if it doesn't have one
+        if (!uri.endsWith("/")) {
+            formats.add("$uri/")
+        }
+
+        return formats
+    }
+
 
     override fun getNonExistentRepositoryUrl(): String = "/non/existent/path"
+
+    override fun getWrongOriginUrls(): List<String> = listOf("https://github.com/fraunhofer-iem/spha")
 
     override val requiresAuthentication: Boolean = false
     override val assertStarsNonNegative: Boolean = false // Local repos have stars = -1
@@ -217,6 +230,27 @@ class LocalRepositoryFetcherTest : ProjectInfoFetcherTestBase() {
             assertTrue(javaSize > jsSize, "Java file should be larger than JS file")
         } finally {
             cleanup()
+        }
+    }
+    @Test
+    fun `getProjectInfo returns failure for file URI pointing to a file`() = runTest {
+        val tempFile = kotlin.io.path.createTempFile("test-file", ".txt")
+        try {
+            val fetcher = LocalRepositoryFetcher()
+            val fileUri = tempFile.toUri().toString()
+
+            val result = fetcher.getProjectInfo(fileUri, null)
+
+            assertTrue(
+                result is NetworkResponse.Failed,
+                "Expected failure for file URI pointing to a file",
+            )
+            assertTrue(
+                result.msg.contains("not a directory"),
+                "Error message should mention 'not a directory'",
+            )
+        } finally {
+            tempFile.deleteIfExists()
         }
     }
 }

@@ -198,7 +198,6 @@ class AnalyzeRepositoryCommandTest : KoinTest {
 
     @Test
     fun `command can send to reportUri instead of file`() = runTest {
-        val repoDir = ".."
         val toolResultDir = "../ui/example"
         val receivedResult = CompletableDeferred<SphaToolResult>()
 
@@ -222,7 +221,7 @@ class AnalyzeRepositoryCommandTest : KoinTest {
             val command = AnalyzeRepositoryCommand()
             val result =
                 command.test(
-                    "--repoOrigin \"$repoDir\" --reportUri $reportUri --repositoryType local --toolResultDir \"$toolResultDir\""
+                    "--repoOrigin \"$CURRENT_REPO_LOCAL\" --reportUri $reportUri --repositoryType local --toolResultDir \"$toolResultDir\""
                 )
 
             assertEquals(
@@ -234,7 +233,7 @@ class AnalyzeRepositoryCommandTest : KoinTest {
             val sphaResult = receivedResult.await()
             assertNotNull(sphaResult.projectInfo, "Project info should not be null")
             assertEquals("https://github.com/fraunhofer-iem/spha", sphaResult.projectInfo.url)
-            assertEquals("..", sphaResult.projectInfo.name)
+            assertEquals(Path(CURRENT_REPO_LOCAL).toRealPath().toString(), sphaResult.projectInfo.name)
             assertTrue(
                 sphaResult.projectInfo.usedLanguages.any { it.name == "Kotlin" },
                 "Should detect Kotlin language",

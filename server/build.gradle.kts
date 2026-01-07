@@ -45,7 +45,7 @@ dependencies {
     implementation(libs.slf4j.logger)
 
     testImplementation(libs.ktor.server.test.host)
-    //    testImplementation(libs.kotlin.test.junit)
+    testImplementation(libs.http.ktor.content.negotiation)
 }
 
 fun isNonStable(version: String): Boolean {

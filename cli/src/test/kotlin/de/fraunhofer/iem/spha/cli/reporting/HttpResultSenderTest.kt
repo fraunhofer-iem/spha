@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Fraunhofer IEM. All rights reserved.
+ * Copyright (c) 2025-2026 Fraunhofer IEM. All rights reserved.
  *
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  *
@@ -82,7 +82,11 @@ class HttpResultSenderTest {
         try {
             sender.send(result, url)
             val captured = receivedResult.await()
-            assertEquals(result, captured, "The received SphaToolResult should be identical to the sent one")
+            assertEquals(
+                result,
+                captured,
+                "The received SphaToolResult should be identical to the sent one",
+            )
         } finally {
             server.stop(100, 100)
         }

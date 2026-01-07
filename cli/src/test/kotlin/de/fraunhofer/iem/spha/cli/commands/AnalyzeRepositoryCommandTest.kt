@@ -50,42 +50,43 @@ class AnalyzeRepositoryCommandTest : KoinTest {
 
         private const val NAME_NOT_FOUND_MESSAGE = "Currently no data available"
 
-        private val isOnlineTest = (System.getenv("GITHUB_TOKEN")
-            ?: System.getenv("GH_TOKEN")) != null
+        private val isOnlineTest =
+            (System.getenv("GITHUB_TOKEN") ?: System.getenv("GH_TOKEN")) != null
 
         @JvmStatic
-        fun commandTestCases() = listOf(
-            Arguments.of(
-                "Command with local path and local reposotryType succeeds with local repository",
-                "--repoOrigin \"$CURRENT_REPO_LOCAL\" --repositoryType local",
-                Path(CURRENT_REPO_LOCAL).toRealPath().toString(),
-                true
-            ),
-            Arguments.of(
-                "Command auto-detects git repository and uses online data when neither repoOrigin nor repositoryType is specified",
-                "",
-                if (isOnlineTest) "spha" else NAME_NOT_FOUND_MESSAGE,
-                isOnlineTest
-            ),
-            Arguments.of(
-                "Command with local repoOrigin and no repositoryType always uses local data",
-                "--repoOrigin \"$CURRENT_REPO_LOCAL\"",
-                Path(CURRENT_REPO_LOCAL).toRealPath().toString(),
-                true
-            ),
-              Arguments.of(
-                "Command with remote repoOrigin and no repositoryType resolves online data",
-                "--repoOrigin \"https://github.com/fraunhofer-iem/spha\"",
-                  if (isOnlineTest) "spha" else NAME_NOT_FOUND_MESSAGE,
-                  isOnlineTest
-              ),
-            Arguments.of(
-                "Command with remote repoOrigin and no correct repositoryType resolves online data",
-                "--repoOrigin \"https://github.com/fraunhofer-iem/spha\" --repositoryType github",
-                  if (isOnlineTest) "spha" else NAME_NOT_FOUND_MESSAGE,
-                  isOnlineTest
-              )
-        )
+        fun commandTestCases() =
+            listOf(
+                Arguments.of(
+                    "Command with local path and local reposotryType succeeds with local repository",
+                    "--repoOrigin \"$CURRENT_REPO_LOCAL\" --repositoryType local",
+                    Path(CURRENT_REPO_LOCAL).toRealPath().toString(),
+                    true,
+                ),
+                Arguments.of(
+                    "Command auto-detects git repository and uses online data when neither repoOrigin nor repositoryType is specified",
+                    "",
+                    if (isOnlineTest) "spha" else NAME_NOT_FOUND_MESSAGE,
+                    isOnlineTest,
+                ),
+                Arguments.of(
+                    "Command with local repoOrigin and no repositoryType always uses local data",
+                    "--repoOrigin \"$CURRENT_REPO_LOCAL\"",
+                    Path(CURRENT_REPO_LOCAL).toRealPath().toString(),
+                    true,
+                ),
+                Arguments.of(
+                    "Command with remote repoOrigin and no repositoryType resolves online data",
+                    "--repoOrigin \"https://github.com/fraunhofer-iem/spha\"",
+                    if (isOnlineTest) "spha" else NAME_NOT_FOUND_MESSAGE,
+                    isOnlineTest,
+                ),
+                Arguments.of(
+                    "Command with remote repoOrigin and no correct repositoryType resolves online data",
+                    "--repoOrigin \"https://github.com/fraunhofer-iem/spha\" --repositoryType github",
+                    if (isOnlineTest) "spha" else NAME_NOT_FOUND_MESSAGE,
+                    isOnlineTest,
+                ),
+            )
     }
 
     @JvmField
@@ -129,12 +130,13 @@ class AnalyzeRepositoryCommandTest : KoinTest {
         description: String,
         variableArgs: String,
         expectedName: String,
-        shouldCheckKotlinLanguage: Boolean
+        shouldCheckKotlinLanguage: Boolean,
     ) = runTest {
         val command = AnalyzeRepositoryCommand()
-        val result = command.test(
-            "$variableArgs --output \"$OUTPUT_FILE\" --toolResultDir \"$SAMPLE_RESULT_DIR\""
-        )
+        val result =
+            command.test(
+                "$variableArgs --output \"$OUTPUT_FILE\" --toolResultDir \"$SAMPLE_RESULT_DIR\""
+            )
 
         assertEquals(
             0,
@@ -158,7 +160,6 @@ class AnalyzeRepositoryCommandTest : KoinTest {
             }
         }
     }
-
 
     @Test
     fun `command respects token override`() = runTest {
@@ -233,7 +234,10 @@ class AnalyzeRepositoryCommandTest : KoinTest {
             val sphaResult = receivedResult.await()
             assertNotNull(sphaResult.projectInfo, "Project info should not be null")
             assertEquals("https://github.com/fraunhofer-iem/spha", sphaResult.projectInfo.url)
-            assertEquals(Path(CURRENT_REPO_LOCAL).toRealPath().toString(), sphaResult.projectInfo.name)
+            assertEquals(
+                Path(CURRENT_REPO_LOCAL).toRealPath().toString(),
+                sphaResult.projectInfo.name,
+            )
             assertTrue(
                 sphaResult.projectInfo.usedLanguages.any { it.name == "Kotlin" },
                 "Should detect Kotlin language",

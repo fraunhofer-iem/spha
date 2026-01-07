@@ -107,24 +107,21 @@ internal class AnalyzeRepositoryCommand :
         }
 
         // Determine repository URL or path
-        val resolvedRepoUrl = repoOrigin ?: GitUtils.detectGitRepositoryUrl()
-        if (resolvedRepoUrl == null) {
-            Logger.error {
-                "No repository URL/path specified and unable to detect from git. Use --repoOrigin option."
-            }
-            return
-        }
-        Logger.debug { "Using repository URL/path: $resolvedRepoUrl" }
+        val resolvedRepoOrigin = repoOrigin ?:
+            GitUtils.detectGitRepositoryUrl() ?:
+            "." // use current directory as fallback
 
-        val provider = getRepositoryFetcher(resolvedRepoUrl, repositoryType)
+        Logger.debug { "Using repository URL/path: $resolvedRepoOrigin" }
 
-        val projectInfoRes = provider.use { it.getProjectInfo(resolvedRepoUrl, token) }
+        val provider = getRepositoryFetcher(resolvedRepoOrigin, repositoryType)
+
+        val projectInfoRes = provider.use { it.getProjectInfo(resolvedRepoOrigin, token) }
         val projectInfo =
             when (projectInfoRes) {
                 is NetworkResponse.Success<ProjectInfo> -> projectInfoRes.data
                 is NetworkResponse.Failed -> {
                     Logger.warn { "Failed to fetch project info: ${projectInfoRes.msg}" }
-                    defaultProjectInfo(resolvedRepoUrl)
+                    defaultProjectInfo(resolvedRepoOrigin)
                 }
             }
 

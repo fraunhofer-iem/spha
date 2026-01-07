@@ -30,4 +30,10 @@ class GitHubProjectFetcherTest : ProjectInfoFetcherTestBase() {
 
     override fun getNonExistentRepositoryUrl(): String =
         "https://github.com/fraunhofer-iem/nonexistent-repo-67890"
+
+    override fun getWrongOriginUrls(): List<String> =
+        listOf(
+            "file:///tmp/some/local/path",
+            "/tmp/some/local/path"
+        )
 }

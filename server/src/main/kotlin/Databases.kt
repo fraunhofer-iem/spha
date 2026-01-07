@@ -10,6 +10,9 @@
 package de.fraunhofer.iem.spha
 
 import de.fraunhofer.iem.spha.model.SphaToolResult
+import de.fraunhofer.iem.spha.model.ToolInfoAndOrigin
+import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiResultHierarchy
+import de.fraunhofer.iem.spha.model.project.Language
 import de.fraunhofer.iem.spha.model.project.ProjectInfo
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -73,6 +76,15 @@ class ResultService(private val connection: Connection) {
             "INSERT INTO TOOL_RESULTS (PROJECT_ID, RESULT_HIERARCHY, CREATED_AT) VALUES (?, ?, ?)"
         private const val INSERT_TOOL_INFO_ORIGIN =
             "INSERT INTO TOOL_INFO_ORIGINS (RESULT_ID, TOOL_INFO, ORIGINS) VALUES (?, ?, ?)"
+        private const val SELECT_ALL_PROJECT_IDS = "SELECT ID FROM PROJECTS ORDER BY ID"
+        private const val SELECT_PROJECT_BY_ID =
+            "SELECT ID, NAME, URL, STARS, NUMBER_OF_CONTRIBUTORS, NUMBER_OF_COMMITS, LAST_COMMIT_DATE FROM PROJECTS WHERE ID = ?"
+        private const val SELECT_LANGUAGES_BY_PROJECT_ID =
+            "SELECT LANGUAGE_NAME, SIZE FROM PROJECT_LANGUAGES WHERE PROJECT_ID = ?"
+        private const val SELECT_RESULTS_BY_PROJECT_ID =
+            "SELECT ID, RESULT_HIERARCHY, CREATED_AT FROM TOOL_RESULTS WHERE PROJECT_ID = ? ORDER BY CREATED_AT DESC"
+        private const val SELECT_TOOL_INFO_ORIGINS_BY_RESULT_ID =
+            "SELECT TOOL_INFO, ORIGINS FROM TOOL_INFO_ORIGINS WHERE RESULT_ID = ?"
     }
 
     init {
@@ -158,6 +170,92 @@ class ResultService(private val connection: Connection) {
 
             return@withContext resultId
         }
+
+    suspend fun getAllProjectIds(): List<Int> =
+        withContext(Dispatchers.IO) {
+            val statement = connection.createStatement()
+            val resultSet = statement.executeQuery(SELECT_ALL_PROJECT_IDS)
+            val projectIds = mutableListOf<Int>()
+            while (resultSet.next()) {
+                projectIds.add(resultSet.getInt("ID"))
+            }
+            return@withContext projectIds
+        }
+
+    suspend fun getResultsByProjectId(projectId: Int): List<SphaToolResult> =
+        withContext(Dispatchers.IO) {
+            // Get project info
+            val projectStmt = connection.prepareStatement(SELECT_PROJECT_BY_ID)
+            projectStmt.setInt(1, projectId)
+            val projectResult = projectStmt.executeQuery()
+            if (!projectResult.next()) {
+                return@withContext emptyList()
+            }
+
+            // Get languages
+            val langStmt = connection.prepareStatement(SELECT_LANGUAGES_BY_PROJECT_ID)
+            langStmt.setInt(1, projectId)
+            val langResult = langStmt.executeQuery()
+            val languages = mutableListOf<Language>()
+            while (langResult.next()) {
+                languages.add(
+                    Language(
+                        name = langResult.getString("LANGUAGE_NAME"),
+                        size = langResult.getInt("SIZE"),
+                    )
+                )
+            }
+
+            val projectInfo =
+                ProjectInfo(
+                    name = projectResult.getString("NAME") ?: "",
+                    usedLanguages = languages,
+                    url = projectResult.getString("URL"),
+                    stars = projectResult.getInt("STARS"),
+                    numberOfContributors = projectResult.getInt("NUMBER_OF_CONTRIBUTORS"),
+                    numberOfCommits = projectResult.getInt("NUMBER_OF_COMMITS"),
+                    lastCommitDate = projectResult.getString("LAST_COMMIT_DATE"),
+                )
+
+            // Get all results for this project
+            val resultsStmt = connection.prepareStatement(SELECT_RESULTS_BY_PROJECT_ID)
+            resultsStmt.setInt(1, projectId)
+            val resultsSet = resultsStmt.executeQuery()
+
+            val sphaResults = mutableListOf<SphaToolResult>()
+            while (resultsSet.next()) {
+                val resultId = resultsSet.getInt("ID")
+                val resultHierarchyJson = resultsSet.getString("RESULT_HIERARCHY")
+
+                // Get tool info and origins for this result
+                val toolInfoStmt =
+                    connection.prepareStatement(SELECT_TOOL_INFO_ORIGINS_BY_RESULT_ID)
+                toolInfoStmt.setInt(1, resultId)
+                val toolInfoSet = toolInfoStmt.executeQuery()
+
+                val origins = mutableListOf<ToolInfoAndOrigin>()
+                while (toolInfoSet.next()) {
+                    val toolInfoJson = toolInfoSet.getString("TOOL_INFO")
+                    val originsJson = toolInfoSet.getString("ORIGINS")
+                    origins.add(
+                        Json.decodeFromString<ToolInfoAndOrigin>(
+                            """{"toolInfo":$toolInfoJson,"origins":$originsJson}"""
+                        )
+                    )
+                }
+
+                val resultHierarchy = Json.decodeFromString<KpiResultHierarchy>(resultHierarchyJson)
+                sphaResults.add(
+                    SphaToolResult(
+                        resultHierarchy = resultHierarchy,
+                        origins = origins,
+                        projectInfo = projectInfo,
+                    )
+                )
+            }
+
+            return@withContext sphaResults
+        }
 }
 
 fun Application.configureDatabases() {
@@ -194,6 +292,40 @@ fun Application.configureDatabases() {
                 )
             } catch (e: Exception) {
                 log.error("Error storing result", e)
+                call.respond(
+                    HttpStatusCode.InternalServerError,
+                    mapOf("error" to (e.message ?: "Unknown error")),
+                )
+            }
+        }
+
+        // Get all project IDs
+        get("/api/projects") {
+            try {
+                val projectIds = resultService.getAllProjectIds()
+                call.respond(HttpStatusCode.OK, mapOf("projectIds" to projectIds))
+            } catch (e: Exception) {
+                log.error("Error retrieving project IDs", e)
+                call.respond(
+                    HttpStatusCode.InternalServerError,
+                    mapOf("error" to (e.message ?: "Unknown error")),
+                )
+            }
+        }
+
+        // Get all results for a specific project
+        get("/api/projects/{projectId}/results") {
+            try {
+                val projectId =
+                    call.parameters["projectId"]?.toIntOrNull()
+                        ?: return@get call.respond(
+                            HttpStatusCode.BadRequest,
+                            mapOf("error" to "Invalid project ID"),
+                        )
+                val results = resultService.getResultsByProjectId(projectId)
+                call.respond(HttpStatusCode.OK, mapOf("results" to results))
+            } catch (e: Exception) {
+                log.error("Error retrieving results for project", e)
                 call.respond(
                     HttpStatusCode.InternalServerError,
                     mapOf("error" to (e.message ?: "Unknown error")),

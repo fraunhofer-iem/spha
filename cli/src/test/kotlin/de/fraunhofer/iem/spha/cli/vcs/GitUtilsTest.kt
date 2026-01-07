@@ -79,16 +79,17 @@ class GitUtilsTest {
 
     @ParameterizedTest
     @org.junit.jupiter.params.provider.CsvSource(
-        value = [
-            "https://github.com/fraunhofer-iem/spha,https://github.com/fraunhofer-iem/spha",
-            "https://github.com/fraunhofer-iem/spha.git,https://github.com/fraunhofer-iem/spha",
-            "git@github.com:fraunhofer-iem/spha.git,https://github.com/fraunhofer-iem/spha",
-            "git@github.com:fraunhofer-iem/spha,https://github.com/fraunhofer-iem/spha",
-            "ssh://git@github.com/fraunhofer-iem/spha.git,https://github.com/fraunhofer-iem/spha",
-            "https://gitlab.com/group/project.git,https://gitlab.com/group/project",
-            "git@gitlab.com:group/project.git,https://gitlab.com/group/project",
-            "git@bitbucket.org:user/repo.git,https://bitbucket.org/user/repo"
-        ]
+        value =
+            [
+                "https://github.com/fraunhofer-iem/spha,https://github.com/fraunhofer-iem/spha",
+                "https://github.com/fraunhofer-iem/spha.git,https://github.com/fraunhofer-iem/spha",
+                "git@github.com:fraunhofer-iem/spha.git,https://github.com/fraunhofer-iem/spha",
+                "git@github.com:fraunhofer-iem/spha,https://github.com/fraunhofer-iem/spha",
+                "ssh://git@github.com/fraunhofer-iem/spha.git,https://github.com/fraunhofer-iem/spha",
+                "https://gitlab.com/group/project.git,https://gitlab.com/group/project",
+                "git@gitlab.com:group/project.git,https://gitlab.com/group/project",
+                "git@bitbucket.org:user/repo.git,https://bitbucket.org/user/repo",
+            ]
     )
     fun `normalizeGitUrl correctly normalizes various formats`(input: String, expected: String) {
         assertEquals(expected, TestGitUtils.normalizeGitUrl(input))

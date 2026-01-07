@@ -4,10 +4,11 @@ ktor:
             - de.fraunhofer.iem.spha.ApplicationKt.module
     deployment:
         port: 8080
-jwt:
-  domain: "https://jwt-provider-domain/"
-  audience: "jwt-audience"
-  realm: "ktor sample app"
+# ToDo: Add JWT support as soon as this moves out of the demo stage
+#jwt:
+#  domain: "https://jwt-provider-domain/"
+#  audience: "jwt-audience"
+#  realm: "ktor sample app"
 database:
   embedded: true
 postgres:

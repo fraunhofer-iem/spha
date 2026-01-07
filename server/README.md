@@ -1,5 +1,33 @@
 ## SPHA Server
 
+### Database Setup
+
+The server requires a PostgreSQL database to function. The default configuration expects the following:
+
+- **Database**: PostgreSQL
+- **Host**: `localhost:5432`
+- **Database Name**: `spha_db`
+- **Username**: `postgres`
+- **Password**: `postgres`
+
+These settings can be configured in `server/src/main/resources/application.yaml`.
+
+#### Starting the Database
+
+The easiest way to start the required PostgreSQL database is using the included `compose.yml` file from the project root:
+
+```bash
+docker compose up db
+```
+
+This will start a PostgreSQL 18.1-alpine container with the correct configuration.
+
+To start both the server and database together:
+
+```bash
+docker compose up
+```
+
 ### Testing
 
 **Note:** Docker must be available to run all tests successfully. The tests use Testcontainers to spin up a PostgreSQL database instance.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025-2026 Fraunhofer IEM. All rights reserved.
+ * Copyright (c) 2025 Fraunhofer IEM. All rights reserved.
  *
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  *
@@ -86,20 +86,35 @@ abstract class ProjectInfoFetcherTestBase {
                 )
                 val projectInfo = result.data
 
-                verifyProjectInfo(getExpectedRepositoryName(), projectInfo)
+                verifyProjectInfo(getExpectedRepositoryName(), projectInfo, url)
             }
         }
     }
 
-    /** Verifies the fetched project information. */
+    /**
+     * Verifies the fetched project information.
+     */
     protected fun verifyProjectInfo(
         expectedName: String,
         projectInfo: de.fraunhofer.iem.spha.model.project.ProjectInfo,
+        requestUrl: String,
     ) {
         assertEquals(expectedName, projectInfo.name)
 
+        // For remote repositories, the returned URL should match the requested URL (ignoring normalization)
+        if (requiresAuthentication) {
+            assertEquals(
+                TestGitUtils.normalizeGitUrl(requestUrl),
+                TestGitUtils.normalizeGitUrl(projectInfo.url),
+                "Project URL should match normalized request URL"
+            )
+        }
+
         if (assertStarsNonNegative) {
-            assertTrue(projectInfo.stars >= 0, "Stars must be >= 0, got ${projectInfo.stars}")
+            assertTrue(
+                projectInfo.stars >= 0,
+                "Stars must be >= 0, got ${projectInfo.stars}",
+            )
         }
 
         if (assertContributorsNonNegative) {
@@ -120,7 +135,10 @@ abstract class ProjectInfoFetcherTestBase {
         }
 
         if (assertLanguagesNotEmpty) {
-            assertTrue(projectInfo.usedLanguages.isNotEmpty(), "Languages should not be empty")
+            assertTrue(
+                projectInfo.usedLanguages.isNotEmpty(),
+                "Languages should not be empty",
+            )
         }
     }
 

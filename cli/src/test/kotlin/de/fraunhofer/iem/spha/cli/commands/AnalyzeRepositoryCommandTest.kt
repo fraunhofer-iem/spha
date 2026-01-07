@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Fraunhofer IEM. All rights reserved.
+ * Copyright (c) 2025-2026 Fraunhofer IEM. All rights reserved.
  *
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  *
@@ -235,7 +235,10 @@ class AnalyzeRepositoryCommandTest : KoinTest {
             assertNotNull(sphaResult.projectInfo, "Project info should not be null")
             assertEquals("https://github.com/fraunhofer-iem/spha", sphaResult.projectInfo.url)
             assertEquals("..", sphaResult.projectInfo.name)
-            assertTrue(sphaResult.projectInfo.usedLanguages.any { it.name == "Kotlin" }, "Should detect Kotlin language")
+            assertTrue(
+                sphaResult.projectInfo.usedLanguages.any { it.name == "Kotlin" },
+                "Should detect Kotlin language",
+            )
             // origins might be empty if no tool results were parsed
             assertNotNull(sphaResult.resultHierarchy.root, "KPI result root should not be null")
         } finally {

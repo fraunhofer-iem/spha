@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Fraunhofer IEM. All rights reserved.
+ * Copyright (c) 2025-2026 Fraunhofer IEM. All rights reserved.
  *
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  *
@@ -32,8 +32,5 @@ class GitHubProjectFetcherTest : ProjectInfoFetcherTestBase() {
         "https://github.com/fraunhofer-iem/nonexistent-repo-67890"
 
     override fun getWrongOriginUrls(): List<String> =
-        listOf(
-            "file:///tmp/some/local/path",
-            "/tmp/some/local/path"
-        )
+        listOf("file:///tmp/some/local/path", "/tmp/some/local/path")
 }

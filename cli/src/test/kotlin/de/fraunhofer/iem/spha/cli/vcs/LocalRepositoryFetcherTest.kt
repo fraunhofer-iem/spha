@@ -9,7 +9,6 @@
 
 package de.fraunhofer.iem.spha.cli.vcs
 
-import kotlinx.coroutines.test.runTest
 import java.nio.file.Files
 import kotlin.io.path.Path
 import kotlin.io.path.deleteIfExists
@@ -17,6 +16,7 @@ import kotlin.io.path.writeText
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlinx.coroutines.test.runTest
 
 class LocalRepositoryFetcherTest : ProjectInfoFetcherTestBase() {
 
@@ -77,10 +77,10 @@ class LocalRepositoryFetcherTest : ProjectInfoFetcherTestBase() {
         return formats
     }
 
-
     override fun getNonExistentRepositoryUrl(): String = "/non/existent/path"
 
-    override fun getWrongOriginUrls(): List<String> = listOf("https://github.com/fraunhofer-iem/spha")
+    override fun getWrongOriginUrls(): List<String> =
+        listOf("https://github.com/fraunhofer-iem/spha")
 
     override val requiresAuthentication: Boolean = false
     override val assertStarsNonNegative: Boolean = false // Local repos have stars = -1
@@ -232,6 +232,7 @@ class LocalRepositoryFetcherTest : ProjectInfoFetcherTestBase() {
             cleanup()
         }
     }
+
     @Test
     fun `getProjectInfo returns failure for file URI pointing to a file`() = runTest {
         val tempFile = kotlin.io.path.createTempFile("test-file", ".txt")

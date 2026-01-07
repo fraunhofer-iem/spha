@@ -91,9 +91,7 @@ abstract class ProjectInfoFetcherTestBase {
         }
     }
 
-    /**
-     * Verifies the fetched project information.
-     */
+    /** Verifies the fetched project information. */
     protected fun verifyProjectInfo(
         expectedName: String,
         projectInfo: de.fraunhofer.iem.spha.model.project.ProjectInfo,
@@ -101,20 +99,18 @@ abstract class ProjectInfoFetcherTestBase {
     ) {
         assertEquals(expectedName, projectInfo.name)
 
-        // For remote repositories, the returned URL should match the requested URL (ignoring normalization)
+        // For remote repositories, the returned URL should match the requested URL (ignoring
+        // normalization)
         if (requiresAuthentication) {
             assertEquals(
                 TestGitUtils.normalizeGitUrl(requestUrl),
                 TestGitUtils.normalizeGitUrl(projectInfo.url),
-                "Project URL should match normalized request URL"
+                "Project URL should match normalized request URL",
             )
         }
 
         if (assertStarsNonNegative) {
-            assertTrue(
-                projectInfo.stars >= 0,
-                "Stars must be >= 0, got ${projectInfo.stars}",
-            )
+            assertTrue(projectInfo.stars >= 0, "Stars must be >= 0, got ${projectInfo.stars}")
         }
 
         if (assertContributorsNonNegative) {
@@ -135,10 +131,7 @@ abstract class ProjectInfoFetcherTestBase {
         }
 
         if (assertLanguagesNotEmpty) {
-            assertTrue(
-                projectInfo.usedLanguages.isNotEmpty(),
-                "Languages should not be empty",
-            )
+            assertTrue(projectInfo.usedLanguages.isNotEmpty(), "Languages should not be empty")
         }
     }
 

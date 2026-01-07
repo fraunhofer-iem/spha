@@ -20,7 +20,8 @@ object TestGitUtils {
      */
     fun normalizeGitUrl(url: String): String {
         // Handle common git hosting providers: github.com, gitlab.com, bitbucket.org
-        val regex = Regex("""(?:https?://|ssh://|git@)(?:git@)?([^/:]+)[:/]([^/]+)/([^/.]+)(?:\.git)?""")
+        val regex =
+            Regex("""(?:https?://|ssh://|git@)(?:git@)?([^/:]+)[:/]([^/]+)/([^/.]+)(?:\.git)?""")
         val matchResult = regex.find(url) ?: return url
 
         val (host, owner, repo) = matchResult.destructured

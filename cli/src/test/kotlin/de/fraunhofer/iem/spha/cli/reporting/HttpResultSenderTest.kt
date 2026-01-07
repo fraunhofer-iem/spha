@@ -146,7 +146,7 @@ class HttpResultSenderTest {
         assertEquals(7, result.projectInfo.stars)
         assertEquals(
             "https://github.com/fraunhofer-iem/spha",
-            de.fraunhofer.iem.spha.cli.vcs.TestGitUtils.normalizeGitUrl(result.projectInfo.url)
+            de.fraunhofer.iem.spha.cli.vcs.TestGitUtils.normalizeGitUrl(result.projectInfo.url),
         )
     }
 }

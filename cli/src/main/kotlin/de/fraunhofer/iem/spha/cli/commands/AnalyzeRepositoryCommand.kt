@@ -107,9 +107,10 @@ internal class AnalyzeRepositoryCommand :
         }
 
         // Determine repository URL or path
-        val resolvedRepoOrigin = repoOrigin ?:
-            GitUtils.detectGitRepositoryUrl() ?:
-            "." // use current directory as fallback
+        val resolvedRepoOrigin =
+            repoOrigin
+                ?: GitUtils.detectGitRepositoryUrl()
+                ?: "." // use current directory as fallback
 
         Logger.debug { "Using repository URL/path: $resolvedRepoOrigin" }
 

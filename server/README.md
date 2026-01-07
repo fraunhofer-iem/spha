@@ -1,5 +1,9 @@
 ## SPHA Server
 
+### Testing
+
+**Note:** Docker must be available to run all tests successfully. The tests use Testcontainers to spin up a PostgreSQL database instance.
+
 ### Docker Build
 
 To build the server as a Docker image, run from the project root:

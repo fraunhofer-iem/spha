@@ -32,6 +32,10 @@ import kotlinx.serialization.json.Json
 
 class ProjectsEndpointTest {
 
+    init {
+        TestDatabaseSetup.setupDatabase()
+    }
+
     private fun createTestProjectInfo(
         name: String = "test-project",
         url: String = "https://github.com/test/test-project",

@@ -20,7 +20,7 @@ semverGit = "0.18.0"
 slf4jApi = "2.0.17"
 versions = "0.53.0"
 postgres = "42.7.8"
-h2 = "2.3.232"
+testContainers = "1.21.4"
 
 [libraries]
 kotlin-cli = { module = "com.github.ajalt.clikt:clikt", version.ref = "kotlinCli" }
@@ -63,8 +63,9 @@ ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref 
 ktor-server-host-common = { module = "io.ktor:ktor-server-host-common", version.ref = "ktor" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
 
+test-container-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testContainers"}
+test-containers = { module = "org.testcontainers:testcontainers", version.ref = "testContainers"}
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgres" }
-h2 = { module = "com.h2database:h2", version.ref = "h2" }
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

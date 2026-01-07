@@ -37,7 +37,6 @@ dependencies {
     implementation(libs.http.ktor.serialization)
     implementation(libs.ktor.server.content.negotiation)
     implementation(libs.postgresql)
-    implementation(libs.h2)
     implementation(libs.ktor.server.host.common)
     implementation(libs.ktor.server.netty)
     implementation(libs.ktor.server.config.yaml)
@@ -46,6 +45,8 @@ dependencies {
 
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.http.ktor.content.negotiation)
+    testImplementation(libs.test.container.postgresql)
+    testImplementation(libs.test.containers)
 }
 
 fun isNonStable(version: String): Boolean {

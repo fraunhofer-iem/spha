@@ -52,7 +52,7 @@ class ResultService(private val connection: Connection) {
             """CREATE TABLE IF NOT EXISTS TOOL_RESULTS (
                 ID SERIAL PRIMARY KEY,
                 PROJECT_ID INT NOT NULL,
-                RESULT_HIERARCHY TEXT NOT NULL,
+                RESULT_HIERARCHY JSONB NOT NULL,
                 CREATED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (PROJECT_ID) REFERENCES PROJECTS(ID) ON DELETE CASCADE
             );"""
@@ -61,8 +61,8 @@ class ResultService(private val connection: Connection) {
             """CREATE TABLE IF NOT EXISTS TOOL_INFO_ORIGINS (
                 ID SERIAL PRIMARY KEY,
                 RESULT_ID INT NOT NULL,
-                TOOL_INFO TEXT NOT NULL,
-                ORIGINS TEXT NOT NULL,
+                TOOL_INFO JSONB NOT NULL,
+                ORIGINS JSONB NOT NULL,
                 FOREIGN KEY (RESULT_ID) REFERENCES TOOL_RESULTS(ID) ON DELETE CASCADE
             );"""
 
@@ -149,7 +149,15 @@ class ResultService(private val connection: Connection) {
             val resultStmt =
                 connection.prepareStatement(INSERT_RESULT, Statement.RETURN_GENERATED_KEYS)
             resultStmt.setInt(1, projectId)
-            resultStmt.setString(2, Json.encodeToString(result.resultHierarchy))
+            // For JSONB columns, use PGobject
+            val hierarchyJson = Json.encodeToString(result.resultHierarchy)
+            resultStmt.setObject(
+                2,
+                org.postgresql.util.PGobject().apply {
+                    type = "jsonb"
+                    value = hierarchyJson
+                },
+            )
             resultStmt.setTimestamp(3, Timestamp(System.currentTimeMillis()))
             resultStmt.executeUpdate()
 
@@ -163,8 +171,24 @@ class ResultService(private val connection: Connection) {
             val toolInfoStmt = connection.prepareStatement(INSERT_TOOL_INFO_ORIGIN)
             for (toolInfoAndOrigin in result.origins) {
                 toolInfoStmt.setInt(1, resultId)
-                toolInfoStmt.setString(2, Json.encodeToString(toolInfoAndOrigin.toolInfo))
-                toolInfoStmt.setString(3, Json.encodeToString(toolInfoAndOrigin.origins))
+                val toolInfoJson = Json.encodeToString(toolInfoAndOrigin.toolInfo)
+                val originsJson = Json.encodeToString(toolInfoAndOrigin.origins)
+
+                // For JSONB columns, use PGobject
+                toolInfoStmt.setObject(
+                    2,
+                    org.postgresql.util.PGobject().apply {
+                        type = "jsonb"
+                        value = toolInfoJson
+                    },
+                )
+                toolInfoStmt.setObject(
+                    3,
+                    org.postgresql.util.PGobject().apply {
+                        type = "jsonb"
+                        value = originsJson
+                    },
+                )
                 toolInfoStmt.executeUpdate()
             }
 
@@ -259,12 +283,7 @@ class ResultService(private val connection: Connection) {
 }
 
 fun Application.configureDatabases() {
-    val embedded =
-        System.getenv("DATABASE_EMBEDDED")?.toBoolean()
-            ?: environment.config.propertyOrNull("database.embedded")?.getString()?.toBoolean()
-            ?: true
-    log.info("Database embedded mode: $embedded")
-    val dbConnection: Connection = connectToPostgres(embedded = embedded)
+    val dbConnection: Connection = connectToPostgres()
     val resultService = ResultService(dbConnection)
 
     routing {
@@ -349,28 +368,24 @@ fun Application.configureDatabases() {
  * instructions [here](https://postgresapp.com/). Then, you would be able to edit your url, which is
  * usually "jdbc:postgresql://host:port/database", as well as user and password values.
  *
- * @param embedded -- if [true] defaults to an embedded database for tests that runs locally in the
- *   same process. In this case you don't have to provide any parameters in configuration file, and
- *   you don't have to run a process.
  * @return [Connection] that represent connection to the database. Please, don't forget to close
  *   this connection when your application shuts down by calling [Connection.close]
  */
-fun Application.connectToPostgres(embedded: Boolean): Connection {
+fun Application.connectToPostgres(): Connection {
     Class.forName("org.postgresql.Driver")
-    if (embedded) {
-        log.info("Using embedded H2 database for testing; replace this flag to use postgres")
-        return DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "root", "")
-    } else {
-        val url =
-            System.getenv("POSTGRES_URL") ?: environment.config.property("postgres.url").getString()
-        log.info("Connecting to postgres database at $url")
-        val user =
-            System.getenv("POSTGRES_USER")
-                ?: environment.config.property("postgres.user").getString()
-        val password =
-            System.getenv("POSTGRES_PASSWORD")
-                ?: environment.config.property("postgres.password").getString()
+    val url =
+        System.getenv("POSTGRES_URL")
+            ?: System.getProperty("POSTGRES_URL")
+            ?: environment.config.property("postgres.url").getString()
+    log.info("Connecting to postgres database at $url")
+    val user =
+        System.getenv("POSTGRES_USER")
+            ?: System.getProperty("POSTGRES_USER")
+            ?: environment.config.property("postgres.user").getString()
+    val password =
+        System.getenv("POSTGRES_PASSWORD")
+            ?: System.getProperty("POSTGRES_PASSWORD")
+            ?: environment.config.property("postgres.password").getString()
 
-        return DriverManager.getConnection(url, user, password)
-    }
+    return DriverManager.getConnection(url, user, password)
 }

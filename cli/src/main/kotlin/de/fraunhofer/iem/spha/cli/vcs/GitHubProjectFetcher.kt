@@ -81,12 +81,12 @@ class GitHubProjectFetcher(
     /**
      * Fetches project information from a GitHub repository URL.
      *
-     * @param repoUrl The GitHub repository URL
+     * @param repoOrigin The GitHub repository URL
      * @param tokenOverride Optional token to override environment variable token
      * @return ProjectInfo containing repository details
      */
     override suspend fun getProjectInfo(
-        repoUrl: String,
+        repoOrigin: String,
         tokenOverride: String?,
     ): NetworkResponse<ProjectInfo> {
         val token =
@@ -95,10 +95,10 @@ class GitHubProjectFetcher(
                 ?: return NetworkResponse.Failed(
                     "GitHub token is required. Set GITHUB_TOKEN or GH_TOKEN environment variable, or use --token option."
                 )
-        logger.info { "Fetching project information from GitHub for repository: $repoUrl" }
+        logger.info { "Fetching project information from GitHub for repository: $repoOrigin" }
 
         val (owner, repo) =
-            parseGitHubUrl(repoUrl) ?: return NetworkResponse.Failed("Invalid repoUrl")
+            parseGitHubUrl(repoOrigin) ?: return NetworkResponse.Failed("Invalid repoUrl")
         logger.debug { "Parsed repository URL: owner=$owner, repo=$repo" }
 
         // Create the GraphQL query

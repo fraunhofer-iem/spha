@@ -13,8 +13,10 @@ import de.fraunhofer.iem.spha.model.project.Language
 import de.fraunhofer.iem.spha.model.project.ProjectInfo
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
+import java.net.URI
 import java.nio.file.Files
 import java.nio.file.Path
+import kotlin.io.path.Path
 import kotlin.io.path.exists
 import kotlin.io.path.isDirectory
 
@@ -24,26 +26,35 @@ class LocalRepositoryFetcher(val logger: KLogger = KotlinLogging.logger {}) : Pr
     /**
      * Fetches project information from a local git repository.
      *
-     * @param repoUrl The local repository path (can be relative or absolute)
+     * @param repoOrigin The local repository path (can be relative or absolute)
      * @param tokenOverride Not used for local repositories
      * @return ProjectInfo containing repository details
      */
     override suspend fun getProjectInfo(
-        repoUrl: String,
+        repoOrigin: String,
         tokenOverride: String?,
     ): NetworkResponse<ProjectInfo> {
-        logger.info { "Fetching project information from local repository: $repoUrl" }
+        logger.info { "Fetching project information from local repository: $repoOrigin" }
 
         val repoPath =
             try {
-                if (repoUrl.startsWith("file:/")) {
-                    Path.of(java.net.URI.create(repoUrl)).toAbsolutePath()
-                } else {
-                    Path.of(repoUrl).toAbsolutePath()
+                try {
+                    val uri = URI.create(repoOrigin)
+                    if (uri.scheme == "file") {
+                        Path.of(uri).toAbsolutePath()
+                    } else if (uri.scheme == null)
+                        Path.of(repoOrigin).toAbsolutePath()
+                    else {
+                        // the specified repoOrigin is not a local path.
+                        // Thus, we assume it's a remote path' for the given current working directory
+                        Path.of(System.getProperty("user.dir")).toAbsolutePath()
+                    }
+                } catch (e : IllegalArgumentException){
+                    Path.of(repoOrigin).toAbsolutePath()
                 }
             } catch (e: Exception) {
-                logger.error(e) { "Invalid repository path: $repoUrl" }
-                return NetworkResponse.Failed("Invalid repository path: $repoUrl")
+                logger.error(e) { "Invalid repository path: $repoOrigin" }
+                return NetworkResponse.Failed("Invalid repository path: $repoOrigin")
             }
 
         if (!repoPath.exists() || !repoPath.isDirectory()) {
@@ -87,7 +98,7 @@ class LocalRepositoryFetcher(val logger: KLogger = KotlinLogging.logger {}) : Pr
     }
 
     private fun getRepositoryName(repoPath: Path): String {
-        return repoPath.fileName?.toString() ?: "unknown"
+        return repoPath.toRealPath().toString()
     }
 
     private fun getRemoteUrl(repoPath: Path): String? {

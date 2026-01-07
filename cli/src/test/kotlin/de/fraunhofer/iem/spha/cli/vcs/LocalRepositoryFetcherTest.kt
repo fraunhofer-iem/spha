@@ -15,6 +15,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
+import kotlin.io.path.Path
 
 class LocalRepositoryFetcherTest : ProjectInfoFetcherTestBase() {
 
@@ -60,7 +61,7 @@ class LocalRepositoryFetcherTest : ProjectInfoFetcherTestBase() {
 
     override fun getExpectedRepositoryName(): String {
         val path = getTestRepositoryUrl()
-        return path.substringAfterLast("/").substringAfterLast("\\")
+        return Path(path).toRealPath().toString()
     }
 
     override fun getAlternativeUrlFormats(): List<String> =

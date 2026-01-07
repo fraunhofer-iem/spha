@@ -20,12 +20,12 @@ interface ProjectInfoFetcher : Closeable {
     /**
      * Fetches project information from a repository.
      *
-     * @param repoUrl The repository URL or local path
+     * @param repoOrigin The repository URL or local path
      * @param tokenOverride Optional token to override environment variable token
      * @return NetworkResponse containing ProjectInfo or error
      */
     suspend fun getProjectInfo(
-        repoUrl: String,
+        repoOrigin: String,
         tokenOverride: String? = null,
     ): NetworkResponse<ProjectInfo>
 }

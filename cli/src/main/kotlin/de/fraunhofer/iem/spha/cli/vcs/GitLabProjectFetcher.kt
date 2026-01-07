@@ -62,19 +62,19 @@ class GitLabProjectFetcher(
     /**
      * Fetches project information from a GitLab repository URL.
      *
-     * @param repoUrl The GitLab repository URL
+     * @param repoOrigin The GitLab repository URL
      * @param tokenOverride Optional token to override environment variable token
      * @return ProjectInfo containing repository details
      */
     override suspend fun getProjectInfo(
-        repoUrl: String,
+        repoOrigin: String,
         tokenOverride: String?,
     ): NetworkResponse<ProjectInfo> {
         val token = tokenOverride ?: getToken()
-        logger.info { "Fetching project information from GitLab for repository: $repoUrl" }
+        logger.info { "Fetching project information from GitLab for repository: $repoOrigin" }
 
         val (host, projectPath) =
-            parseGitLabUrl(repoUrl) ?: return NetworkResponse.Failed("Invalid GitLab URL")
+            parseGitLabUrl(repoOrigin) ?: return NetworkResponse.Failed("Invalid GitLab URL")
         logger.debug { "Parsed repository URL: host=$host, projectPath=$projectPath" }
 
         val encodedPath = withContext(Dispatchers.IO) { URLEncoder.encode(projectPath, "UTF-8") }

@@ -33,6 +33,9 @@ import kotlinx.serialization.json.decodeFromStream
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.RegisterExtension
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.junit5.KoinTestExtension
@@ -44,6 +47,45 @@ class AnalyzeRepositoryCommandTest : KoinTest {
         private const val OUTPUT_FILE = "output.json"
         private const val SAMPLE_RESULT_DIR = "../ui/example"
         private const val CURRENT_REPO_LOCAL = ".."
+
+        private const val NAME_NOT_FOUND_MESSAGE = "Currently no data available"
+
+        private val isOnlineTest = (System.getenv("GITHUB_TOKEN")
+            ?: System.getenv("GH_TOKEN")) != null
+
+        @JvmStatic
+        fun commandTestCases() = listOf(
+            Arguments.of(
+                "Command with local path and local reposotryType succeeds with local repository",
+                "--repoOrigin \"$CURRENT_REPO_LOCAL\" --repositoryType local",
+                Path(CURRENT_REPO_LOCAL).toRealPath().toString(),
+                true
+            ),
+            Arguments.of(
+                "Command auto-detects git repository and uses online data when neither repoOrigin nor repositoryType is specified",
+                "",
+                if (isOnlineTest) "spha" else NAME_NOT_FOUND_MESSAGE,
+                isOnlineTest
+            ),
+            Arguments.of(
+                "Command with local repoOrigin and no repositoryType always uses local data",
+                "--repoOrigin \"$CURRENT_REPO_LOCAL\"",
+                Path(CURRENT_REPO_LOCAL).toRealPath().toString(),
+                true
+            ),
+              Arguments.of(
+                "Command with remote repoOrigin and no repositoryType resolves online data",
+                "--repoOrigin \"https://github.com/fraunhofer-iem/spha\"",
+                  if (isOnlineTest) "spha" else NAME_NOT_FOUND_MESSAGE,
+                  isOnlineTest
+              ),
+            Arguments.of(
+                "Command with remote repoOrigin and no correct repositoryType resolves online data",
+                "--repoOrigin \"https://github.com/fraunhofer-iem/spha\" --repositoryType github",
+                  if (isOnlineTest) "spha" else NAME_NOT_FOUND_MESSAGE,
+                  isOnlineTest
+              )
+        )
     }
 
     @JvmField
@@ -81,56 +123,42 @@ class AnalyzeRepositoryCommandTest : KoinTest {
     }
 
     @OptIn(ExperimentalSerializationApi::class)
-    @Test
-    fun `command succeeds with local repository`() = runTest {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("commandTestCases")
+    fun `command executes successfully with various arguments`(
+        description: String,
+        variableArgs: String,
+        expectedName: String,
+        shouldCheckKotlinLanguage: Boolean
+    ) = runTest {
         val command = AnalyzeRepositoryCommand()
-        val result =
-            command.test(
-                "--repoOrigin \"$CURRENT_REPO_LOCAL\" --output \"$OUTPUT_FILE\" --repositoryType local --toolResultDir \"$SAMPLE_RESULT_DIR\""
-            )
+        val result = command.test(
+            "$variableArgs --output \"$OUTPUT_FILE\" --toolResultDir \"$SAMPLE_RESULT_DIR\""
+        )
 
         assertEquals(
             0,
             result.statusCode,
-            "Command should succeed with local repository. Output: ${result.stdout}\n${result.stderr}",
+            "$description. Output: ${result.stdout}\n${result.stderr}",
         )
         assertTrue(Files.exists(Path(OUTPUT_FILE)), "Output file should be created at $OUTPUT_FILE")
 
         Files.newInputStream(Path(OUTPUT_FILE)).use { inputStream ->
             val sphaResult = Json.decodeFromStream<SphaToolResult>(inputStream)
             assertNotNull(sphaResult.projectInfo, "Project info should not be null")
-            assertEquals("..", sphaResult.projectInfo.name)
+
+            assertEquals(expectedName, sphaResult.projectInfo.name)
             assertEquals("https://github.com/fraunhofer-iem/spha", sphaResult.projectInfo.url)
-            assertTrue(
-                sphaResult.projectInfo.usedLanguages.any { it.name == "Kotlin" },
-                "Should detect Kotlin language",
-            )
+
+            if (shouldCheckKotlinLanguage) {
+                assertTrue(
+                    sphaResult.projectInfo.usedLanguages.any { it.name == "Kotlin" },
+                    "Should detect Kotlin language",
+                )
+            }
         }
     }
 
-    @OptIn(ExperimentalSerializationApi::class)
-    @Test
-    fun `command uses detected git repository when repoUrl not specified`() = runTest {
-        val command = AnalyzeRepositoryCommand()
-
-        val result =
-            command.test(
-                "--output \"$OUTPUT_FILE\" --repositoryType local --toolResultDir \"$SAMPLE_RESULT_DIR\""
-            )
-
-        assertEquals(
-            0,
-            result.statusCode,
-            "Command should auto-detect git repository. Output: ${result.stdout}\n${result.stderr}",
-        )
-        assertTrue(Files.exists(Path(OUTPUT_FILE)), "Output file should be created")
-
-        Files.newInputStream(Path(OUTPUT_FILE)).use { inputStream ->
-            val sphaResult = Json.decodeFromStream<SphaToolResult>(inputStream)
-            assertNotNull(sphaResult.projectInfo, "Project info should not be null")
-            assertEquals("https://github.com/fraunhofer-iem/spha", sphaResult.projectInfo.url)
-        }
-    }
 
     @Test
     fun `command respects token override`() = runTest {

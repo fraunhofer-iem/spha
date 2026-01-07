@@ -65,7 +65,7 @@ object GitUtils {
         if (url != null) {
             logger.info { "Detected repository URL from git: $url" }
         } else {
-            logger.warn { "Unable to detect repository URL from git" }
+            logger.trace { "Unable to detect repository URL from git" }
         }
         return url
     }

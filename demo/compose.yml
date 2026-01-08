@@ -1,0 +1,34 @@
+services:
+  gitlab:
+    extra_hosts:
+      - "gitlab.spha.demo:host-gateway"
+    image: gitlab/gitlab-ce:18.7.1-ce.0
+    container_name: gitlab
+    restart: always
+    hostname: 'gitlab.spha.demo'
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://gitlab.spha.demo'
+        gitlab_rails['gitlab_shell_ssh_port'] = 2424
+    ports:
+      - '80:80'
+      - '4443:4443'
+      - '2424:22'
+    volumes:
+      - '$GITLAB_HOME/config:/etc/gitlab'
+      - '$GITLAB_HOME/logs:/var/log/gitlab'
+      - '$GITLAB_HOME/data:/var/opt/gitlab'
+    shm_size: '256m'
+
+  runner:
+    extra_hosts:
+      - "gitlab.spha.demo:host-gateway"
+    security_opt:
+      - no-new-privileges:true
+    image: gitlab/gitlab-runner:alpine
+    privileged: true
+    container_name: gitlab-runner
+    restart: unless-stopped
+    volumes:
+      - '$GITLAB_RUNNER_HOME/config:/etc/gitlab-runner'
+      - /var/run/docker.sock:/var/run/docker.sock

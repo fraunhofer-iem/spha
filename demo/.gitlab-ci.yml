@@ -1,0 +1,66 @@
+stages:
+  - security-scan
+  - custom-scan
+
+# Run OSV Scanner
+osv-scanner:
+  stage: security-scan
+  image:
+    name: ghcr.io/google/osv-scanner:latest
+    entrypoint: [""]  # <--- FORCE ENTRYPOINT RESET
+  tags:
+    - shared
+  script:
+    # Added --format=json and redirection to create the actual file
+    - /osv-scanner --recursive --format=json . > osv-scanner-report.json
+  allow_failure: true
+  artifacts:
+    when: always
+    paths:
+      - osv-scanner-report.json
+    expire_in: 1 week
+    # Note: 'gl-dependency-scanning-report.json' removed.
+    # OSV output is not natively compatible with GitLab's Security Dashboard format.
+  only:
+    - branches
+    - merge_requests
+
+# Run TruffleHog
+trufflehog:
+  stage: security-scan
+  image:
+    name: trufflesecurity/trufflehog:latest
+    entrypoint: [""] # <--- FORCE ENTRYPOINT RESET
+  tags:
+    - shared
+  script:
+    - trufflehog git file://. --json --no-update > trufflehog-report.json
+  allow_failure: true
+  artifacts:
+    paths:
+      - trufflehog-report.json
+    expire_in: 1 week
+  only:
+    - branches
+    - merge_requests
+
+# Placeholder for SPHA-CLI to collect the results and sent to our server
+custom-security-tool:
+  stage: custom-scan
+  image: alpine:latest
+  tags:
+    - shared
+  script:
+    - echo "Custom security tool placeholder"
+    - echo "Replace this with your custom tool execution"
+  allow_failure: true
+  artifacts:
+    paths:
+      - custom-tool-report.json
+    expire_in: 1 week
+  only:
+    - branches
+    - merge_requests
+  needs:
+    - osv-scanner
+    - trufflehog

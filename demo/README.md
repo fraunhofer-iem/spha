@@ -13,6 +13,7 @@ export GITLAB_HOME=/path/to/your/gitlab/data
 ```
 
 For example:
+
 ```bash
 export GITLAB_HOME=$HOME/gitlab
 ```
@@ -26,6 +27,7 @@ sudo sh -c 'echo "127.0.0.1 gitlab.spha.demo" >> /etc/hosts'
 ```
 
 Or manually add this line to `/etc/hosts`:
+
 ```
 127.0.0.1 gitlab.spha.demo
 ```
@@ -39,8 +41,9 @@ docker compose up -d
 ```
 
 GitLab will be accessible at:
-- `http://localhost:1234`
-- `http://gitlab.spha.demo:1234`
+
+- `http://localhost:80`
+- `http://gitlab.spha.demo:80`
 
 ### Initial Login
 
@@ -52,8 +55,8 @@ GitLab will be accessible at:
    ```
 
 3. Login with:
-   - **Username:** `root`
-   - **Password:** (use the password retrieved from the command above)
+    - **Username:** `root`
+    - **Password:** (use the password retrieved from the command above)
 
 4. **Important:** Change the root password immediately after first login
 
@@ -63,7 +66,8 @@ GitLab will be accessible at:
 
 2. Click **New instance runner**
 
-3. Select **Linux** as the operating system and create the runner
+3. Select **Linux** as the operating system and create the runner and use the tag "shared" to match the tag from the
+   example pipeline configuration.
 
 4. Copy the generated **runner token**
 
@@ -74,7 +78,7 @@ GitLab will be accessible at:
 
 6. Start the runner container:
    ```bash
-   docker compose -f gitlab-runner-compose.yml up -d
+   docker compose up runner -d
    ```
 
 7. Register the runner **once** with:
@@ -97,6 +101,6 @@ To use this pipeline in your GitLab project, copy `.gitlab-ci.yml` to the root o
 - The initial root password file is automatically deleted 24 hours after installation
 - GitLab data persists in the `$GITLAB_HOME` directory across container restarts
 - Ports exposed:
-  - `1234`: HTTP (GitLab web interface)
-  - `4443`: HTTPS
-  - `2222`: SSH
+    - `80`: HTTP (GitLab web interface)
+    - `4443`: HTTPS
+    - `2222`: SSH

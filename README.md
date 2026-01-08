@@ -40,6 +40,8 @@ A Ktor-based REST API server providing backend services for SPHA.
 
 ### Running with Docker Compose
 
+The `SPHA_DB` environment variable must be set to a directory to use for PostgreSQL database persistence.
+
 To run the server with a PostgreSQL database using Docker Compose:
 
 ```bash

@@ -16,7 +16,7 @@ services:
   db:
     image: postgres:18.1-alpine
     volumes:
-      - ./tmp/db:/var/lib/postgresql
+      - '$SPHA_DB:/var/lib/postgresql'
     environment:
       POSTGRES_DB: spha_db
       POSTGRES_USER: postgres

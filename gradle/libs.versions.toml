@@ -20,7 +20,8 @@ semverGit = "0.18.0"
 slf4jApi = "2.0.17"
 versions = "0.53.0"
 postgres = "42.7.8"
-testContainers = "1.21.4"
+testContainers = "2.0.3"
+testContainersPSQL = "1.21.4"
 
 [libraries]
 kotlin-cli = { module = "com.github.ajalt.clikt:clikt", version.ref = "kotlinCli" }
@@ -64,7 +65,7 @@ ktor-server-host-common = { module = "io.ktor:ktor-server-host-common", version.
 ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
 ktor-server-websocket = { module = "io.ktor:ktor-server-websockets", version.ref = "ktor"}
 
-test-container-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testContainers"}
+test-container-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testContainersPSQL"}
 test-containers = { module = "org.testcontainers:testcontainers", version.ref = "testContainers"}
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 

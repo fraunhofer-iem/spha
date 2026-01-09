@@ -55,8 +55,7 @@ spha-cli:
   script:
     - echo "Running SPHA-CLI Analyze..."
     # The 'analyze' command parses all JSON files in the directory and sends them to the SPHA server
-    - java -jar ./cli-0.6.0-348.sha.a3b6b55-standalone.jar analyze --toolResultDir . --reportUri http://spha:8080/api/report --repoOrigin https://github.com/fraunhofer-iem/spha-demo
-  allow_failure: true
+    - java -jar ./cli-0.6.0-348.sha.a3b6b55-standalone.jar analyze --toolResultDir . --reportUri http://spha:8080/api/report
   only:
     - branches
     - merge_requests

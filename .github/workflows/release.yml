@@ -12,9 +12,9 @@ on:
         type: string
 
 jobs:
-  publish:
+  publish-lib:
     env:
-      SPHA_VERSION: ${{ inputs.tag || github.ref_name }}
+      SPHA_LIB_VERSION: ${{ inputs.tag || github.ref_name }}
     permissions:
       contents: write
     runs-on: ubuntu-24.04
@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         with:
-          ref: ${{ env.SPHA_VERSION }}
+          ref: ${{ env.SPHA_LIB_VERSION }}
       - name: Set up Apache Maven Central
         uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e
         with: # running setup-java again overwrites the settings.xml
@@ -37,17 +37,24 @@ jobs:
 
       - name: Publish to Maven Central
         env:
+          SPHA_LIB_VERSION: ${{ env.SPHA_LIB_VERSION }}
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_USER }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_PW }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_PRIVATE_KEY }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
-        run: ./gradlew publishToMavenCentral --no-configuration-cache
+        run: ./gradlew :lib:core:publishToMavenCentral :lib:adapter:publishToMavenCentral :lib:model:publishToMavenCentral --no-configuration-cache
 
+      # TODO: Changelog shouldn't contain UI / cli changes
       - name: Generate Release Notes
-        run: ./gradlew -q printChangeLog > RELEASE_NOTES.md
+        run: |
+          prev_tag=$(git tag --sort=-v:refname | awk -v t="$SPHA_LIB_VERSION" '$0 ==t {seen = 1; next }; seen { print; exit }')
+          git log --pretty=oneline $prev_tag..HEAD -- lib
+          # Make clean RELEASE_NOTES
+          #./gradlew -q printChangeLog > RELEASE_NOTES.md
 
       - name: Create GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # TODO: suggestion to release lib-VERSION and cli-VERSION later on
         run: |
-          gh release create $SPHA_VERSION --notes-file RELEASE_NOTES.md build/distributions/*.zip 
+          gh release create $SPHA_LIB_VERSION --notes-file RELEASE_NOTES.md build/distributions/*.zip 

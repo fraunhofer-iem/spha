@@ -19,8 +19,9 @@ import java.sql.Statement
 import java.sql.Timestamp
 import kotlinx.coroutines.*
 import kotlinx.serialization.json.Json
+import org.slf4j.Logger
 
-class ResultService(private val connection: Connection) {
+class ResultService(private val connection: Connection, private val log: Logger) {
     companion object {
         private const val CREATE_TABLE_PROJECTS =
             """CREATE TABLE IF NOT EXISTS PROJECTS (
@@ -197,6 +198,7 @@ class ResultService(private val connection: Connection) {
             while (resultSet.next()) {
                 projectIds.add(resultSet.getInt("ID"))
             }
+            log.debug("Fetched ${projectIds.size} project IDs from database")
             return@withContext projectIds
         }
 

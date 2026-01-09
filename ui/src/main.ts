@@ -7,15 +7,15 @@
  * License-Filename: LICENSE
  */
 
-import {createApp} from 'vue'
+import { createApp } from 'vue'
 import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap/dist/js/bootstrap.bundle.min.js"
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './assets/styles/dashboard-card.scss';
 import router from './router'
-import {store} from "./store.ts";
-import {DemoProductRepository} from "./repository/DemoProductRepository.ts";
-import {ApiProductRepository} from "./repository/ApiProductRepository.ts";
+import { store } from "./store.ts";
+import { DemoProductRepository } from "./repository/DemoProductRepository.ts";
+import { ApiProductRepository } from "./repository/ApiProductRepository.ts";
 
 declare var __DEMO_MODE__: string;
 
@@ -35,6 +35,7 @@ async function main() {
 
     // Load products from the configured repository
     await store.loadProducts();
+    await store.connectToUpdates();
 }
 
 main();

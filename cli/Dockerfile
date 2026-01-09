@@ -7,6 +7,7 @@ WORKDIR /app
 # Copy only necessary files for dependency resolution and build
 COPY gradle gradle
 COPY build.gradle.kts settings.gradle.kts gradle.properties gradlew ./
+RUN chmod +x gradlew && sed -i 's/\r$//' gradlew
 COPY src src
 # Needed to calculate the semantic version
 COPY .git .git

@@ -5,6 +5,7 @@ ENV GRADLE_USER_HOME=/home/gradle/cache_home
 COPY build.gradle.kts gradle.properties settings.gradle.kts /home/gradle/app/
 COPY gradle /home/gradle/app/gradle
 COPY gradlew /home/gradle/app/gradlew
+RUN chmod +x /home/gradle/app/gradlew && sed -i 's/\r$//' /home/gradle/app/gradlew
 COPY buildSrc /home/gradle/app/buildSrc
 COPY lib /home/gradle/app/lib
 COPY cli/build.gradle.kts /home/gradle/app/cli/

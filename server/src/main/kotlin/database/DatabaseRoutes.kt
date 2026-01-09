@@ -15,19 +15,54 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.websocket.webSocket
+import io.ktor.websocket.Frame
 import java.sql.Connection
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+
+@Serializable data class ProjectChanged(val type: String = "PROJECT_CHANGED", val projectId: Int)
 
 fun Application.configureDatabases() {
     val dbConnection: Connection = connectToPostgres()
     val resultService = ResultService(dbConnection)
 
     routing {
+        val projectUpdates =
+            MutableSharedFlow<ProjectChanged>(
+                replay = 0,
+                extraBufferCapacity = 64,
+                onBufferOverflow = BufferOverflow.DROP_OLDEST,
+            )
+
+        val sharedFlow = projectUpdates.asSharedFlow()
+
+        webSocket("/api/ws/updates") {
+            val job = launch {
+                sharedFlow.collect { event -> send(Frame.Text(event.projectId.toString())) }
+            }
+
+            try {
+                awaitCancellation()
+            } finally {
+                job.cancel()
+            }
+        }
+
         // Submit new SPHA tool result
         post("/api/report") {
             try {
                 val result = call.receive<SphaToolResult>()
                 val projectId = resultService.findOrCreateProject(result.projectInfo)
                 val resultId = resultService.createResult(projectId, result)
+
+                // Notify all WebSocket clients about the update
+                projectUpdates.tryEmit(ProjectChanged(projectId = projectId))
+
                 call.respond(
                     HttpStatusCode.Created,
                     mapOf("id" to resultId, "projectId" to projectId),

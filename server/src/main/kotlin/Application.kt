@@ -9,6 +9,7 @@
 
 package de.fraunhofer.iem.spha
 
+import de.fraunhofer.iem.spha.database.configureDatabases
 import io.ktor.server.application.*
 
 fun main(args: Array<String>) {

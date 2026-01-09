@@ -46,7 +46,11 @@ jobs:
 
       # TODO: Changelog shouldn't contain UI / cli changes
       - name: Generate Release Notes
-        run: ./gradlew -q printChangeLog > RELEASE_NOTES.md
+        run: |
+          prev_tag=$(git tag --sort=-v:refname | awk -v t="$SPHA_LIB_VERSION" '$0 ==t {seen = 1; next }; seen { print; exit }')
+          git log --pretty=oneline $prev_tag..HEAD -- lib
+          # Make clean RELEASE_NOTES
+          #./gradlew -q printChangeLog > RELEASE_NOTES.md
 
       - name: Create GitHub Release
         env:

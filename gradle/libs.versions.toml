@@ -62,6 +62,7 @@ ktor-server-config-yaml = { module = "io.ktor:ktor-server-config-yaml", version.
 ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }
 ktor-server-host-common = { module = "io.ktor:ktor-server-host-common", version.ref = "ktor" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
+ktor-server-websocket = { module = "io.ktor:ktor-server-websockets", version.ref = "ktor"}
 
 test-container-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testContainers"}
 test-containers = { module = "org.testcontainers:testcontainers", version.ref = "testContainers"}

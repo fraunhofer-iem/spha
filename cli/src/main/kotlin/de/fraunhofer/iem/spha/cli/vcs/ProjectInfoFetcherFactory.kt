@@ -10,7 +10,6 @@
 package de.fraunhofer.iem.spha.cli.vcs
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import java.net.URI
 import java.nio.file.Path
 import kotlin.io.path.exists
 import kotlin.io.path.isDirectory

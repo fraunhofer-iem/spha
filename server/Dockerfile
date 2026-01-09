@@ -17,7 +17,7 @@ FROM node:latest AS ui-build
 COPY ui /app/ui
 WORKDIR /app/ui
 RUN npm install
-RUN npm run build:demo
+RUN npm run build
 
 # Stage 3: Build Application
 FROM gradle:latest AS build

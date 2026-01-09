@@ -150,12 +150,13 @@ class GitHubProjectFetcher(
      * @return A Pair containing the owner and repository name
      */
     private fun parseGitHubUrl(url: String): Pair<String, String>? {
-        val regex = Regex("""github\.com[/:]([^/]+)/([^/.]+)(?:\.git)?""")
-        val matchResult = regex.find(url) ?: return null
+        val (host, path) = GitUtils.parseVCSUrl(url) ?: return null
+        if (host != "github.com") return null
 
-        // Using destructuring for clarity
-        val (owner, repo) = matchResult.destructured
-        return Pair(owner, repo)
+        val parts = path.split('/')
+        if (parts.size < 2) return null
+
+        return parts[0] to parts[1]
     }
 
     /**

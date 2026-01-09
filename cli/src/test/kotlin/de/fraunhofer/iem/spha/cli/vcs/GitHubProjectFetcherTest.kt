@@ -23,6 +23,7 @@ class GitHubProjectFetcherTest : ProjectInfoFetcherTestBase() {
     override fun getAlternativeUrlFormats(): List<String> =
         listOf(
             "https://github.com/fraunhofer-iem/spha",
+            "https://www.github.com/fraunhofer-iem/spha",
             "https://github.com/fraunhofer-iem/spha.git",
             "git@github.com:fraunhofer-iem/spha.git",
             "git@github.com:fraunhofer-iem/spha",

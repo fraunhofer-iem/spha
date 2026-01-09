@@ -77,8 +77,9 @@ class GitLabProjectFetcher(
             parseGitLabUrl(repoOrigin) ?: return NetworkResponse.Failed("Invalid GitLab URL")
         logger.debug { "Parsed repository URL: host=$host, projectPath=$projectPath" }
 
+        val protocol = if (repoOrigin.startsWith("http://")) "http" else "https"
         val encodedPath = withContext(Dispatchers.IO) { URLEncoder.encode(projectPath, "UTF-8") }
-        val baseUrl = "https://$host/api/v4"
+        val baseUrl = "$protocol://$host/api/v4"
 
         try {
             // Fetch project details
@@ -158,18 +159,14 @@ class GitLabProjectFetcher(
      * @return A Pair containing the host and project path (e.g., "group/project")
      */
     private fun parseGitLabUrl(url: String): Pair<String, String>? {
-        // Matches gitlab.com/group/project or custom-gitlab.com/group/subgroup/project
-        val regex = Regex("""(?:https?://)?([^/]+)/(.+?)(?:\.git)?/?$""")
-        val matchResult = regex.find(url) ?: return null
-
-        val (host, projectPath) = matchResult.destructured
+        val (host, path) = GitUtils.parseVCSUrl(url) ?: return null
 
         // Only accept URLs that contain "gitlab" in the host
         if (!host.contains("gitlab", ignoreCase = true)) {
             return null
         }
 
-        return Pair(host, projectPath)
+        return Pair(host, path)
     }
 
     /**

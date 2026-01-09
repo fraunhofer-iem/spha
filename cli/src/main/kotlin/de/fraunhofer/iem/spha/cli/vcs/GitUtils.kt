@@ -69,4 +69,38 @@ object GitUtils {
         }
         return url
     }
+
+    /**
+     * Parses a VCS URL into host and path parts. Supports HTTPS, HTTP, and SSH (git@host:path)
+     * formats. Host is normalized (lowercase, 'www.' prefix removed).
+     *
+     * @param url The VCS URL to parse
+     * @return Pair of host and path (without .git suffix), or null if parsing fails
+     */
+    fun parseVCSUrl(url: String): Pair<String, String>? {
+        return try {
+            when {
+                // git@host:path
+                url.startsWith("git@") -> {
+                    val host =
+                        url.substringAfter("git@")
+                            .substringBefore(":")
+                            .lowercase()
+                            .removePrefix("www.")
+                    val path = url.substringAfter(":").removeSuffix(".git").trim('/')
+                    host to path
+                }
+                // http(s)://host/path
+                url.startsWith("http://") || url.startsWith("https://") -> {
+                    val uri = java.net.URI(url)
+                    val host = uri.host?.lowercase()?.removePrefix("www.") ?: return null
+                    val path = uri.path.trim('/').removeSuffix(".git")
+                    host to path
+                }
+                else -> null
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
 }

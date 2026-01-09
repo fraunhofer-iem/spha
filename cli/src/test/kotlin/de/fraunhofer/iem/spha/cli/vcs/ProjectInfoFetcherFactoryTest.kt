@@ -35,6 +35,7 @@ class ProjectInfoFetcherFactoryTest {
         fun detectRepositoryTypeCases() =
             Stream.of(
                 Arguments.of("https://github.com/owner/repo", RepositoryType.GITHUB),
+                Arguments.of("https://www.github.com/owner/repo", RepositoryType.GITHUB),
                 Arguments.of("git@github.com:owner/repo.git", RepositoryType.GITHUB),
                 Arguments.of("https://gitlab.com/owner/repo", RepositoryType.GITLAB),
                 Arguments.of("https://gitlab.company.com/owner/repo", RepositoryType.GITLAB),

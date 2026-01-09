@@ -94,4 +94,28 @@ class GitUtilsTest {
     fun `normalizeGitUrl correctly normalizes various formats`(input: String, expected: String) {
         assertEquals(expected, TestGitUtils.normalizeGitUrl(input))
     }
+
+    @ParameterizedTest
+    @org.junit.jupiter.params.provider.CsvSource(
+        value =
+            [
+                "https://github.com/owner/repo,github.com,owner/repo",
+                "https://www.github.com/owner/repo,github.com,owner/repo",
+                "http://github.com/owner/repo.git,github.com,owner/repo",
+                "git@github.com:owner/repo.git,github.com,owner/repo",
+                "https://gitlab.com/group/subgroup/project.git,gitlab.com,group/subgroup/project",
+                "https://gitlab.my-company.com/project,gitlab.my-company.com,project",
+                "git@gitlab.my-company.com:project.git,gitlab.my-company.com,project",
+            ]
+    )
+    fun `parseVCSUrl correctly parses various formats`(
+        input: String,
+        expectedHost: String,
+        expectedPath: String,
+    ) {
+        val result = GitUtils.parseVCSUrl(input)
+        assertNotNull(result)
+        assertEquals(expectedHost, result.first)
+        assertEquals(expectedPath, result.second)
+    }
 }

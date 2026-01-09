@@ -46,7 +46,7 @@ class AnalyzeRepositoryCommandTest : KoinTest {
 
     companion object {
         private const val OUTPUT_FILE = "output.json"
-        private const val SAMPLE_RESULT_DIR = "../ui/example"
+        private const val SAMPLE_RESULT_DIR = "examples/toolResults"
         private const val CURRENT_REPO_LOCAL = ".."
 
         private const val NAME_NOT_FOUND_MESSAGE = "Currently no data available"
@@ -203,7 +203,6 @@ class AnalyzeRepositoryCommandTest : KoinTest {
 
     @Test
     fun `command can send to reportUri instead of file`() = runTest {
-        val toolResultDir = "../ui/example"
         val receivedResult = CompletableDeferred<SphaToolResult>()
 
         val server =
@@ -226,7 +225,7 @@ class AnalyzeRepositoryCommandTest : KoinTest {
             val command = AnalyzeRepositoryCommand()
             val result =
                 command.test(
-                    "--repoOrigin \"$CURRENT_REPO_LOCAL\" --reportUri $reportUri --repositoryType local --toolResultDir \"$toolResultDir\""
+                    "--repoOrigin \"$CURRENT_REPO_LOCAL\" --reportUri $reportUri --repositoryType local --toolResultDir \"$SAMPLE_RESULT_DIR\""
                 )
 
             assertEquals(
@@ -259,7 +258,6 @@ class AnalyzeRepositoryCommandTest : KoinTest {
     @Test
     fun `command fails when reportUri returns 500 error`() = runTest {
         val repoDir = ".."
-        val toolResultDir = "../ui/example"
 
         val server =
             embeddedServer(Netty, port = 0) {
@@ -279,7 +277,7 @@ class AnalyzeRepositoryCommandTest : KoinTest {
             val exception =
                 assertThrows<Exception> {
                     command.test(
-                        "--repoOrigin \"$repoDir\" --reportUri $reportUri --repositoryType local --toolResultDir \"$toolResultDir\""
+                        "--repoOrigin \"$repoDir\" --reportUri $reportUri --repositoryType local --toolResultDir \"$SAMPLE_RESULT_DIR\""
                     )
                 }
             assertContains(exception.message!!, "Server returned error status 500")

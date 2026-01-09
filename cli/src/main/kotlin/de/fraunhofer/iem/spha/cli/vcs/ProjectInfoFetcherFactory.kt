@@ -82,13 +82,13 @@ object ProjectInfoFetcherFactory {
             }
             // Parse as remote URL
             else -> {
-                val host = parseHostFromUrl(repoUrlOrPath)
+                val host = GitUtils.parseVCSUrl(repoUrlOrPath)?.first
                 when {
-                    host != null && host.equals("github.com", ignoreCase = true) -> {
-                        logger.info { "Detected GitHub repository from host: $host" }
+                    host == "github.com" -> {
+                        logger.info { "Detected GitHub repository" }
                         RepositoryType.GITHUB
                     }
-                    host != null && host.contains("gitlab", ignoreCase = true) -> {
+                    host != null && host.contains("gitlab") -> {
                         logger.info { "Detected GitLab repository from host: $host" }
                         RepositoryType.GITLAB
                     }
@@ -122,34 +122,6 @@ object ProjectInfoFetcherFactory {
     fun createFetcherFromUrl(repoUrlOrPath: String): ProjectInfoFetcher {
         val repositoryType = detectRepositoryType(repoUrlOrPath)
         return createFetcher(repositoryType)
-    }
-
-    /**
-     * Parses the host from a repository URL (supports HTTP(S) and SSH git URLs).
-     *
-     * @param url The repository URL
-     * @return The host name or null if unable to parse
-     */
-    private fun parseHostFromUrl(url: String): String? {
-        return try {
-            when {
-                // Handle git@host:path SSH URLs
-                url.startsWith("git@") -> {
-                    url.substringAfter("git@").substringBefore(":")
-                }
-                // Handle HTTP(S) URLs
-                url.startsWith("http://") || url.startsWith("https://") -> {
-                    URI(url).host
-                }
-                // Try as URI anyway
-                else -> {
-                    URI(url).host
-                }
-            }
-        } catch (e: Exception) {
-            logger.debug(e) { "Failed to parse URL: $url" }
-            null
-        }
     }
 
     /**

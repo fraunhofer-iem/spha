@@ -29,7 +29,7 @@ import kotlinx.serialization.Serializable
 
 fun Application.configureDatabases() {
     val dbConnection: Connection = connectToPostgres()
-    val resultService = ResultService(dbConnection)
+    val resultService = ResultService(dbConnection, log)
 
     routing {
         val projectUpdates =
@@ -57,6 +57,7 @@ fun Application.configureDatabases() {
         post("/api/report") {
             try {
                 val result = call.receive<SphaToolResult>()
+                log.debug("Received result for project: ${result.projectInfo.name}")
                 val projectId = resultService.findOrCreateProject(result.projectInfo)
                 val resultId = resultService.createResult(projectId, result)
 

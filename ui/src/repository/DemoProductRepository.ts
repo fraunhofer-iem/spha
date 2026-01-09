@@ -7,9 +7,9 @@
  * License-Filename: LICENSE
  */
 
-import type {ProductRepository} from './ProductRepository';
-import {Product, type Result} from '../model/Result';
-import {parse} from '../util/Parser';
+import type { ProductRepository } from './ProductRepository';
+import { Product, type Result } from '../model/Result';
+import { parse } from '../util/Parser';
 
 /**
  * Demo repository that returns mock data from remote demo files
@@ -83,5 +83,22 @@ export class DemoProductRepository implements ProductRepository {
             console.error(`Error fetching demo data from ${url}:`, error);
             return null;
         }
+    }
+    async getProductByProjectId(_projectId: number): Promise<Product | null> {
+        // For demo purposes, we can try to find the product in the already loaded list
+        // Since we don't have a persistent ID map in this simple demo repo, we might just return null 
+        // or try to match by some logic if needed. 
+        // But for the purpose of "updates" in demo mode, usually we don't expect real-time updates.
+        // Let's return null to satisfy the interface.
+        return null;
+    }
+
+    connectToUpdates(_onUpdate: (projectId: number) => void): void {
+        // No-op for demo
+        console.log('Demo mode: connectToUpdates called (no-op)');
+    }
+
+    disconnectFromUpdates(): void {
+        // No-op for demo
     }
 }

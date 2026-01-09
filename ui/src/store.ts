@@ -48,6 +48,50 @@ export const store = reactive({
         }
     },
 
+    async connectToUpdates() {
+        if (!this.repository) {
+            console.warn('No repository configured');
+            return;
+        }
+
+        this.repository.connectToUpdates(async (projectId: number) => {
+            console.log(`Received update for project ${projectId}`);
+            await this.updateProduct(projectId);
+        });
+    },
+
+    disconnectFromUpdates() {
+        if (this.repository) {
+            this.repository.disconnectFromUpdates();
+        }
+    },
+
+    async updateProduct(projectId: number) {
+        if (!this.repository) {
+            console.warn('No repository configured');
+            return;
+        }
+
+        try {
+            const updatedProduct = await this.repository.getProductByProjectId(projectId);
+            if (updatedProduct) {
+                const existingIndex = this.products.findIndex(
+                    p => p.id === updatedProduct.id
+                );
+
+                if (existingIndex !== -1) {
+                    // Update existing product
+                    this.products[existingIndex] = updatedProduct;
+                } else {
+                    // Add new product
+                    this.products.push(updatedProduct);
+                }
+            }
+        } catch (error) {
+            console.error(`Error updating product for project ${projectId}:`, error);
+        }
+    },
+
     addResult(result: Result) {
         return addResult(result)
     },

@@ -34,6 +34,7 @@ dependencies {
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.auth.jwt)
     implementation(libs.ktor.server.request.validation)
+    implementation(libs.ktor.server.websocket)
     implementation(libs.http.ktor.serialization)
     implementation(libs.ktor.server.content.negotiation)
     implementation(libs.postgresql)

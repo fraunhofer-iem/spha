@@ -32,13 +32,22 @@ Or manually add this line to `/etc/hosts`:
 127.0.0.1 gitlab.spha.demo
 ```
 
-### Starting GitLab
+### Starting the Environment
 
-Start the GitLab container:
+**Important:** Start the services in the correct order to ensure proper Docker networking:
 
-```bash
-docker compose up -d
-```
+1. First, start the main SPHA stack from the repository root to create the shared network:
+   ```bash
+   docker compose up -d
+   ```
+
+2. Then, start the GitLab demo environment:
+   ```bash
+   cd demo
+   docker compose up -d
+   ```
+
+This order is necessary because the demo environment relies on the `spha-network` Docker network created by the main compose file. The GitLab runner is configured to join this network, allowing CI/CD jobs to communicate with the SPHA container using the hostname `spha` (e.g., `http://spha:8080`).
 
 GitLab will be accessible at:
 

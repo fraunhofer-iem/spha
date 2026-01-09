@@ -38,14 +38,6 @@ jobs:
       - name: Package distribution
         run: ./gradlew distZip
 
-      - name: Publish to Maven Central
-        env:
-          SPHA_LIB_VERSION: ${{ env.SPHA_LIB_VERSION }}
-          SPHA_CLI_VERSION: ${{ inputs.SPHA_CLI_VERSION }}
-          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_USER }}
-          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_PW }}
-          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_PRIVATE_KEY }}
-          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
-        run: ./gradlew :cli:publishToMavenCentral --no-configuration-cache
+      # TODO build and and publish to github releases
 
       # XXX: no official releases with changelog for CLI?

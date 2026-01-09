@@ -15,7 +15,6 @@ plugins {
     alias(libs.plugins.serialization)
     alias(libs.plugins.versions)
     alias(libs.plugins.semverGit)
-    id("publish-conventions")
     application
 }
 

@@ -1,6 +1,6 @@
 stages:
   - security-scan
-  - custom-scan
+  - spha-scan
 
 # Run OSV Scanner
 osv-scanner:
@@ -44,20 +44,19 @@ trufflehog:
     - branches
     - merge_requests
 
-# Placeholder for SPHA-CLI to collect the results and sent to our server
-custom-security-tool:
-  stage: custom-scan
-  image: alpine:latest
+# Run SPHA-CLI to collect the results and send to our server
+spha-cli:
+  stage: spha-scan
+  image: eclipse-temurin:25
   tags:
     - shared
+  before_script:
+    - apt-get update && apt-get install -y git
   script:
-    - echo "Custom security tool placeholder"
-    - echo "Replace this with your custom tool execution"
+    - echo "Running SPHA-CLI Analyze..."
+    # The 'analyze' command parses all JSON files in the directory and sends them to the SPHA server
+    - java -jar ./cli-0.6.0-348.sha.a3b6b55-standalone.jar analyze --toolResultDir . --reportUri http://spha:8080/api/report --repoOrigin https://github.com/fraunhofer-iem/spha-demo
   allow_failure: true
-  artifacts:
-    paths:
-      - custom-tool-report.json
-    expire_in: 1 week
   only:
     - branches
     - merge_requests

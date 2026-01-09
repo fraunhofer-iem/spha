@@ -1,6 +1,6 @@
 # Use a multi-stage build for smaller final image size
 # Stage 1: Build the application
-FROM eclipse-temurin:24-jdk-alpine AS build
+FROM eclipse-temurin:25-jdk-alpine AS build
 
 WORKDIR /app
 
@@ -16,7 +16,7 @@ COPY .git .git
 RUN ./gradlew installDist
 
 # Stage 2: Create the production image
-FROM eclipse-temurin:24-jre-alpine
+FROM eclipse-temurin:25-jre-alpine
 
 
 WORKDIR /app

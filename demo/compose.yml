@@ -19,6 +19,9 @@ services:
       - '$GITLAB_HOME/logs:/var/log/gitlab'
       - '$GITLAB_HOME/data:/var/opt/gitlab'
     shm_size: '256m'
+    networks:
+      - default
+      - spha-network
 
   runner:
     extra_hosts:
@@ -32,3 +35,11 @@ services:
     volumes:
       - '$GITLAB_RUNNER_HOME/config:/etc/gitlab-runner'
       - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - default
+      - spha-network
+
+networks:
+  spha-network:
+    name: spha-network
+    external: true

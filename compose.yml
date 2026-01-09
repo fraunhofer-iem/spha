@@ -1,5 +1,5 @@
 services:
-  web:
+  spha:
     build:
       context: .
       dockerfile: server/Dockerfile
@@ -13,6 +13,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - spha-network
   db:
     image: postgres:18.1-alpine
     volumes:
@@ -24,8 +26,12 @@ services:
     ports:
       - "5432:5432"
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres -d spha_db" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 1s
+    networks:
+      - spha-network
+
+networks:
+  spha-network:
+    name: spha-network
+    driver: bridge

@@ -94,16 +94,30 @@ GitLab will be accessible at:
    ```bash
    ./registerRunner.sh
    ```
+   
+### Preapare SPHA CLI Runner component
 
-### Example Pipeline Configuration
+1. Create a new repo in the gitlab instance named `spha-component`. *Ensure to make repo public and have a non-empty repo description*
+2. Copy the files from `demo/spha-component` to the newly created repo.
+3. (A CI job should already have started `test-component`)
+4. Create a runnable .jar file (e.g., a "FatJAR") of the CLI tool and place it in the root directory of the repo.
+4. Go to **Settings** --> **General** --> **Visibility, project features, permissions** and check the box for **CI/CD Catalog project**
+5. Create a new Tag (e.g., `1.0.0`)
+6. Confirm that a job `create-release` started and finished.
 
-An example GitLab CI/CD pipeline configuration is provided in `demo/.gitlab-ci.yml`. This pipeline demonstrates:
+*Note: In `cli-component.yml` you might need to adjust the repo path to match your environment.*
+
+
+### Analzying a Demo Project
+
+1. Create a new project in GitLab you with to analyze.
+2. Copy the file `demo/.gitlab-ci.yml` to the newly created repo.
+
+This pipeline demonstrates:
 
 - **Security scanning** with OSV Scanner and TruffleHog
 - **Artifact collection** from security tools
-- **Integration placeholder** for SPHA CLI to collect and send results to the SPHA server
-
-To use this pipeline in your GitLab project, copy `.gitlab-ci.yml` to the root of your repository.
+- **Runs SPHA** against the collected artifacts and reports the results to the SPHA dashboard at http://localhost:8080
 
 ### Notes
 

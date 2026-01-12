@@ -1,0 +1,26 @@
+spec:
+  inputs:
+    server_url:
+      default: "http://spha:8080/api/report"
+      description: "The SPHA server endpoint to POST the result"
+    tool_result_dir:
+      default: "."
+      description: "The directory containing tool result JSON files"
+
+---
+.spha-cli-analyze:
+  image: eclipse-temurin:25-jdk-alpine
+  tags: ["shared"]
+  variables:
+    SPHA_CLI_JAR_PATH: "spha-cli-standalone.jar"
+
+  before_script:
+    - apk update && apk add git
+
+  script:
+    - echo "Fetching component JAR from components repo..."
+    - git clone "http://gitlab.spha.demo/root/spha-component.git" comp-repo # ADJUST THIS AS REQUIRED
+    - cd comp-repo
+    - if [ ! -f "$SPHA_CLI_JAR_PATH" ]; then echo "JAR not found at $SPHA_CLI_JAR_PATH" && exit 1; fi
+    - cd .. # Otherwise we would analyze the component repo
+    - java -jar "comp-repo/$SPHA_CLI_JAR_PATH" analyze --reportUri "$[[ inputs.server_url ]]" --toolResultDir "$[[ inputs.tool_result_dir ]]"

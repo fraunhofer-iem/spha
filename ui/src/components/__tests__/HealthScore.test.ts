@@ -1,8 +1,17 @@
+/*
+ * Copyright (c) 2026 Fraunhofer IEM. All rights reserved.
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for details.
+ *
+ * SPDX-License-Identifier: MIT
+ * License-Filename: LICENSE
+ */
+
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { mount, type VueWrapper } from "@vue/test-utils";
 import HealthScore from "../HealthScore.vue";
 import { Chart } from "chart.js";
-import { Product, type Kpi } from "../../model/Result.ts";
+import {Kpi, Product} from "../../model/Result";
 
 // Mock Chart.js
 vi.mock("chart.js", () => {

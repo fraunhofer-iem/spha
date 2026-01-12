@@ -1,6 +1,12 @@
+include:
+  - component: $CI_SERVER_FQDN/root/spha-component/cli-component@~latest # ADJUST REPO PATH AS REQUIRED
+    inputs:
+      server_url: "http://spha:8080/api/report"
+      tool_result_dir: "."
+
 stages:
   - security-scan
-  - custom-scan
+  - spha-result
 
 # Run OSV Scanner
 osv-scanner:
@@ -44,23 +50,16 @@ trufflehog:
     - branches
     - merge_requests
 
-# Placeholder for SPHA-CLI to collect the results and sent to our server
-custom-security-tool:
-  stage: custom-scan
-  image: alpine:latest
+# Run SPHA CLI analysis using the component
+spha-cli:
+  extends: .spha-cli-analyze
+  stage: spha-result
   tags:
     - shared
-  script:
-    - echo "Custom security tool placeholder"
-    - echo "Replace this with your custom tool execution"
-  allow_failure: true
-  artifacts:
-    paths:
-      - custom-tool-report.json
-    expire_in: 1 week
-  only:
-    - branches
-    - merge_requests
   needs:
     - osv-scanner
     - trufflehog
+  allow_failure: true
+  only:
+    - branches
+    - merge_requests

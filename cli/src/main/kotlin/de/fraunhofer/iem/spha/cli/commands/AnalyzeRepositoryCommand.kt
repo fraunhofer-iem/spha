@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Fraunhofer IEM. All rights reserved.
+ * Copyright (c) 2025-2026 Fraunhofer IEM. All rights reserved.
  *
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  *
@@ -29,6 +29,7 @@ import java.nio.file.FileSystem
 import kotlin.io.path.createDirectories
 import kotlin.io.path.inputStream
 import kotlin.io.path.outputStream
+import kotlin.time.Clock
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
@@ -166,7 +167,7 @@ internal class AnalyzeRepositoryCommand :
                 }
             }
 
-        val result = SphaToolResult(kpiResult, originsData, projectInfo)
+        val result = SphaToolResult(kpiResult, originsData, projectInfo, Clock.System.now())
         processResult(result)
     }
 

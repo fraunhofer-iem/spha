@@ -158,7 +158,7 @@ class ResultService(private val connection: Connection) {
                     value = hierarchyJson
                 },
             )
-            resultStmt.setTimestamp(3, Timestamp(System.currentTimeMillis()))
+            resultStmt.setTimestamp(3, Timestamp(result.createdAt.toEpochMilliseconds()))
             resultStmt.executeUpdate()
 
             val generatedKeys = resultStmt.generatedKeys
@@ -250,6 +250,7 @@ class ResultService(private val connection: Connection) {
             while (resultsSet.next()) {
                 val resultId = resultsSet.getInt("ID")
                 val resultHierarchyJson = resultsSet.getString("RESULT_HIERARCHY")
+                val createdAtTimestamp = resultsSet.getTimestamp("CREATED_AT")
 
                 // Get tool info and origins for this result
                 val toolInfoStmt =
@@ -274,6 +275,8 @@ class ResultService(private val connection: Connection) {
                         resultHierarchy = resultHierarchy,
                         origins = origins,
                         projectInfo = projectInfo,
+                        createdAt =
+                            kotlin.time.Instant.fromEpochMilliseconds(createdAtTimestamp.time),
                     )
                 )
             }

@@ -13,6 +13,7 @@ import de.fraunhofer.iem.spha.model.adapter.Origin
 import de.fraunhofer.iem.spha.model.adapter.ToolInfo
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiResultHierarchy
 import de.fraunhofer.iem.spha.model.project.ProjectInfo
+import kotlin.time.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -20,6 +21,7 @@ data class SphaToolResult(
     val resultHierarchy: KpiResultHierarchy,
     val origins: List<ToolInfoAndOrigin>,
     val projectInfo: ProjectInfo,
+    val createdAt: Instant,
 )
 
 @Serializable data class ToolInfoAndOrigin(val toolInfo: ToolInfo, val origins: List<Origin>)

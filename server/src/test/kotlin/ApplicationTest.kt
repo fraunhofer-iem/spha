@@ -88,6 +88,7 @@ class ReportEndpointTest {
             resultHierarchy = createTestKpiResultHierarchy(),
             origins = listOf(ToolInfoAndOrigin(toolInfo = toolInfo, origins = emptyList())),
             projectInfo = createTestProjectInfo(name = projectName, url = projectUrl),
+            createdAt = kotlin.time.Instant.fromEpochMilliseconds(System.currentTimeMillis()),
         )
     }
 
@@ -250,6 +251,7 @@ class ReportEndpointTest {
                 resultHierarchy = KpiResultHierarchy.create(minimalNode),
                 origins = emptyList(),
                 projectInfo = minimalProjectInfo,
+                createdAt = kotlin.time.Instant.fromEpochMilliseconds(System.currentTimeMillis()),
             )
 
         val response =
@@ -348,6 +350,7 @@ class ReportEndpointTest {
                         ),
                     ),
                 projectInfo = createTestProjectInfo(name = "complex-project"),
+                createdAt = kotlin.time.Instant.fromEpochMilliseconds(System.currentTimeMillis()),
             )
 
         val response =
@@ -387,6 +390,7 @@ class ReportEndpointTest {
                 resultHierarchy = KpiResultHierarchy.create(errorNode),
                 origins = emptyList(),
                 projectInfo = createTestProjectInfo(name = "error-project"),
+                createdAt = kotlin.time.Instant.fromEpochMilliseconds(System.currentTimeMillis()),
             )
 
         val response =

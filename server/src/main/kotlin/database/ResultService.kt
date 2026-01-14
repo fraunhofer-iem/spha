@@ -12,7 +12,6 @@ package de.fraunhofer.iem.spha.database
 import de.fraunhofer.iem.spha.model.SphaToolResult
 import de.fraunhofer.iem.spha.model.ToolInfoAndOrigin
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiResultHierarchy
-import de.fraunhofer.iem.spha.model.project.Language
 import de.fraunhofer.iem.spha.model.project.ProjectInfo
 import java.sql.Connection
 import java.sql.Statement
@@ -26,21 +25,8 @@ class ResultService(private val connection: Connection, private val log: Logger)
         private const val CREATE_TABLE_PROJECTS =
             """CREATE TABLE IF NOT EXISTS PROJECTS (
                 ID SERIAL PRIMARY KEY,
-                NAME VARCHAR(255),
-                URL VARCHAR(512) UNIQUE NOT NULL,
-                STARS INT,
-                NUMBER_OF_CONTRIBUTORS INT,
-                NUMBER_OF_COMMITS INT,
-                LAST_COMMIT_DATE VARCHAR(255)
-            );"""
-
-        private const val CREATE_TABLE_PROJECT_LANGUAGES =
-            """CREATE TABLE IF NOT EXISTS PROJECT_LANGUAGES (
-                ID SERIAL PRIMARY KEY,
-                PROJECT_ID INT NOT NULL,
-                LANGUAGE_NAME VARCHAR(255),
-                SIZE INT,
-                FOREIGN KEY (PROJECT_ID) REFERENCES PROJECTS(ID) ON DELETE CASCADE
+                NAME VARCHAR(255) NOT NULL,
+                URL VARCHAR(512) UNIQUE NOT NULL
             );"""
 
         private const val CREATE_TABLE_TOOL_RESULTS =
@@ -48,6 +34,7 @@ class ResultService(private val connection: Connection, private val log: Logger)
                 ID SERIAL PRIMARY KEY,
                 PROJECT_ID INT NOT NULL,
                 RESULT_HIERARCHY JSONB NOT NULL,
+                REPOSITORY_INFO JSONB NOT NULL,
                 CREATED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (PROJECT_ID) REFERENCES PROJECTS(ID) ON DELETE CASCADE
             );"""
@@ -61,23 +48,16 @@ class ResultService(private val connection: Connection, private val log: Logger)
                 FOREIGN KEY (RESULT_ID) REFERENCES TOOL_RESULTS(ID) ON DELETE CASCADE
             );"""
 
-        private const val SELECT_PROJECT_BY_URL =
-            "SELECT ID, NAME, URL, STARS, NUMBER_OF_CONTRIBUTORS, NUMBER_OF_COMMITS, LAST_COMMIT_DATE FROM PROJECTS WHERE URL = ?"
-        private const val INSERT_PROJECT =
-            "INSERT INTO PROJECTS (NAME, URL, STARS, NUMBER_OF_CONTRIBUTORS, NUMBER_OF_COMMITS, LAST_COMMIT_DATE) VALUES (?, ?, ?, ?, ?, ?)"
-        private const val INSERT_LANGUAGE =
-            "INSERT INTO PROJECT_LANGUAGES (PROJECT_ID, LANGUAGE_NAME, SIZE) VALUES (?, ?, ?)"
+        private const val SELECT_PROJECT_BY_URL = "SELECT ID, NAME, URL FROM PROJECTS WHERE URL = ?"
+        private const val INSERT_PROJECT = "INSERT INTO PROJECTS (NAME, URL) VALUES (?, ?)"
         private const val INSERT_RESULT =
-            "INSERT INTO TOOL_RESULTS (PROJECT_ID, RESULT_HIERARCHY, CREATED_AT) VALUES (?, ?, ?)"
+            "INSERT INTO TOOL_RESULTS (PROJECT_ID, RESULT_HIERARCHY, REPOSITORY_INFO, CREATED_AT) VALUES (?, ?, ?, ?)"
         private const val INSERT_TOOL_INFO_ORIGIN =
             "INSERT INTO TOOL_INFO_ORIGINS (RESULT_ID, TOOL_INFO, ORIGINS) VALUES (?, ?, ?)"
         private const val SELECT_ALL_PROJECT_IDS = "SELECT ID FROM PROJECTS ORDER BY ID"
-        private const val SELECT_PROJECT_BY_ID =
-            "SELECT ID, NAME, URL, STARS, NUMBER_OF_CONTRIBUTORS, NUMBER_OF_COMMITS, LAST_COMMIT_DATE FROM PROJECTS WHERE ID = ?"
-        private const val SELECT_LANGUAGES_BY_PROJECT_ID =
-            "SELECT LANGUAGE_NAME, SIZE FROM PROJECT_LANGUAGES WHERE PROJECT_ID = ?"
+        private const val SELECT_PROJECT_BY_ID = "SELECT ID, NAME, URL FROM PROJECTS WHERE ID = ?"
         private const val SELECT_RESULTS_BY_PROJECT_ID =
-            "SELECT ID, RESULT_HIERARCHY, CREATED_AT FROM TOOL_RESULTS WHERE PROJECT_ID = ? ORDER BY CREATED_AT DESC"
+            "SELECT ID, RESULT_HIERARCHY, REPOSITORY_INFO, CREATED_AT FROM TOOL_RESULTS WHERE PROJECT_ID = ? ORDER BY CREATED_AT DESC"
         private const val SELECT_TOOL_INFO_ORIGINS_BY_RESULT_ID =
             "SELECT TOOL_INFO, ORIGINS FROM TOOL_INFO_ORIGINS WHERE RESULT_ID = ?"
     }
@@ -85,7 +65,6 @@ class ResultService(private val connection: Connection, private val log: Logger)
     init {
         val statement = connection.createStatement()
         statement.executeUpdate(CREATE_TABLE_PROJECTS)
-        statement.executeUpdate(CREATE_TABLE_PROJECT_LANGUAGES)
         statement.executeUpdate(CREATE_TABLE_TOOL_RESULTS)
         statement.executeUpdate(CREATE_TABLE_TOOL_INFO_ORIGINS)
     }
@@ -101,50 +80,28 @@ class ResultService(private val connection: Connection, private val log: Logger)
                 return@withContext resultSet.getInt("ID")
             }
 
-            // Project doesn't exist, create it
+            // Project doesn't exist, create it (only name and URL)
             val insertStmt =
                 connection.prepareStatement(INSERT_PROJECT, Statement.RETURN_GENERATED_KEYS)
             insertStmt.setString(1, projectInfo.name)
             insertStmt.setString(2, projectInfo.url)
-            insertStmt.setInt(3, projectInfo.stars)
-            insertStmt.setInt(4, projectInfo.numberOfContributors)
-            if (projectInfo.numberOfCommits != null) {
-                insertStmt.setInt(5, projectInfo.numberOfCommits!!)
-            } else {
-                insertStmt.setNull(5, java.sql.Types.INTEGER)
-            }
-            if (projectInfo.lastCommitDate != null) {
-                insertStmt.setString(6, projectInfo.lastCommitDate)
-            } else {
-                insertStmt.setNull(6, java.sql.Types.VARCHAR)
-            }
             insertStmt.executeUpdate()
 
             val generatedKeys = insertStmt.generatedKeys
             if (!generatedKeys.next()) {
                 throw Exception("Unable to retrieve the id of the newly inserted project")
             }
-            val projectId = generatedKeys.getInt(1)
-
-            // Insert languages
-            val langStmt = connection.prepareStatement(INSERT_LANGUAGE)
-            for (language in projectInfo.usedLanguages) {
-                langStmt.setInt(1, projectId)
-                langStmt.setString(2, language.name)
-                langStmt.setInt(3, language.size)
-                langStmt.executeUpdate()
-            }
-
-            return@withContext projectId
+            return@withContext generatedKeys.getInt(1)
         }
 
     suspend fun createResult(projectId: Int, result: SphaToolResult): Int =
         withContext(Dispatchers.IO) {
-            // Insert tool result
+            // Insert tool result with repository info
             val resultStmt =
                 connection.prepareStatement(INSERT_RESULT, Statement.RETURN_GENERATED_KEYS)
             resultStmt.setInt(1, projectId)
-            // For JSONB columns, use PGobject
+
+            // Serialize hierarchy and repository info as JSONB
             val hierarchyJson = Json.encodeToString(result.resultHierarchy)
             resultStmt.setObject(
                 2,
@@ -153,7 +110,17 @@ class ResultService(private val connection: Connection, private val log: Logger)
                     value = hierarchyJson
                 },
             )
-            resultStmt.setTimestamp(3, Timestamp(result.createdAt.toEpochMilliseconds()))
+
+            val repositoryInfoJson = Json.encodeToString(result.projectInfo)
+            resultStmt.setObject(
+                3,
+                org.postgresql.util.PGobject().apply {
+                    type = "jsonb"
+                    value = repositoryInfoJson
+                },
+            )
+
+            resultStmt.setTimestamp(4, Timestamp(result.createdAt.toEpochMilliseconds()))
             resultStmt.executeUpdate()
 
             val generatedKeys = resultStmt.generatedKeys
@@ -204,38 +171,13 @@ class ResultService(private val connection: Connection, private val log: Logger)
 
     suspend fun getResultsByProjectId(projectId: Int): List<SphaToolResult> =
         withContext(Dispatchers.IO) {
-            // Get project info
+            // Get project info (only name and URL)
             val projectStmt = connection.prepareStatement(SELECT_PROJECT_BY_ID)
             projectStmt.setInt(1, projectId)
             val projectResult = projectStmt.executeQuery()
             if (!projectResult.next()) {
                 return@withContext emptyList()
             }
-
-            // Get languages
-            val langStmt = connection.prepareStatement(SELECT_LANGUAGES_BY_PROJECT_ID)
-            langStmt.setInt(1, projectId)
-            val langResult = langStmt.executeQuery()
-            val languages = mutableListOf<Language>()
-            while (langResult.next()) {
-                languages.add(
-                    Language(
-                        name = langResult.getString("LANGUAGE_NAME"),
-                        size = langResult.getInt("SIZE"),
-                    )
-                )
-            }
-
-            val projectInfo =
-                ProjectInfo(
-                    name = projectResult.getString("NAME") ?: "",
-                    usedLanguages = languages,
-                    url = projectResult.getString("URL"),
-                    stars = projectResult.getInt("STARS"),
-                    numberOfContributors = projectResult.getInt("NUMBER_OF_CONTRIBUTORS"),
-                    numberOfCommits = projectResult.getInt("NUMBER_OF_COMMITS"),
-                    lastCommitDate = projectResult.getString("LAST_COMMIT_DATE"),
-                )
 
             // Get all results for this project
             val resultsStmt = connection.prepareStatement(SELECT_RESULTS_BY_PROJECT_ID)
@@ -246,6 +188,7 @@ class ResultService(private val connection: Connection, private val log: Logger)
             while (resultsSet.next()) {
                 val resultId = resultsSet.getInt("ID")
                 val resultHierarchyJson = resultsSet.getString("RESULT_HIERARCHY")
+                val repositoryInfoJson = resultsSet.getString("REPOSITORY_INFO")
                 val createdAtTimestamp = resultsSet.getTimestamp("CREATED_AT")
 
                 // Get tool info and origins for this result
@@ -266,6 +209,8 @@ class ResultService(private val connection: Connection, private val log: Logger)
                 }
 
                 val resultHierarchy = Json.decodeFromString<KpiResultHierarchy>(resultHierarchyJson)
+                val projectInfo = Json.decodeFromString<ProjectInfo>(repositoryInfoJson)
+
                 sphaResults.add(
                     SphaToolResult(
                         resultHierarchy = resultHierarchy,

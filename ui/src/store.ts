@@ -88,7 +88,6 @@ export const store = reactive({
                     // Create a new array reference to trigger reactivity
                     existing.results = [...updatedProduct.results];
                     existing.createdAt = updatedProduct.createdAt;
-                    console.log(existing);
                 } else {
                     // Add new product
                     this.products.push(updatedProduct);

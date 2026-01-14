@@ -1,3 +1,12 @@
+<!--
+  - Copyright (c) 2026 Fraunhofer IEM. All rights reserved.
+  -
+  - Licensed under the MIT license. See LICENSE file in the project root for details.
+  -
+  - SPDX-License-Identifier: MIT
+  - License-Filename: LICENSE
+  -->
+
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch, computed } from "vue";
 import {
@@ -100,8 +109,8 @@ const renderChart = () => {
 
 onMounted(renderChart);
 
-watch(() => props.productId, renderChart);
-watch(() => product.value?.results, renderChart, { deep: true });
+watch(() => props.productId, renderChart, { flush: 'post' });
+watch(() => product.value?.results, renderChart, { deep: true, flush: 'post' });
 
 onUnmounted(() => {
   if (chartInstance) {

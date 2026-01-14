@@ -222,8 +222,7 @@ const renderChart = () => {
 
 onMounted(renderChart);
 
-watch(() => products.value.length, renderChart, {deep: true});
-watch(() => products.value.map(p => p.results.length), renderChart, {deep: true});
+watch(products, renderChart, {deep: true, flush: 'post'});
 
 onUnmounted(() => {
   if (chartInstance) {

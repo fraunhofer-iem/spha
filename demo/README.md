@@ -95,18 +95,9 @@ GitLab will be accessible at:
    ./registerRunner.sh
    ```
    
-### Preapare SPHA CLI Runner component
+### Prepare SPHA CLI Runner GitLab component
 
-1. Create a new repo in the gitlab instance named `spha-component`. *Ensure to make repo public and have a non-empty repo description*
-2. Copy the files from `demo/spha-component` to the newly created repo.
-3. (A CI job should already have started `test-component`)
-4. Create a runnable .jar file (e.g., a "FatJAR") of the CLI tool and place it in the root directory of the repo.
-4. Go to **Settings** --> **General** --> **Visibility, project features, permissions** and check the box for **CI/CD Catalog project**
-5. Create a new Tag (e.g., `1.0.0`)
-6. Confirm that a job `create-release` started and finished.
-
-*Note: In `cli-component.yml` you might need to adjust the repo path to match your environment.*
-
+Follow the steps described in spha-component/README.md to setup the GitLab SPHA component.
 
 ### Analzying a Demo Project
 

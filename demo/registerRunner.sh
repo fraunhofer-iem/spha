@@ -20,4 +20,5 @@ docker compose run --rm runner register \
   --description "safe-docker-runner" \
   --docker-privileged \
   --docker-extra-hosts "gitlab.spha.demo:host-gateway"
+  --docker-network-mode "spha-network"
   --docker-image "docker:29-cli"

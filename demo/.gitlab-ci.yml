@@ -1,12 +1,6 @@
-include:
-  - component: $CI_SERVER_FQDN/root/spha-component/cli-component@~latest # ADJUST REPO PATH AS REQUIRED
-    inputs:
-      server_url: "http://spha:8080/api/report"
-      tool_result_dir: "."
-
 stages:
   - security-scan
-  - spha-result
+  - spha-scan
 
 # Run OSV Scanner
 osv-scanner:
@@ -50,16 +44,7 @@ trufflehog:
     - branches
     - merge_requests
 
-# Run SPHA CLI analysis using the component
-spha-cli:
-  extends: .spha-cli-analyze
-  stage: spha-result
-  tags:
-    - shared
-  needs:
-    - osv-scanner
-    - trufflehog
-  allow_failure: true
-  only:
-    - branches
-    - merge_requests
+include:
+  - component: $CI_SERVER_FQDN/spah/spa-component/spha-cli@0.0.8 # <--- IMPORTANT: REPLACE WITH YOUR COMPONENT version
+    inputs:
+      stage: spha-scan

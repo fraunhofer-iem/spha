@@ -1,27 +1,30 @@
-name: Tag
+name: create Tag
 
 on:
   workflow_dispatch:
+    inputs:
+      SPHA_LIB_VERSION:
+        description: "LIB version and tag"
+        required: true
+        type: string
 
 permissions:
   contents: write
 
-
 jobs:
-  build:
+  create-tag:
+    env:
+      SPHA_LIB_VERSION: ${{ inputs.SPHA_LIB_VERSION }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         with:
           fetch-depth: 0
 
-      - name: Retrieve current version number before release
-        run: ./gradlew printVersion
-
       - name: Create release tag
         id: createRelease
         run: |
-          ./gradlew releaseVersion --no-commit
+          git tag "$SPHA_LIB_VERSION"
 
       - name: Push new tag
         run: |

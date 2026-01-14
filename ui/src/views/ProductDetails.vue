@@ -1,3 +1,12 @@
+<!--
+  - Copyright (c) 2026 Fraunhofer IEM. All rights reserved.
+  -
+  - Licensed under the MIT license. See LICENSE file in the project root for details.
+  -
+  - SPDX-License-Identifier: MIT
+  - License-Filename: LICENSE
+  -->
+
 <script setup lang="ts">
 import ProjectOverview from "./../components/ProjectOverview.vue";
 import RepoLanguagesPieChart from "./../components/RepoLanguagesPieChart.vue";
@@ -24,7 +33,10 @@ const product = computed(() =>
 
 // Check if product has any results
 const hasResults = computed(() => (product.value?.results.length ?? 0) > 0);
-const lastResult = computed(() => hasResults.value ? product.value!.results[product.value!.results.length - 1] : null);
+const lastResult = computed(() => {
+    if (!hasResults.value || !product.value) return null;
+    return product.value.results[product.value.results.length - 1];
+});
 const rootComputed = computed(() => lastResult.value?.root);
 const {criticalKpis, warningKpis} = useKpiFilters(rootComputed);
 
@@ -96,13 +108,13 @@ const handleUploadClick = () => {
       </div>
 
       <div class="col-md-9 mb-3">
-        <TopLevelKpiOverview v-bind="lastResult!.root"/>
+        <TopLevelKpiOverview :root="lastResult!.root"/>
       </div>
     </div>
 
     <div class="row">
       <div class="col-md-6 mb-3">
-        <ProjectOverview v-bind="lastResult!.repoInfo"/>
+        <ProjectOverview :repo-info="lastResult!.repoInfo"/>
       </div>
       <div class="col-md-3 mb-3">
         <RepoLanguagesPieChart :languages="lastResult!.repoInfo.repoLanguages"/>

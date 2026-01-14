@@ -8,26 +8,26 @@
   -->
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import {computed, onMounted, onUnmounted, ref, watch} from "vue";
 import {
-    BarController,
-    BarElement,
-    CategoryScale,
-    Chart,
-    type ChartData,
-    type ChartOptions,
-    LinearScale,
-    Title,
-    Tooltip,
+  BarController,
+  BarElement,
+  CategoryScale,
+  Chart,
+  type ChartData,
+  type ChartOptions,
+  LinearScale,
+  Title,
+  Tooltip,
 } from "chart.js";
 import DashboardCard from "./DashboardCard.vue";
 import HealthScoreModal from "./HealthScoreModal.vue";
-import { background_grey, blue_chart } from "../assets/styles/Colors.ts";
-import type { Kpi } from "../model/Result.ts";
+import {background_grey, blue_chart} from "../assets/styles/Colors.ts";
+import type {Kpi} from "../model/Result.ts";
 import {
-    getKpisOverThreshold,
-    generateKpiSummaryText,
-    getKpiStatusColor,
+  getKpisOverThreshold,
+  generateKpiSummaryText,
+  getKpiStatusColor,
 } from "../util/KpiService.ts";
 
 Chart.register(
@@ -39,22 +39,18 @@ Chart.register(
     Title,
 );
 
-interface KpiView {
-    name: string;
-    score: number; // 0-100
-    description: string; // Tooltip content
+interface Props {
+  root: Kpi;
 }
 
-interface Props extends Kpi {}
-
-const root = defineProps<Props>();
-const kpis: KpiView[] = root.children.map((child) => {
-    return {
-        name: child.displayName,
-        score: child.score,
-        description: " ",
-    };
-});
+const props = defineProps<Props>();
+const kpis = computed(() => props.root.children.map((child) => {
+  return {
+    name: child.displayName,
+    score: child.score,
+    description: " ",
+  };
+}));
 
 const chartCanvas = ref<HTMLCanvasElement | null>(null);
 let chartInstance: Chart | null = null;
@@ -63,170 +59,170 @@ let chartInstance: Chart | null = null;
 const showModal = ref(false);
 
 // KPI analysis computed properties
-const kpiAnalysis = computed(() => getKpisOverThreshold(root, 60));
+const kpiAnalysis = computed(() => getKpisOverThreshold(props.root, 60));
 const summaryText = computed(() => generateKpiSummaryText(kpiAnalysis.value));
 const statusColor = computed(() =>
     getKpiStatusColor(kpiAnalysis.value.percentage),
 );
 
 const createChart = () => {
-    if (!chartCanvas.value) return;
+  if (!chartCanvas.value) return;
 
-    const data: ChartData<"bar"> = {
-        labels: kpis.map((kpi) => kpi.name),
-        datasets: [
-            {
-                label: "KPI Score",
-                barThickness: 60,
-                data: kpis.map((kpi) => kpi.score),
-                backgroundColor: blue_chart,
-                borderWidth: 0,
-                stack: "stack1",
-                borderRadius: 8,
-            },
-            {
-                label: "Track",
-                barThickness: 60,
-                data: kpis.map(() => 100),
-                backgroundColor: background_grey,
-                borderWidth: 0,
-                stack: "stack1",
-                borderRadius: 8,
-            },
-        ],
-    };
+  const data: ChartData<"bar"> = {
+    labels: kpis.value.map((kpi) => kpi.name),
+    datasets: [
+      {
+        label: "KPI Score",
+        barThickness: 60,
+        data: kpis.value.map((kpi) => kpi.score),
+        backgroundColor: blue_chart,
+        borderWidth: 0,
+        stack: "stack1",
+        borderRadius: 8,
+      },
+      {
+        label: "Track",
+        barThickness: 60,
+        data: kpis.value.map(() => 100),
+        backgroundColor: background_grey,
+        borderWidth: 0,
+        stack: "stack1",
+        borderRadius: 8,
+      },
+    ],
+  };
 
-    const options: ChartOptions<"bar"> = {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: {
-            intersect: false,
-            mode: false as any,
+  const options: ChartOptions<"bar"> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: {
+      intersect: false,
+      mode: false as any,
+    },
+    hover: {
+      mode: undefined,
+    },
+    scales: {
+      y: {
+        stacked: false,
+        display: false,
+        grid: {
+          display: false,
         },
-        hover: {
-            mode: undefined,
+        beginAtZero: true,
+        max: 101,
+        title: {
+          display: true,
+          text: "Score",
         },
-        scales: {
-            y: {
-                stacked: false,
-                display: false,
-                grid: {
-                    display: false,
-                },
-                beginAtZero: true,
-                max: 101,
-                title: {
-                    display: true,
-                    text: "Score",
-                },
-            },
-            x: {
-                grid: {
-                    display: false,
-                },
-                ticks: {
-                    font: {
-                        size: 16,
-                    },
-                },
-            },
+      },
+      x: {
+        grid: {
+          display: false,
         },
-        plugins: {
-            tooltip: {
-                callbacks: {
-                    label: (context) => {
-                        return kpis[context.dataIndex]?.description || "";
-                    },
-                },
-            },
-            legend: {
-                display: false,
-            },
+        ticks: {
+          font: {
+            size: 16,
+          },
         },
-    };
+      },
+    },
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            return kpis.value[context.dataIndex]?.description || "";
+          },
+        },
+      },
+      legend: {
+        display: false,
+      },
+    },
+  };
 
-    chartInstance = new Chart(chartCanvas.value, {
-        type: "bar",
-        data,
-        options,
-    });
+  chartInstance = new Chart(chartCanvas.value, {
+    type: "bar",
+    data,
+    options,
+  });
 };
 
 onMounted(() => {
-    createChart();
+  createChart();
 });
 
 onUnmounted(() => {
-    chartInstance?.destroy();
+  chartInstance?.destroy();
 });
 
 // Redraw if props change
 watch(
-    () => root,
+    () => props.root,
     () => {
-        chartInstance?.destroy();
-        createChart();
+      chartInstance?.destroy();
+      createChart();
     },
-    { deep: true, flush: 'post' },
+    {deep: true, flush: 'post'},
 );
 
 const handleButtonClick = () => {
-    showModal.value = true;
+  showModal.value = true;
 };
 
 const handleCloseModal = () => {
-    showModal.value = false;
+  showModal.value = false;
 };
 </script>
 
 <template>
-    <DashboardCard title="Top-Level KPI Overview">
-        <div class="container">
-            <div class="row">
-                <div class="col col-md-10 h-100">
-                    <div
-                        class="chart-container"
-                        style="position: relative; height: 300px"
-                    >
-                        <canvas ref="chartCanvas"></canvas>
-                    </div>
-                </div>
-                <div class="col col-md-2">
-                    <div
-                        class="d-flex flex-column justify-content-between h-100"
-                    >
-                        <div>
-                            <p class="text-start" :class="statusColor">
-                                {{ summaryText }}
-                            </p>
-                        </div>
-                        <div class="mt-auto">
-                            <div class="d-grid mb-2">
-                                <button
-                                    type="button"
-                                    @click="handleButtonClick"
-                                    class="text-primary-emphasis fw-bold bg-primary-subtle btn btn-lg"
-                                >
-                                    Details
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <DashboardCard title="Top-Level KPI Overview">
+    <div class="container">
+      <div class="row">
+        <div class="col col-md-10 h-100">
+          <div
+              class="chart-container"
+              style="position: relative; height: 300px"
+          >
+            <canvas ref="chartCanvas"></canvas>
+          </div>
         </div>
-        
-        <!-- Top Level KPIs Modal -->
-        <HealthScoreModal 
-            :show="showModal" 
-            :root-kpi="root" 
-            @close="handleCloseModal" 
-        />
-    </DashboardCard>
+        <div class="col col-md-2">
+          <div
+              class="d-flex flex-column justify-content-between h-100"
+          >
+            <div>
+              <p class="text-start" :class="statusColor">
+                {{ summaryText }}
+              </p>
+            </div>
+            <div class="mt-auto">
+              <div class="d-grid mb-2">
+                <button
+                    type="button"
+                    @click="handleButtonClick"
+                    class="text-primary-emphasis fw-bold bg-primary-subtle btn btn-lg"
+                >
+                  Details
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Level KPIs Modal -->
+    <HealthScoreModal
+        :show="showModal"
+        :root-kpi="props.root"
+        @close="handleCloseModal"
+    />
+  </DashboardCard>
 </template>
 
 <style scoped>
 .chart-container {
-    width: 100%;
+  width: 100%;
 }
 </style>

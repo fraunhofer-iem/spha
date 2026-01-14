@@ -14,7 +14,7 @@ const selectedProduct = computed(() => {
   }
 });
 
-const products = store.products
+const products = computed(() => store.products)
 
 const emit = defineEmits<{
   sidebarToggle: [collapsed: boolean];

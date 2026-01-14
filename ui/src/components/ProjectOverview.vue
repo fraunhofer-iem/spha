@@ -1,34 +1,44 @@
+<!--
+  - Copyright (c) 2026 Fraunhofer IEM. All rights reserved.
+  -
+  - Licensed under the MIT license. See LICENSE file in the project root for details.
+  -
+  - SPDX-License-Identifier: MIT
+  - License-Filename: LICENSE
+  -->
+
 <script setup lang="ts">
 import { computed } from "vue";
 import DashboardCard from "./DashboardCard.vue";
 import type { RepoInfo } from "../model/Result.ts";
 
-const props = withDefaults(defineProps<RepoInfo>(), {
-    projectUrl: "Project URL not found",
-});
+interface Props {
+    repoInfo: RepoInfo;
+}
+
+const props = defineProps<Props>();
 
 const formattedContributors = computed(() => {
-    // Access props via the 'props' object.
-    if (props.contributors === undefined) {
+    if (props.repoInfo.contributors === undefined) {
         return "Number of Contributors not found";
     }
-    return props.contributors.toLocaleString();
+    return props.repoInfo.contributors.toLocaleString();
 });
 
 const formattedStars = computed(() => {
-    if (props.stars === undefined) {
+    if (props.repoInfo.stars === undefined) {
         return "Number of Stars not found";
     }
-    return props.stars.toLocaleString();
+    return props.repoInfo.stars.toLocaleString();
 });
 
 // Format last commit date
 const formattedLastCommitDate = computed(() => {
-    if (!props.lastCommitDate) {
+    if (!props.repoInfo.lastCommitDate) {
         return "Last commit date not found";
     }
 
-    const date = new Date(props.lastCommitDate);
+    const date = new Date(props.repoInfo.lastCommitDate);
     if (isNaN(date.getTime())) {
         return "Invalid date";
     }
@@ -39,6 +49,8 @@ const formattedLastCommitDate = computed(() => {
         day: "numeric",
     });
 });
+
+const projectUrl = computed(() => props.repoInfo.projectUrl || "Project URL not found");
 </script>
 <template>
     <DashboardCard title="Project Overview">

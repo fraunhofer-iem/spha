@@ -80,8 +80,15 @@ export const store = reactive({
                 );
 
                 if (existingIndex !== -1) {
-                    // Update existing product
-                    this.products[existingIndex] = updatedProduct;
+                    // Update existing product in place to maintain reactivity
+                    const existing = this.products[existingIndex]!;
+                    existing.name = updatedProduct.name;
+                    existing.description = updatedProduct.description;
+                    existing.version = updatedProduct.version;
+                    // Create a new array reference to trigger reactivity
+                    existing.results = [...updatedProduct.results];
+                    existing.createdAt = updatedProduct.createdAt;
+                    console.log(existing);
                 } else {
                     // Add new product
                     this.products.push(updatedProduct);

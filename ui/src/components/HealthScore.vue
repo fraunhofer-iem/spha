@@ -1,3 +1,12 @@
+<!--
+  - Copyright (c) 2026 Fraunhofer IEM. All rights reserved.
+  -
+  - Licensed under the MIT license. See LICENSE file in the project root for details.
+  -
+  - SPDX-License-Identifier: MIT
+  - License-Filename: LICENSE
+  -->
+
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, ref, watch} from "vue";
 import {ArcElement, Chart, DoughnutController, Legend, Tooltip,} from "chart.js";
@@ -120,7 +129,7 @@ const renderChart = () => {
 
 onMounted(renderChart);
 
-watch(currentScore, renderChart);
+watch(currentScore, renderChart, { flush: 'post' });
 
 onUnmounted(() => {
   if (chartInstance) {

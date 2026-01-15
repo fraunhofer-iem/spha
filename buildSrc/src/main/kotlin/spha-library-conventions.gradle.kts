@@ -22,9 +22,8 @@ tasks.register<Jar>("javadocJar") {
     from(tasks.named("dokkaGeneratePublicationJavadoc"))
 }
 
-var sphaLibVersion: String = rootProject.version.toString()
-sphaLibVersion = (
-    findProperty("sphaLibVersion") as String?
-        ?: System.getenv("SPHA_LIB_VERSION")
-) ?: sphaLibVersion
+val sphaLibVersion: String =
+    System.getenv("SPHA_LIB_VERSION")
+        ?: (findProperty("sphaLibVersion") as String?)
+        ?: "0.0.0-dev+local"
 version = sphaLibVersion

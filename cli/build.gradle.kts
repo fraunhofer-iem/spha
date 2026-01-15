@@ -49,16 +49,6 @@ application {
     mainClass = "de.fraunhofer.iem.spha.cli.MainKt"
 }
 
-semver {
-    // Do not create an empty release commit when running the "releaseVersion" task.
-    createReleaseCommit = false
-
-    // Do not let untracked files bump the version or add a "-SNAPSHOT" suffix.
-    noDirtyCheck = true
-
-    groupVersionIncrements = false
-}
-
 val sphaCliVersion: String =
     System.getenv("SPHA_CLI_VERSION")
         ?: (findProperty("sphaCliVersion") as String?)

@@ -16,7 +16,6 @@ docker compose run --rm runner register \
   --url "http://gitlab.spha.demo" \
   --token "$RUNNER_TOKEN" \
   --executor "docker" \
-  --docker-image alpine:latest \
   --description "safe-docker-runner" \
   --docker-privileged \
   --docker-extra-hosts "gitlab.spha.demo:host-gateway"

@@ -45,6 +45,6 @@ trufflehog:
     - merge_requests
 
 include:
-  - component: $CI_SERVER_FQDN/spah/spa-component/spha-cli@0.0.8 # <--- IMPORTANT: REPLACE WITH YOUR COMPONENT version
+  - component: $CI_SERVER_FQDN/spah/spa-component/spha-cli@1.0.0 # <--- IMPORTANT: REPLACE WITH YOUR COMPONENT version
     inputs:
       stage: spha-scan

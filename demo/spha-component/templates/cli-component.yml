@@ -2,7 +2,7 @@
 spec:
   inputs:
     stage:
-      description: "The pipeline stage to run the JAR in"
+      description: ""
       default: "test"
     server_url:
       default: "http://spha:8080/api/report"

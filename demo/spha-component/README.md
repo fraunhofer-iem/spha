@@ -17,7 +17,7 @@ To make this component available for use in other GitLab projects:
 
 ### 1. Create a Component Repository
 
-Create a new repository in your GitLab instance (e.g., `spha-component`):
+Create a new repository in your GitLab instance (e.g., in the `spha-component` component in the group `spha` (you need to edit the templates if you choose different names)):
 - **Important:** Make the repository **public** or ensure consuming projects have access
 - Add a non-empty repository description (required for CI/CD Catalog)
 

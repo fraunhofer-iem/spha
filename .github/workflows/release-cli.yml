@@ -18,9 +18,13 @@ jobs:
     environment: Deploy
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - name: Set up Apache Maven Central
+        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e
+        with: # running setup-java again overwrites the settings.xml
+          distribution: 'temurin'
+          java-version: '25'
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2
-
       - name: Package cli distribution
         env:
           SPHA_CLI_VERSION: ${{ env.SPHA_CLI_VERSION }}

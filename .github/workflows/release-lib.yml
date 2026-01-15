@@ -1,4 +1,4 @@
-name: Release
+name: Release lib
 
 on:
   workflow_dispatch:
@@ -16,7 +16,6 @@ jobs:
   publish-lib:
     env:
       SPHA_LIB_VERSION: ${{ inputs.SPHA_LIB_VERSION }}
-      SPHA_CLI_VERSION: ${{ inputs.SPHA_CLI_VERSION }}
     permissions:
       contents: write
     runs-on: ubuntu-24.04
@@ -42,18 +41,3 @@ jobs:
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_PRIVATE_KEY }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
         run: ./gradlew :lib:core:publishToMavenCentral :lib:adapter:publishToMavenCentral :lib:model:publishToMavenCentral --no-configuration-cache
-
-      - name: Package cli distribution
-        env:
-          SPHA_CLI_VERSION: ${{ env.SPHA_CLI_VERSION }}
-        run: |
-          ./gradlew distZip
-          mkdir -p release
-          cp cli/build/distributions/*.zip release
-
-      - name: Create GitHub Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: ${{ env.SPHA_LIB_VERSION}}
-        run: |
-          gh release create "$TAG" --generate-notes release/*

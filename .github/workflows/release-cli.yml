@@ -32,9 +32,9 @@ jobs:
       - name: Create GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: ${{ env.SPHA_LIB_VERSION}}
+          SPHA_CLI_VERSION: ${{ env.SPHA_CLI_VERSION }}
         run: |
-          gh release create "$TAG" --generate-notes release/*
+          gh release create --title "cli: $SPHA_CLI_VERSION" --generate-notes release/*
 
   publish-cli-docker:
     env:

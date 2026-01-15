@@ -59,11 +59,10 @@ semver {
     groupVersionIncrements = false
 }
 
-var sphaCliVersion: String = "0.3.1"
-
-sphaCliVersion =
-    (findProperty("sphaCliVersion") as String? ?: System.getenv("SPHA_CLI_VERSION"))
-        ?: sphaCliVersion
+val sphaCliVersion: String =
+    System.getenv("SPHA_CLI_VERSION")
+        ?: (findProperty("sphaCliVersion") as String?)
+        ?: "0.0.0-dev+local"
 
 version = sphaCliVersion
 

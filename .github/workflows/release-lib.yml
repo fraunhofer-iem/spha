@@ -7,10 +7,6 @@ on:
         description: "LIB version and tag"
         required: true
         type: string
-      SPHA_CLI_VERSION:
-        description: "CLI version"
-        required: true
-        type: string
 
 jobs:
   publish-lib:

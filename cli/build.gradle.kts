@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Fraunhofer IEM. All rights reserved.
+ * Copyright (c) 2024-2026 Fraunhofer IEM. All rights reserved.
  *
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  *
@@ -10,7 +10,6 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 plugins {
-    jacoco
     id("spha-kotlin-conventions")
     alias(libs.plugins.serialization)
     alias(libs.plugins.versions)
@@ -38,6 +37,11 @@ dependencies {
     testImplementation(libs.test.mockk)
     testImplementation(libs.test.fileSystem)
     testImplementation(libs.test.junit5.params)
+
+    testImplementation(libs.ktor.server.core)
+    testImplementation(libs.ktor.server.netty)
+    testImplementation(libs.ktor.server.content.negotiation)
+    testImplementation(libs.http.ktor.serialization)
 }
 
 application {

@@ -10,6 +10,7 @@
 package de.fraunhofer.iem.spha.adapter
 
 import de.fraunhofer.iem.spha.model.adapter.Origin
+import de.fraunhofer.iem.spha.model.adapter.ToolInfo
 import de.fraunhofer.iem.spha.model.adapter.ToolResult
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -40,9 +41,6 @@ abstract class KpiAdapter<T : ToolResult, O : Origin> {
         return jsonParser.decodeFromStream(deserializer, jsonData)
     }
 }
-
-@Serializable
-data class ToolInfo(val name: String, val description: String, val version: String? = null)
 
 @Serializable
 data class AdapterResult<T : Origin>(

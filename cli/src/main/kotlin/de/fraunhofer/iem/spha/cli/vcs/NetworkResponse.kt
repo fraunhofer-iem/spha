@@ -7,7 +7,7 @@
  * License-Filename: LICENSE
  */
 
-package de.fraunhofer.iem.spha.cli.network
+package de.fraunhofer.iem.spha.cli.vcs
 
 sealed class NetworkResponse<out T> {
     data class Success<out T>(val data: T) : NetworkResponse<T>()

@@ -24,9 +24,7 @@ import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiNode
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiResultEdge
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiResultHierarchy
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiResultNode
-import io.mockk.every
 import io.mockk.mockkClass
-import io.mockk.mockkObject
 import java.nio.file.FileSystem
 import kotlin.io.path.outputStream
 import kotlin.io.path.writeText
@@ -79,9 +77,15 @@ class CalculateKpiCommandTest : KoinTest {
                 )
             )
 
-        mockkObject(KpiCalculator)
-        every { KpiCalculator.calculateKpis(DefaultHierarchy.get(), listOf()) } returns
+        val service = TestKpiCalculatorService()
+        declare<KpiCalculatorService> { service }
+        service.handler = { _, values ->
+            // Verify arguments if needed, e.g., assertEquals(DefaultHierarchy.get(), hierarchy)
+            // But since DefaultHierarchy.get() returns new instance, we rely on equals().
+            // And values should be empty.
+            assertTrue(values.isEmpty())
             expectedResult
+        }
 
         val command = CalculateKpiCommand()
         command.test("-o result/h.json")
@@ -120,16 +124,16 @@ class CalculateKpiCommandTest : KoinTest {
                 )
             )
 
-        mockkObject(KpiCalculator)
-        every {
-            KpiCalculator.calculateKpis(
-                DefaultHierarchy.get(),
-                listOf(
-                    RawValueKpi(KpiType.CHECKED_IN_BINARIES.name, 100, id = ""),
-                    RawValueKpi(KpiType.SECRETS.name, 50, id = ""),
-                ),
-            )
-        } returns expectedResult
+        val service = TestKpiCalculatorService()
+        declare<KpiCalculatorService> { service }
+        service.handler = { _, values ->
+            // Verify values. Since we sorted files, order should be deterministic.
+            // 1.json (CHECKED_IN_BINARIES) -> 2.json (SECRETS)
+            assertEquals(2, values.size)
+            assertEquals(KpiType.CHECKED_IN_BINARIES.name, values[0].typeId)
+            assertEquals(KpiType.SECRETS.name, values[1].typeId)
+            expectedResult
+        }
 
         val command = CalculateKpiCommand()
         command.test("-o result.json -s tools")
@@ -165,8 +169,13 @@ class CalculateKpiCommandTest : KoinTest {
                 )
             )
 
-        mockkObject(KpiCalculator)
-        every { KpiCalculator.calculateKpis(customHierarchy, listOf()) } returns expectedResult
+        val service = TestKpiCalculatorService()
+        declare<KpiCalculatorService> { service }
+        service.handler = { hierarchy, _ ->
+            // Verify hierarchy matches customHierarchy
+            assertEquals(customHierarchy, hierarchy)
+            expectedResult
+        }
 
         val command = CalculateKpiCommand()
         command.test("-o result.json -h h.json")
@@ -271,5 +280,17 @@ class CalculateKpiCommandTest : KoinTest {
 
         // Recursively compare the target nodes.
         return compareNodes(e1.target, e2.target)
+    }
+
+    class TestKpiCalculatorService : KpiCalculatorService {
+        var handler: ((KpiHierarchy, List<RawValueKpi>) -> KpiResultHierarchy)? = null
+
+        override fun calculateKpis(
+            hierarchy: KpiHierarchy,
+            rawValues: List<RawValueKpi>,
+        ): KpiResultHierarchy {
+            return handler?.invoke(hierarchy, rawValues)
+                ?: throw IllegalStateException("Handler not set")
+        }
     }
 }

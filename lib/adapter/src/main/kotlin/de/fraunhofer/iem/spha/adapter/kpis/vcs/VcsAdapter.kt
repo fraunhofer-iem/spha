@@ -11,9 +11,9 @@ package de.fraunhofer.iem.spha.adapter.kpis.vcs
 
 import de.fraunhofer.iem.spha.adapter.AdapterResult
 import de.fraunhofer.iem.spha.adapter.KpiAdapter
-import de.fraunhofer.iem.spha.adapter.ToolInfo
 import de.fraunhofer.iem.spha.adapter.TransformationResult
 import de.fraunhofer.iem.spha.model.adapter.RepositoryDetails
+import de.fraunhofer.iem.spha.model.adapter.ToolInfo
 import de.fraunhofer.iem.spha.model.kpi.KpiType
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 

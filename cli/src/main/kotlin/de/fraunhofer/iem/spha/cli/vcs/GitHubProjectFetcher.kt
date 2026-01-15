@@ -7,8 +7,10 @@
  * License-Filename: LICENSE
  */
 
-package de.fraunhofer.iem.spha.cli.network
+package de.fraunhofer.iem.spha.cli.vcs
 
+import de.fraunhofer.iem.spha.model.project.Language
+import de.fraunhofer.iem.spha.model.project.ProjectInfo
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
@@ -56,24 +58,11 @@ private data class Repository(
 
 @Serializable private data class UserConnection(val totalCount: Int)
 
-@Serializable
-data class ProjectInfo(
-    val name: String,
-    val usedLanguages: List<Language>,
-    val url: String,
-    val stars: Int,
-    val numberOfContributors: Int,
-    val numberOfCommits: Int?,
-    val lastCommitDate: String?,
-)
-
-@Serializable data class Language(val name: String, val size: Int)
-
 /** A class responsible for fetching project information from GitHub repositories. */
 class GitHubProjectFetcher(
     val logger: KLogger = KotlinLogging.logger {},
     private val githubApiClient: HttpClient = createDefaultHttpClient(),
-) : Closeable by githubApiClient {
+) : ProjectInfoFetcher, Closeable by githubApiClient {
 
     companion object {
         private fun createDefaultHttpClient() =
@@ -92,14 +81,24 @@ class GitHubProjectFetcher(
     /**
      * Fetches project information from a GitHub repository URL.
      *
-     * @param repoUrl The GitHub repository URL
+     * @param repoOrigin The GitHub repository URL
+     * @param tokenOverride Optional token to override environment variable token
      * @return ProjectInfo containing repository details
      */
-    suspend fun getProjectInfo(repoUrl: String, token: String): NetworkResponse<ProjectInfo> {
-        logger.info { "Fetching project information from GitHub for repository: $repoUrl" }
+    override suspend fun getProjectInfo(
+        repoOrigin: String,
+        tokenOverride: String?,
+    ): NetworkResponse<ProjectInfo> {
+        val token =
+            tokenOverride
+                ?: getToken()
+                ?: return NetworkResponse.Failed(
+                    "GitHub token is required. Set GITHUB_TOKEN or GH_TOKEN environment variable, or use --token option."
+                )
+        logger.info { "Fetching project information from GitHub for repository: $repoOrigin" }
 
         val (owner, repo) =
-            parseGitHubUrl(repoUrl) ?: return NetworkResponse.Failed("Invalid repoUrl")
+            parseGitHubUrl(repoOrigin) ?: return NetworkResponse.Failed("Invalid repoUrl")
         logger.debug { "Parsed repository URL: owner=$owner, repo=$repo" }
 
         // Create the GraphQL query
@@ -151,12 +150,13 @@ class GitHubProjectFetcher(
      * @return A Pair containing the owner and repository name
      */
     private fun parseGitHubUrl(url: String): Pair<String, String>? {
-        val regex = Regex("""github\.com[/:]([^/]+)/([^/.]+)(?:\.git)?""")
-        val matchResult = regex.find(url) ?: return null
+        val (host, path) = GitUtils.parseVCSUrl(url) ?: return null
+        if (host != "github.com") return null
 
-        // Using destructuring for clarity
-        val (owner, repo) = matchResult.destructured
-        return Pair(owner, repo)
+        val parts = path.split('/')
+        if (parts.size < 2) return null
+
+        return parts[0] to parts[1]
     }
 
     /**
@@ -223,5 +223,15 @@ class GitHubProjectFetcher(
                 stars = repository.stargazerCount,
             )
         )
+    }
+
+    /**
+     * Gets the GitHub authentication token from environment variables. Checks GITHUB_TOKEN first,
+     * then falls back to GH_TOKEN.
+     *
+     * @return The GitHub token or null if not available
+     */
+    private fun getToken(): String? {
+        return System.getenv("GITHUB_TOKEN") ?: System.getenv("GH_TOKEN")
     }
 }

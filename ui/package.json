@@ -34,22 +34,22 @@
     "bootstrap-icons": "1.13.1",
     "chart.js": "4.5.1",
     "chartjs-plugin-annotation": "3.1.0",
-    "vue": "3.5.25",
+    "vue": "3.5.26",
     "vue-router": "4.6.4"
   },
   "devDependencies": {
     "@types/bootstrap": "5.2.10",
-    "@types/node": "25.0.1",
+    "@types/node": "25.0.8",
     "@vitejs/plugin-vue": "6.0.3",
-    "@vitest/coverage-v8": "4.0.15",
+    "@vitest/coverage-v8": "4.0.17",
     "@vue/test-utils": "2.4.6",
     "@vue/tsconfig": "0.8.1",
-    "jsdom": "27.3.0",
-    "sass": "1.96.0",
+    "jsdom": "27.4.0",
+    "sass": "1.97.2",
     "typescript": "5.9.3",
-    "vite": "7.2.7",
+    "vite": "7.3.1",
     "vite-plugin-singlefile": "2.3.0",
-    "vitest": "4.0.15",
-    "vue-tsc": "3.1.8"
+    "vitest": "4.0.17",
+    "vue-tsc": "3.2.2"
   }
 }

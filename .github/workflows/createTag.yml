@@ -1,4 +1,4 @@
-name: create Tag
+name: create lib Tag
 
 on:
   workflow_dispatch:
@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 jobs:
-  create-tag:
+  create-lib-tag:
     env:
       SPHA_LIB_VERSION: ${{ inputs.SPHA_LIB_VERSION }}
     runs-on: ubuntu-24.04

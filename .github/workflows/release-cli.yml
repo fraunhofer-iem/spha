@@ -1,32 +1,44 @@
-name: Docker
-
-# This workflow uses actions that GitHub does not certify.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
+name: Release cli
 
 on:
-  push:
-    tags:
-      - "[0-9]+.[0-9]+.[0-9]+"
   workflow_dispatch:
     inputs:
-      tag:
-        description: "Git tag to release from"
+      SPHA_CLI_VERSION:
+        description: "CLI version"
         required: true
         type: string
 
-env:
-  # Use docker.io for Docker Hub if empty
-  REGISTRY: ghcr.io
-  # github.repository as <account>/<repo>
-  IMAGE_NAME: ${{ github.repository }}
-
-
 jobs:
-  build:
-
+  publish-cli-gh:
+    env:
+      SPHA_CLI_VERSION: ${{ inputs.SPHA_CLI_VERSION }}
+    permissions:
+      contents: write
     runs-on: ubuntu-24.04
+    environment: Deploy
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2
+
+      - name: Package cli distribution
+        env:
+          SPHA_CLI_VERSION: ${{ env.SPHA_CLI_VERSION }}
+        run: |
+          ./gradlew distZip
+          mkdir -p release
+          cp cli/build/distributions/*.zip release
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ env.SPHA_LIB_VERSION}}
+        run: |
+          gh release create "$TAG" --generate-notes release/*
+
+  publish-cli-docker:
+    env:
+      SPHA_CLI_VERSION: ${{ inputs.SPHA_CLI_VERSION }}
     permissions:
       contents: read
       packages: write
@@ -34,11 +46,11 @@ jobs:
       # with sigstore/fulcio when running outside PRs.
       id-token: write
       attestations: write
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130
 
@@ -65,6 +77,9 @@ jobs:
         uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ env.SPHA_CLI_VERSION }}, priority=100
+            type=raw,value=latest,priority=90
 
       # Build and push the Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action

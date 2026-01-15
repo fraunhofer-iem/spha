@@ -38,7 +38,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SPHA_CLI_VERSION: ${{ env.SPHA_CLI_VERSION }}
         run: |
-          gh release create --title "cli: $SPHA_CLI_VERSION" --generate-notes release/*
+          gh release create "cli/$SPHA_CLI_VERSION" --title "cli: $SPHA_CLI_VERSION" --generate-notes release/*
 
   publish-cli-docker:
     env:

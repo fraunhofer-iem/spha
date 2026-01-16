@@ -45,7 +45,7 @@ jobs:
       SPHA_CLI_VERSION: ${{ inputs.SPHA_CLI_VERSION }}
       REGISTRY: ghcr.io
       # github.repository as <account>/<repo>
-      IMAGE_NAME: ${{ github.repository }}
+      IMAGE_NAME: ${{ github.repository }}/cli
     permissions:
       contents: read
       packages: write
@@ -95,7 +95,7 @@ jobs:
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83
         with:
           platforms: linux/amd64, linux/arm64
-          context: "{{defaultContext}}:cli"
+          file: "cli/Dockerfile"
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

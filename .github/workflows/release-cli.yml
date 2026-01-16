@@ -43,6 +43,9 @@ jobs:
   publish-cli-docker:
     env:
       SPHA_CLI_VERSION: ${{ inputs.SPHA_CLI_VERSION }}
+      REGISTRY: ghcr.io
+      # github.repository as <account>/<repo>
+      IMAGE_NAME: ${{ github.repository }}
     permissions:
       contents: read
       packages: write

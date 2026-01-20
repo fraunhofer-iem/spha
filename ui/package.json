@@ -34,12 +34,12 @@
     "bootstrap-icons": "1.13.1",
     "chart.js": "4.5.1",
     "chartjs-plugin-annotation": "3.1.0",
-    "vue": "3.5.26",
+    "vue": "3.5.27",
     "vue-router": "4.6.4"
   },
   "devDependencies": {
     "@types/bootstrap": "5.2.10",
-    "@types/node": "25.0.8",
+    "@types/node": "25.0.9",
     "@vitejs/plugin-vue": "6.0.3",
     "@vitest/coverage-v8": "4.0.17",
     "@vue/test-utils": "2.4.6",

@@ -17,11 +17,11 @@ jobs:
     runs-on: ubuntu-24.04
     environment: Deploy
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ env.SPHA_LIB_VERSION }}
       - name: Set up Apache Maven Central
-        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654
         with: # running setup-java again overwrites the settings.xml
           distribution: 'temurin'
           java-version: '25'

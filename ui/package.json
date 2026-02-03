@@ -35,7 +35,7 @@
     "chart.js": "4.5.1",
     "chartjs-plugin-annotation": "3.1.0",
     "vue": "3.5.27",
-    "vue-router": "4.6.4"
+    "vue-router": "5.0.2"
   },
   "devDependencies": {
     "@types/bootstrap": "5.2.10",

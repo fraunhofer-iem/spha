@@ -9,26 +9,25 @@
 
 package de.fraunhofer.iem.spha.adapter
 
-import de.fraunhofer.iem.spha.adapter.ToolProcessorImpl.Companion.getAllToolProcessors
+import de.fraunhofer.iem.spha.adapter.ToolProcessorImpl.Companion.jsonParser
 import de.fraunhofer.iem.spha.adapter.tools.osv.OsvAdapter
 import de.fraunhofer.iem.spha.adapter.tools.tlc.TlcAdapter
 import de.fraunhofer.iem.spha.adapter.tools.trivy.TrivyAdapter
 import de.fraunhofer.iem.spha.adapter.tools.trufflehog.TrufflehogAdapter
-import de.fraunhofer.iem.spha.model.adapter.OsvScannerDto
-import de.fraunhofer.iem.spha.model.adapter.TlcDto
-import de.fraunhofer.iem.spha.model.adapter.ToolResult
-import de.fraunhofer.iem.spha.model.adapter.TrivyDtoV2
-import de.fraunhofer.iem.spha.model.adapter.TrufflehogReportDto
+import de.fraunhofer.iem.spha.model.adapter.*
 import io.github.oshai.kotlinlogging.KotlinLogging
-import java.io.File
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import java.io.File
 
 /** A processor that attempts to parse and transform content for a specific tool. */
 private interface ToolProcessor {
     /** The name of the tool or format this processor handles, used for logging. */
     val name: String
+
+    /** The unique identifier for this tool processor, used for configuration and identification. */
+    val id: String
 
     /**
      * Tries to process the given JSON content.
@@ -50,8 +49,8 @@ private interface ToolProcessor {
  * @property transform The function to convert the decoded object of type `T` into the result.
  */
 private class ToolProcessorImpl<T : ToolResult>(
+    override val id: String,
     private val serializer: KSerializer<T>,
-    private val jsonParser: Json,
     private val transform: (T) -> AdapterResult<*>,
 ) : ToolProcessor {
 
@@ -69,37 +68,74 @@ private class ToolProcessorImpl<T : ToolResult>(
         }
     }
 
-    companion object {
-        private val jsonParser = Json {
+    companion object{
+        val jsonParser = Json {
             isLenient = true
             ignoreUnknownKeys = true
-        }
-
-        // List of all supported tool processors. Adding a new tool is a single-line change here.
-        fun getAllToolProcessors(): List<ToolProcessor> {
-            return listOf(
-                ToolProcessorImpl(OsvScannerDto.serializer(), jsonParser) {
-                    OsvAdapter.transformDataToKpi(it)
-                },
-                ToolProcessorImpl(TrivyDtoV2.serializer(), jsonParser) {
-                    TrivyAdapter.transformDataToKpi(it)
-                },
-                ToolProcessorImpl(TrufflehogReportDto.serializer(), jsonParser) {
-                    TrufflehogAdapter.transformDataToKpi(it)
-                },
-                ToolProcessorImpl(TlcDto.serializer(), jsonParser) {
-                    TlcAdapter.transformDataToKpi(it)
-                },
-            )
         }
     }
 }
 
+/**
+ * A specialized processor for TruffleHog's NDJSON (newline-delimited JSON) output format. Each line
+ * in the file is a separate JSON object representing a finding.
+ */
+private class TrufflehogNdjsonProcessor : ToolProcessor {
+    private val serializer = TrufflehogFindingDto.serializer()
+
+    override val name: String get() = serializer.descriptor.serialName
+    override val id: String = ID
+
+    override fun tryProcess(content: String): AdapterResult<*>? {
+        val lines = content.lines().filter { it.isNotBlank() }
+
+        // Must have at least one line and first line must look like a TruffleHog finding
+        if (lines.isEmpty()) return null
+
+        val findings = mutableListOf<TrufflehogFindingDto>()
+
+        for (line in lines) {
+            try {
+                val finding = jsonParser.decodeFromString(serializer, line)
+                // Verify this looks like a TruffleHog finding by checking for characteristic fields
+                if (finding.detectorName != null || finding.sourceMetadata != null) {
+                    findings.add(finding)
+                } else {
+                    // Line doesn't look like a TruffleHog finding, this isn't NDJSON format
+                    return null
+                }
+            } catch (_: SerializationException) {
+                // If any line fails to parse, this isn't valid NDJSON format
+                return null
+            }
+        }
+
+        if (findings.isEmpty()) return null
+
+        // Convert findings to a TrufflehogReportDto by counting verified/unverified secrets
+        val verifiedSecrets = findings.count { it.verified }
+        val unverifiedSecrets = findings.count { !it.verified }
+
+        val reportDto =
+            TrufflehogReportDto(
+                chunks = null,
+                bytes = null,
+                verifiedSecrets = verifiedSecrets,
+                unverifiedSecrets = unverifiedSecrets,
+                scanDuration = null,
+                trufflehogVersion = null,
+            )
+
+        return TrufflehogAdapter.transformDataToKpi(reportDto)
+    }
+
+    companion object {
+        const val ID = "trufflehog"
+    }
+}
+
 object ToolResultParser {
-
     private val logger = KotlinLogging.logger {}
-
-    private val processors: List<ToolProcessor> = getAllToolProcessors()
 
     private fun getJsonFiles(directoryPath: String): List<File> {
         val directory = File(directoryPath)
@@ -142,31 +178,9 @@ object ToolResultParser {
         val transformationResults = mutableListOf<AdapterResult<*>>()
         for (file in jsonFiles) {
             try {
-                val content = file.readText(Charsets.UTF_8)
-                if (content.isBlank()) {
-                    logger.warn { "Warning: Skipping empty file: ${file.name}" }
-                    continue
-                }
-
-                for (processor in processors) {
-                    try {
-                        // tryProcess returns results on success or null on format mismatch
-                        val results = processor.tryProcess(content)
-                        if (results != null) {
-                            transformationResults.add(results)
-                            logger.info {
-                                "Successfully parsed '${file.name}' as '${processor.name}'"
-                            }
-                            break // Move to the next file
-                        }
-                    } catch (e: Exception) {
-                        // Catch unexpected errors from the transform logic
-                        logger.error {
-                            "Unexpected error processing '${file.name}' with '${processor.name}': ${e.message}"
-                        }
-                        // Mark as parsed to avoid the "unsuitable parser" warning
-                        break
-                    }
+                val adapterResult = getAdapterResultFromJsonFile(file)
+                if (adapterResult != null) {
+                    transformationResults.add(adapterResult)
                 }
             } catch (e: Exception) {
                 logger.error { "Unexpected error processing file '${file.name}': ${e.message}" }
@@ -174,4 +188,47 @@ object ToolResultParser {
         }
         return transformationResults
     }
+
+    private fun getAdapterResultFromJsonFile(file: File): AdapterResult<*>? {
+        val content = file.readText(Charsets.UTF_8)
+
+        // TODO: Check for envelope format and use that first
+
+        for (processor in ToolProcessorStore.processors.values) {
+            try {
+                // tryProcess returns results on success or null on format mismatch
+                val results = processor.tryProcess(content)
+                if (results != null) {
+                    logger.info {
+                        "Successfully parsed '${file.name}' as '${processor.name}'"
+                    }
+                    return results
+                }
+            } catch (e: Exception) {
+                logger.error {
+                    "Unexpected error processing '${file.name}' with '${processor.name}': ${e.message}"
+                }
+                break
+            }
+        }
+
+        logger.warn { "No suitable tool processor found for '${file.name}' " }
+        return null
+    }
+}
+
+private object ToolProcessorStore {
+
+    val processors = mapOf(
+        "osv-scanner" to ToolProcessorImpl("osv-scanner", OsvScannerDto.serializer()) {
+            OsvAdapter.transformDataToKpi(it)
+        },
+        "trivy" to ToolProcessorImpl("trivy", TrivyDtoV2.serializer()) {
+            TrivyAdapter.transformDataToKpi(it)
+        },
+        TrufflehogNdjsonProcessor.ID to TrufflehogNdjsonProcessor(),
+        "technicalLag" to ToolProcessorImpl("technicalLag", TlcDto.serializer()) {
+            TlcAdapter.transformDataToKpi(it)
+        },
+    )
 }

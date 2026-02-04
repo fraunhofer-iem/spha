@@ -21,15 +21,10 @@ class TrufflehogNdjsonProcessorTest : AbstractProcessorTest<TrufflehogFindingDto
     override fun getProcessor(): ToolProcessor = TrufflehogNdjsonProcessor()
 
     override val invalidInputs: List<String>
-        get() = listOf(
-            "{\"trufflehog_wrong\": 3}"
-        )
+        get() = listOf("{\"trufflehog_wrong\": 3}")
 
     override val validTestResourceFiles: List<String>
-        get() = listOf(
-            "trufflehog-ndjson.json",
-            "trufflehog-ndjson-verified.json"
-        )
+        get() = listOf("trufflehog-ndjson.json", "trufflehog-ndjson-verified.json")
 
     override val supportsEmptyInput: Boolean
         get() = true

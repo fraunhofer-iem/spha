@@ -18,15 +18,10 @@ class TrivyProcessorTest : AbstractProcessorTest<TrivyVulnerabilityDto>() {
     override fun getProcessor(): ToolProcessor = ToolProcessorStore.processors["trivy"]!!
 
     override val invalidInputs: List<String>
-        get() = listOf(
-            "{}",
-            "{\"invalid\": true}"
-        )
+        get() = listOf("{}", "{\"invalid\": true}")
 
     override val validTestResourceFiles: List<String>
-        get() = listOf(
-            "trivy-result-v2.json"
-        )
+        get() = listOf("trivy-result-v2.json")
 
     // Some vulnerabilities may not have CVSS scores and will result in errors
     override fun expectAllResultsSuccess(resourceFile: String): Boolean = false

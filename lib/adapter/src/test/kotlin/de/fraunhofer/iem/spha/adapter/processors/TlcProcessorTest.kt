@@ -9,28 +9,17 @@
 
 package de.fraunhofer.iem.spha.adapter.processors
 
-import de.fraunhofer.iem.spha.adapter.AdapterResult
 import de.fraunhofer.iem.spha.adapter.ToolProcessor
 import de.fraunhofer.iem.spha.adapter.ToolProcessorStore
-import kotlin.test.assertTrue
+import de.fraunhofer.iem.spha.model.adapter.TlcOrigin
 
-//class TlcProcessorTest : AbstractProcessorTest() {
-//
-//    override fun getProcessor(): ToolProcessor = ToolProcessorStore.processors["technicalLag"]!!
-//
-//    override fun getInvalidInputs(): List<String> = listOf(
-//        "{}",
-//        "{\"invalid\": true}"
-//    )
-//
-//    override fun getValidTestResourceFiles(): List<String> = listOf(
-//        "techLag-npm-vuejs.json",
-//        "techLag-npm-angular.json"
-//    )
-//
-//    override fun validateResult(result: AdapterResult<*>, resourceFile: String) {
-//        val transformationResults = result.transformationResults
-//
-//        assertTrue(transformationResults.isNotEmpty(), "Expected non-empty transformation results for $resourceFile")
-//    }
-//}
+class TlcProcessorTest : AbstractProcessorTest<TlcOrigin>() {
+
+    override fun getProcessor(): ToolProcessor = ToolProcessorStore.processors["technicalLag"]!!
+
+    override val invalidInputs: List<String>
+        get() = listOf("{}", "{\"invalid\": true}")
+
+    override val validTestResourceFiles: List<String>
+        get() = listOf("techLag-npm-vuejs.json", "techLag-npm-angular.json")
+}

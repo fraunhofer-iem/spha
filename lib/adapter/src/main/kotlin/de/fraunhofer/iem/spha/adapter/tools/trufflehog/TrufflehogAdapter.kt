@@ -13,23 +13,35 @@ import de.fraunhofer.iem.spha.adapter.AdapterResult
 import de.fraunhofer.iem.spha.adapter.KpiAdapter
 import de.fraunhofer.iem.spha.adapter.TransformationResult
 import de.fraunhofer.iem.spha.model.adapter.ToolInfo
-import de.fraunhofer.iem.spha.model.adapter.TrufflehogReportDto
+import de.fraunhofer.iem.spha.model.adapter.TrufflehogFindingDto
+import de.fraunhofer.iem.spha.model.adapter.TrufflehogResultDto
 import de.fraunhofer.iem.spha.model.kpi.KpiType
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 
-object TrufflehogAdapter : KpiAdapter<TrufflehogReportDto, TrufflehogReportDto>() {
+object TrufflehogAdapter : KpiAdapter<TrufflehogResultDto, TrufflehogFindingDto>() {
 
-    override fun transformDataToKpi(
-        vararg data: TrufflehogReportDto
-    ): AdapterResult<TrufflehogReportDto> {
+    override fun transformDataToKpi(vararg data: TrufflehogResultDto): AdapterResult<TrufflehogFindingDto> {
         val transformedData =
-            data.mapNotNull {
-                val verifiedSecrets = it.verifiedSecrets ?: return@mapNotNull null
+            data.flatMap { result ->
+                val verifiedSecrets = result.verifiedSecrets ?: return@flatMap emptyList()
                 val score = if (verifiedSecrets > 0) 0 else 100
-                TransformationResult.Success.Kpi(
-                    RawValueKpi(score = score, typeId = KpiType.SECRETS.name),
-                    origin = it,
-                )
+
+                // If there are no findings, create a single KPI with an empty finding placeholder
+                if (result.origins.isEmpty()) {
+                    listOf(
+                        TransformationResult.Success.Kpi(
+                            RawValueKpi(score = score, typeId = KpiType.SECRETS.name),
+                            origin = TrufflehogFindingDto(verified = false),
+                        )
+                    )
+                } else {
+                    result.origins.map { finding ->
+                        TransformationResult.Success.Kpi(
+                            RawValueKpi(score = score, typeId = KpiType.SECRETS.name),
+                            origin = finding,
+                        )
+                    }
+                }
             }
 
         return AdapterResult(

@@ -13,14 +13,11 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class TrufflehogReportDto(
-    val chunks: Int?,
-    val bytes: Int?,
+data class TrufflehogResultDto(
     @SerialName("verified_secrets") val verifiedSecrets: Int?,
     @SerialName("unverified_secrets") val unverifiedSecrets: Int?,
-    @SerialName("scan_duration") val scanDuration: String?,
-    @SerialName("trufflehog_version") val trufflehogVersion: String?,
-) : ToolResult, Origin
+    @SerialName("origins") val origins: List<TrufflehogFindingDto> = listOf(),
+) : ToolResult
 
 /**
  * Represents a single finding from TruffleHog's NDJSON output format. Each line in the NDJSON
@@ -36,12 +33,12 @@ data class TrufflehogFindingDto(
     @SerialName("DetectorName") val detectorName: String? = null,
     @SerialName("DetectorDescription") val detectorDescription: String? = null,
     @SerialName("DecoderName") val decoderName: String? = null,
-    @SerialName("Verified") val verified: Boolean = false,
+    @SerialName("Verified") val verified: Boolean,
     @SerialName("VerificationFromCache") val verificationFromCache: Boolean? = null,
     @SerialName("Raw") val raw: String? = null,
     @SerialName("RawV2") val rawV2: String? = null,
     @SerialName("Redacted") val redacted: String? = null,
-) : ToolResult
+) : Origin
 
 @Serializable
 data class TrufflehogSourceMetadata(

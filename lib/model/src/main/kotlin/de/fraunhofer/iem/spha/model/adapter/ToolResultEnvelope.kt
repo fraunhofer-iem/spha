@@ -15,7 +15,8 @@ import kotlinx.serialization.Serializable
 /**
  * Represents an envelope format to link tool result files to the tool that produced the result.
  *
- * @property tool The identifier of the tool that produced the result (e.g., "osv-scanner", "trivy"). This is usually the name of the tool's binary
+ * @property tool The identifier of the tool that produced the result (e.g., "osv-scanner",
+ *   "trivy"). This is usually the name of the tool's binary
  * @property resultFile The path to the file containing the actual tool results.
  */
 @Serializable

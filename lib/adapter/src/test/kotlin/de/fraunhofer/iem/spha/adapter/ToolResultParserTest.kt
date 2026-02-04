@@ -9,18 +9,18 @@
 
 package de.fraunhofer.iem.spha.adapter
 
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.io.TempDir
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.Arguments
-import org.junit.jupiter.params.provider.MethodSource
 import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.createTempDirectory
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.io.TempDir
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 
 class ToolResultParserTest {
 
@@ -119,10 +119,16 @@ class ToolResultParserTest {
         // Should only parse the JSON file, ignoring all non-JSON files
         assertEquals(1, results.size)
         // Verify that the result contains successful transformations
-        val allSuccesses = results.flatMap { adapterResult ->
-            adapterResult.transformationResults.filterIsInstance<TransformationResult.Success<*>>()
-        }
-        assertTrue(allSuccesses.isNotEmpty(), "Expected at least one successful transformation result")
+        val allSuccesses =
+            results.flatMap { adapterResult ->
+                adapterResult.transformationResults.filterIsInstance<
+                    TransformationResult.Success<*>
+                >()
+            }
+        assertTrue(
+            allSuccesses.isNotEmpty(),
+            "Expected at least one successful transformation result",
+        )
     }
 
     @Test
@@ -189,12 +195,15 @@ class ToolResultParserTest {
         val copiedResultFile = envelopeDir.resolve("trufflehog-ndjson.json").toFile()
         resultFile.copyTo(copiedResultFile)
         val envelopeFile = envelopeDir.resolve("envelope.json").toFile()
-        envelopeFile.writeText("""
+        envelopeFile.writeText(
+            """
             {
               "tool": "trufflehog",
               "result_file": "trufflehog-ndjson.json"
             }
-        """.trimIndent())
+        """
+                .trimIndent()
+        )
 
         val results = ToolResultParser.getAdapterResultsFromJsonFiles(listOf(envelopeFile))
 
@@ -213,12 +222,15 @@ class ToolResultParserTest {
         val envelopeDir = createTempDirectory("envelope")
         val resultFile = File("$testResourcesDir/trufflehog-ndjson.json")
         val envelopeFile = envelopeDir.resolve("envelope.json").toFile()
-        envelopeFile.writeText("""
+        envelopeFile.writeText(
+            """
             {
               "tool": "trufflehog",
               "result_file": "${resultFile.absolutePath.replace("\\", "/")}"
             }
-        """.trimIndent())
+        """
+                .trimIndent()
+        )
 
         val results = ToolResultParser.getAdapterResultsFromJsonFiles(listOf(envelopeFile))
 
@@ -236,12 +248,15 @@ class ToolResultParserTest {
         // Create envelope pointing to non-existent file
         val envelopeDir = createTempDirectory("envelope-missing")
         val envelopeFile = envelopeDir.resolve("envelope.json").toFile()
-        envelopeFile.writeText("""
+        envelopeFile.writeText(
+            """
             {
               "tool": "trufflehog",
               "result_file": "non-existent-file.json"
             }
-        """.trimIndent())
+        """
+                .trimIndent()
+        )
 
         val results = ToolResultParser.getAdapterResultsFromJsonFiles(listOf(envelopeFile))
 
@@ -253,7 +268,11 @@ class ToolResultParserTest {
 
     @ParameterizedTest
     @MethodSource("envelopeToolMismatchTestCases")
-    fun testEnvelopeWithToolMismatchReturnsEmptyResult(toolId: String, resultFileName: String, description: String) {
+    fun testEnvelopeWithToolMismatchReturnsEmptyResult(
+        toolId: String,
+        resultFileName: String,
+        description: String,
+    ) {
         val (envelopeDir, envelopeFile) = createEnvelopeFile(toolId, resultFileName)
 
         try {
@@ -273,12 +292,15 @@ class ToolResultParserTest {
         val emptyResultFile = envelopeDir.resolve("empty-result.json").toFile()
         emptyResultFile.writeText("")
         val envelopeFile = envelopeDir.resolve("envelope.json").toFile()
-        envelopeFile.writeText("""
+        envelopeFile.writeText(
+            """
             {
               "tool": "trufflehog",
               "result_file": "empty-result.json"
             }
-        """.trimIndent())
+        """
+                .trimIndent()
+        )
 
         val results = ToolResultParser.getAdapterResultsFromJsonFiles(listOf(envelopeFile))
 
@@ -301,13 +323,22 @@ class ToolResultParserTest {
         try {
             val results = ToolResultParser.getAdapterResultsFromJsonFiles(listOf(envelopeFile))
 
-            assertTrue(results.isNotEmpty(), "Expected non-empty results for tool: $toolId, file: $resultFileName")
+            assertTrue(
+                results.isNotEmpty(),
+                "Expected non-empty results for tool: $toolId, file: $resultFileName",
+            )
 
             // Verify that at least one transformation result is a success
-            val allSuccesses = results.flatMap { adapterResult ->
-                adapterResult.transformationResults.filterIsInstance<TransformationResult.Success<*>>()
-            }
-            assertTrue(allSuccesses.isNotEmpty(), "Expected at least one successful transformation result for tool: $toolId")
+            val allSuccesses =
+                results.flatMap { adapterResult ->
+                    adapterResult.transformationResults.filterIsInstance<
+                        TransformationResult.Success<*>
+                    >()
+                }
+            assertTrue(
+                allSuccesses.isNotEmpty(),
+                "Expected at least one successful transformation result for tool: $toolId",
+            )
         } finally {
             envelopeDir.toFile().deleteRecursively()
         }
@@ -317,30 +348,35 @@ class ToolResultParserTest {
         val envelopeDir = createTempDirectory("envelope-$toolId")
         val resultFile = File("$testResourcesDir/$resultFileName")
         val envelopeFile = envelopeDir.resolve("envelope.json").toFile()
-        envelopeFile.writeText("""
+        envelopeFile.writeText(
+            """
             {
               "tool": "$toolId",
               "result_file": "${resultFile.absolutePath.replace("\\", "/")}"
             }
-        """.trimIndent())
+        """
+                .trimIndent()
+        )
         return Pair(envelopeDir, envelopeFile)
     }
 
     companion object {
         @JvmStatic
-        fun envelopeTestCases() = listOf(
-            Arguments.of("osv-scanner", "osv-scanner.json"),
-            Arguments.of("trivy", "trivy-result-v2.json"),
-            Arguments.of("trufflehog", "trufflehog-ndjson.json"),
-            Arguments.of("technicalLag", "techLag-npm-vuejs.json")
-        )
+        fun envelopeTestCases() =
+            listOf(
+                Arguments.of("osv-scanner", "osv-scanner.json"),
+                Arguments.of("trivy", "trivy-result-v2.json"),
+                Arguments.of("trufflehog", "trufflehog-ndjson.json"),
+                Arguments.of("technicalLag", "techLag-npm-vuejs.json"),
+            )
 
         @JvmStatic
-        fun envelopeToolMismatchTestCases() = listOf(
-            // Unknown tool ID
-            Arguments.of("unknown-tool", "trufflehog-ndjson.json", "unknown tool ID"),
-            // Valid tool ID but wrong file format
-            Arguments.of("trivy", "osv-scanner.json", "trivy tool ID with osv-scanner file")
-        )
+        fun envelopeToolMismatchTestCases() =
+            listOf(
+                // Unknown tool ID
+                Arguments.of("unknown-tool", "trufflehog-ndjson.json", "unknown tool ID"),
+                // Valid tool ID but wrong file format
+                Arguments.of("trivy", "osv-scanner.json", "trivy tool ID with osv-scanner file"),
+            )
     }
 }

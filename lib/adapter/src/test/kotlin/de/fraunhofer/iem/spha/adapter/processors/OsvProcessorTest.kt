@@ -18,13 +18,8 @@ class OsvProcessorTest : AbstractProcessorTest<OsvVulnerabilityDto>() {
     override fun getProcessor(): ToolProcessor = ToolProcessorStore.processors["osv-scanner"]!!
 
     override val invalidInputs: List<String>
-        get() = listOf(
-            "{}",
-            "{\"SchemaVersion\": 3}"
-        )
+        get() = listOf("{}", "{\"SchemaVersion\": 3}")
 
     override val validTestResourceFiles: List<String>
-        get() = listOf(
-            "osv-scanner.json"
-        )
+        get() = listOf("osv-scanner.json")
 }

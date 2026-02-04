@@ -19,10 +19,7 @@ data class TrufflehogResultDto(
     @SerialName("origins") val origins: List<TrufflehogFindingDto> = listOf(),
 ) : ToolResult
 
-/**
- * Represents a single finding from TruffleHog
- * Note: SourceMetadata is skipped
- */
+/** Represents a single finding from TruffleHog Note: SourceMetadata is skipped */
 @Serializable
 data class TrufflehogFindingDto(
     @SerialName("SourceID") val sourceId: Int? = null,

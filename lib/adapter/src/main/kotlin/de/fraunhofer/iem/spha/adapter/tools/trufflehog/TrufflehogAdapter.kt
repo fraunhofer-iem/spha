@@ -20,7 +20,9 @@ import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 
 object TrufflehogAdapter : KpiAdapter<TrufflehogResultDto, TrufflehogFindingDto>() {
 
-    override fun transformDataToKpi(vararg data: TrufflehogResultDto): AdapterResult<TrufflehogFindingDto> {
+    override fun transformDataToKpi(
+        vararg data: TrufflehogResultDto
+    ): AdapterResult<TrufflehogFindingDto> {
         val transformedData =
             data.flatMap { result ->
                 val verifiedSecrets = result.verifiedSecrets ?: return@flatMap emptyList()

@@ -15,11 +15,11 @@ import de.fraunhofer.iem.spha.adapter.tools.trivy.TrivyAdapter
 import de.fraunhofer.iem.spha.adapter.tools.trufflehog.TrufflehogAdapter
 import de.fraunhofer.iem.spha.model.adapter.*
 import io.github.oshai.kotlinlogging.KotlinLogging
+import java.io.File
+import java.nio.file.Paths
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
-import java.io.File
-import java.nio.file.Paths
 
 /** A processor that attempts to parse and transform content for a specific tool. */
 internal interface ToolProcessor {
@@ -39,7 +39,7 @@ internal interface ToolProcessor {
      */
     fun tryProcess(content: String): AdapterResult<*>?
 
-    companion object{
+    companion object {
         val jsonParser = Json {
             isLenient = true
             ignoreUnknownKeys = true
@@ -82,7 +82,9 @@ internal class ToolProcessorImpl<T : ToolResult>(
 internal class TrufflehogNdjsonProcessor : ToolProcessor {
     private val serializer = TrufflehogFindingDto.serializer()
 
-    override val name: String get() = serializer.descriptor.serialName
+    override val name: String
+        get() = serializer.descriptor.serialName
+
     override val id: String = ID
 
     override fun tryProcess(content: String): AdapterResult<*>? {
@@ -103,7 +105,7 @@ internal class TrufflehogNdjsonProcessor : ToolProcessor {
             TrufflehogResultDto(
                 verifiedSecrets = findings.count { it.verified },
                 unverifiedSecrets = findings.count { !it.verified },
-                origins = findings
+                origins = findings,
             )
 
         return TrufflehogAdapter.transformDataToKpi(reportDto)
@@ -180,8 +182,11 @@ object ToolResultParser {
                 return envelopeResult.result
             }
             is EnvelopeProcessResult.Failed -> {
-                logger.error { "Envelope '${file.name}' failed to process: ${envelopeResult.reason}" }
-                // Envelope was detected, but processing failed - do NOT fall back to other processors
+                logger.error {
+                    "Envelope '${file.name}' failed to process: ${envelopeResult.reason}"
+                }
+                // Envelope was detected, but processing failed - do NOT fall back to other
+                // processors
                 return null
             }
             is EnvelopeProcessResult.NotAnEnvelope -> {
@@ -221,29 +226,37 @@ object ToolResultParser {
      *
      * @param content The JSON content to parse as an envelope.
      * @param baseDir The base directory to resolve relative paths in the envelope.
-     * @return EnvelopeProcessResult indicating whether this was an envelope and if processing succeeded.
+     * @return EnvelopeProcessResult indicating whether this was an envelope and if processing
+     *   succeeded.
      */
     private fun tryProcessEnvelope(content: String, baseDir: File?): EnvelopeProcessResult {
-        val envelope = try {
-            envelopeJsonParser.decodeFromString(ToolResultEnvelope.serializer(), content)
-        } catch (_: SerializationException) {
-            return EnvelopeProcessResult.NotAnEnvelope
-        }
+        val envelope =
+            try {
+                envelopeJsonParser.decodeFromString(ToolResultEnvelope.serializer(), content)
+            } catch (_: SerializationException) {
+                return EnvelopeProcessResult.NotAnEnvelope
+            }
 
         // Find the processor for the specified tool_id
-        val processor = ToolProcessorStore.processors[envelope.tool]
-            ?: return EnvelopeProcessResult.Failed("No processor found for tool_id '${envelope.tool}'")
+        val processor =
+            ToolProcessorStore.processors[envelope.tool]
+                ?: return EnvelopeProcessResult.Failed(
+                    "No processor found for tool_id '${envelope.tool}'"
+                )
 
         // Resolve the result file path (can be absolute or relative to the envelope file)
         val resultFilePath = Paths.get(envelope.resultFile)
-        val resultFile = if (resultFilePath.isAbsolute) {
-            resultFilePath.toFile()
-        } else {
-            baseDir?.resolve(envelope.resultFile) ?: File(envelope.resultFile)
-        }
+        val resultFile =
+            if (resultFilePath.isAbsolute) {
+                resultFilePath.toFile()
+            } else {
+                baseDir?.resolve(envelope.resultFile) ?: File(envelope.resultFile)
+            }
 
         if (!resultFile.exists() || !resultFile.isFile) {
-            return EnvelopeProcessResult.Failed("Result file '${resultFile.absolutePath}' does not exist")
+            return EnvelopeProcessResult.Failed(
+                "Result file '${resultFile.absolutePath}' does not exist"
+            )
         }
 
         // Read and process the result file content
@@ -251,13 +264,19 @@ object ToolResultParser {
         return try {
             val result = processor.tryProcess(resultContent)
             if (result != null) {
-                logger.info { "Successfully processed result file '${resultFile.name}' with processor '${processor.name}'" }
+                logger.info {
+                    "Successfully processed result file '${resultFile.name}' with processor '${processor.name}'"
+                }
                 EnvelopeProcessResult.Success(result)
             } else {
-                EnvelopeProcessResult.Failed("Processor '${processor.name}' could not parse result file '${resultFile.name}'")
+                EnvelopeProcessResult.Failed(
+                    "Processor '${processor.name}' could not parse result file '${resultFile.name}'"
+                )
             }
         } catch (e: Exception) {
-            EnvelopeProcessResult.Failed("Error processing result file '${resultFile.name}': ${e.message}")
+            EnvelopeProcessResult.Failed(
+                "Error processing result file '${resultFile.name}': ${e.message}"
+            )
         }
     }
 }
@@ -276,16 +295,20 @@ private sealed class EnvelopeProcessResult {
 
 internal object ToolProcessorStore {
 
-    val processors = mapOf(
-        "osv-scanner" to ToolProcessorImpl("osv-scanner", OsvScannerDto.serializer()) {
-            OsvAdapter.transformDataToKpi(it)
-        },
-        "trivy" to ToolProcessorImpl("trivy", TrivyDtoV2.serializer()) {
-            TrivyAdapter.transformDataToKpi(it)
-        },
-        TrufflehogNdjsonProcessor.ID to TrufflehogNdjsonProcessor(),
-        "technicalLag" to ToolProcessorImpl("technicalLag", TlcDto.serializer()) {
-            TlcAdapter.transformDataToKpi(it)
-        },
-    )
+    val processors =
+        mapOf(
+            "osv-scanner" to
+                ToolProcessorImpl("osv-scanner", OsvScannerDto.serializer()) {
+                    OsvAdapter.transformDataToKpi(it)
+                },
+            "trivy" to
+                ToolProcessorImpl("trivy", TrivyDtoV2.serializer()) {
+                    TrivyAdapter.transformDataToKpi(it)
+                },
+            TrufflehogNdjsonProcessor.ID to TrufflehogNdjsonProcessor(),
+            "technicalLag" to
+                ToolProcessorImpl("technicalLag", TlcDto.serializer()) {
+                    TlcAdapter.transformDataToKpi(it)
+                },
+        )
 }

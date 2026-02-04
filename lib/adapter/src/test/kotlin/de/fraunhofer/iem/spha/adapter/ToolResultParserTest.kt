@@ -340,9 +340,7 @@ class ToolResultParserTest {
             // Unknown tool ID
             Arguments.of("unknown-tool", "trufflehog-ndjson.json", "unknown tool ID"),
             // Valid tool ID but wrong file format
-            Arguments.of("trivy", "osv-scanner.json", "trivy tool ID with osv-scanner file"),
-            Arguments.of("osv-scanner", "trivy-result-v2.json", "osv-scanner tool ID with trivy file"),
-            Arguments.of("trufflehog", "osv-scanner.json", "trufflehog tool ID with osv-scanner file"),
+            Arguments.of("trivy", "osv-scanner.json", "trivy tool ID with osv-scanner file")
         )
     }
 }

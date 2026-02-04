@@ -22,7 +22,7 @@ import java.io.File
 import java.nio.file.Paths
 
 /** A processor that attempts to parse and transform content for a specific tool. */
-private interface ToolProcessor {
+internal interface ToolProcessor {
     /** The name of the tool or format this processor handles, used for logging. */
     val name: String
 
@@ -54,7 +54,7 @@ private interface ToolProcessor {
  * @property serializer The `KSerializer` for the type `T`.
  * @property transform The function to convert the decoded object of type `T` into the result.
  */
-private class ToolProcessorImpl<T : ToolResult>(
+internal class ToolProcessorImpl<T : ToolResult>(
     override val id: String,
     private val serializer: KSerializer<T>,
     private val transform: (T) -> AdapterResult<*>,
@@ -274,7 +274,7 @@ private sealed class EnvelopeProcessResult {
     data class Failed(val reason: String) : EnvelopeProcessResult()
 }
 
-private object ToolProcessorStore {
+internal object ToolProcessorStore {
 
     val processors = mapOf(
         "osv-scanner" to ToolProcessorImpl("osv-scanner", OsvScannerDto.serializer()) {

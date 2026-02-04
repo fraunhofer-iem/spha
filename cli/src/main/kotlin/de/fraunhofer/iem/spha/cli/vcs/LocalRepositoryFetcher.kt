@@ -38,10 +38,12 @@ class LocalRepositoryFetcher(val logger: KLogger = KotlinLogging.logger {}) : Pr
         val repoPath =
             try {
                     val uri = URI.create(repoOrigin)
-                    if (uri.scheme == "file") Path.of(uri)
-                    else if (uri.scheme == null) Path.of(repoOrigin)
-                    else Path.of(System.getProperty("user.dir"))
-                } catch (e: Exception) {
+                    when (uri.scheme) {
+                        "file" -> Path.of(uri)
+                        null -> Path.of(repoOrigin)
+                        else -> Path.of(System.getProperty("user.dir"))
+                    }
+                } catch (_: Exception) {
                     Path.of(repoOrigin)
                 }
                 .toAbsolutePath()

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Fraunhofer IEM. All rights reserved.
+ * Copyright (c) 2025-2026 Fraunhofer IEM. All rights reserved.
  *
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  *
@@ -135,9 +135,7 @@ class GitHubProjectFetcher(
         """
                 .trimIndent()
 
-        val response = executeGitHubGraphQLQuery(query, token)
-
-        return when (response) {
+        return when (val response = executeGitHubGraphQLQuery(query, token)) {
             is NetworkResponse.Failed -> response
             is NetworkResponse.Success -> processGitHubResponse(response.data)
         }

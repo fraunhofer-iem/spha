@@ -20,12 +20,11 @@ data class TrufflehogResultDto(
 ) : ToolResult
 
 /**
- * Represents a single finding from TruffleHog's NDJSON output format. Each line in the NDJSON
- * output is a separate finding with this structure.
+ * Represents a single finding from TruffleHog
+ * Note: SourceMetadata is skipped
  */
 @Serializable
 data class TrufflehogFindingDto(
-    @SerialName("SourceMetadata") val sourceMetadata: TrufflehogSourceMetadata? = null,
     @SerialName("SourceID") val sourceId: Int? = null,
     @SerialName("SourceType") val sourceType: Int? = null,
     @SerialName("SourceName") val sourceName: String? = null,
@@ -39,24 +38,3 @@ data class TrufflehogFindingDto(
     @SerialName("RawV2") val rawV2: String? = null,
     @SerialName("Redacted") val redacted: String? = null,
 ) : Origin
-
-@Serializable
-data class TrufflehogSourceMetadata(
-    @SerialName("Data") val data: TrufflehogSourceData? = null,
-)
-
-@Serializable
-data class TrufflehogSourceData(
-    @SerialName("Github") val github: TrufflehogGithubData? = null,
-)
-
-@Serializable
-data class TrufflehogGithubData(
-    val link: String? = null,
-    val repository: String? = null,
-    val commit: String? = null,
-    val email: String? = null,
-    val file: String? = null,
-    val timestamp: String? = null,
-    val line: Int? = null,
-)

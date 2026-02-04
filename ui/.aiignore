@@ -6,5 +6,4 @@
 # - If Brave Mode is turned on.
 # - If a command has been added to the Allowlist — Junie will not ask for confirmation, even if it accesses - files and folders listed in .aiignore.
 */kpi-results.json
-*/kpi-results-2.json
 example

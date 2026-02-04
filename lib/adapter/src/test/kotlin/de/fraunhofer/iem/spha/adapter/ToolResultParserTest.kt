@@ -133,17 +133,24 @@ class ToolResultParserTest {
 
     @Test
     fun testGetAdapterResultsFromJsonFiles() {
-        val jsonFiles =
-            listOf(
-                File("$testResourcesDir/osv-scanner.json"),
-                File("$testResourcesDir/trivy-result-v2.json"),
-                File("$testResourcesDir/trufflehog-ndjson.json"),
-                File("$testResourcesDir/techLag-npm-vuejs.json"),
-            )
+        // Create envelope for TruffleHog to test combined processing with envelope format
+        val (envelopeDir, envelopeFile) = createEnvelopeFile("trufflehog", "trufflehog-ndjson.json")
 
-        val results = ToolResultParser.getAdapterResultsFromJsonFiles(jsonFiles)
+        try {
+            val jsonFiles =
+                listOf(
+                    File("$testResourcesDir/osv-scanner.json"),
+                    File("$testResourcesDir/trivy-result-v2.json"),
+                    envelopeFile,
+                    File("$testResourcesDir/techLag-npm-vuejs.json"),
+                )
 
-        assertEquals(4, results.size)
+            val results = ToolResultParser.getAdapterResultsFromJsonFiles(jsonFiles)
+
+            assertEquals(4, results.size)
+        } finally {
+            envelopeDir.toFile().deleteRecursively()
+        }
     }
 
     @Test

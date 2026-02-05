@@ -69,6 +69,7 @@ class GitLabProjectFetcher(
     override suspend fun getProjectInfo(
         repoOrigin: String,
         tokenOverride: String?,
+        commitSha: String?,
     ): NetworkResponse<ProjectInfo> {
         val token = tokenOverride ?: getToken()
         logger.info { "Fetching project information from GitLab for repository: $repoOrigin" }
@@ -80,6 +81,7 @@ class GitLabProjectFetcher(
         val protocol = if (repoOrigin.startsWith("http://")) "http" else "https"
         val encodedPath = withContext(Dispatchers.IO) { URLEncoder.encode(projectPath, "UTF-8") }
         val baseUrl = "$protocol://$host/api/v4"
+        val commitRef = commitSha?.takeIf { it.isNotBlank() }
 
         try {
             // Fetch project details
@@ -113,6 +115,7 @@ class GitLabProjectFetcher(
                 gitlabApiClient.get("$baseUrl/projects/$encodedPath/repository/contributors") {
                     token?.let { header("PRIVATE-TOKEN", it) }
                     parameter("per_page", "1")
+                    commitRef?.let { parameter("ref_name", it) }
                 }
             val contributorsCount = contributorsResponse.headers["X-Total"]?.toIntOrNull() ?: -1
 
@@ -121,6 +124,7 @@ class GitLabProjectFetcher(
                 gitlabApiClient.get("$baseUrl/projects/$encodedPath/repository/commits") {
                     token?.let { header("PRIVATE-TOKEN", it) }
                     parameter("per_page", "1")
+                    commitRef?.let { parameter("ref_name", it) }
                 }
 
             var lastCommitDate: String? = null
@@ -130,6 +134,12 @@ class GitLabProjectFetcher(
                 val commits = commitsResponse.body<List<GitLabCommit>>()
                 lastCommitDate = commits.firstOrNull()?.committedDate
                 totalCommits = commitsResponse.headers["X-Total"]?.toIntOrNull()
+            }
+
+            val commitDateAtSha =
+                commitRef?.let { fetchCommitDate(baseUrl, encodedPath, token, it) }
+            if (commitDateAtSha != null) {
+                lastCommitDate = commitDateAtSha
             }
 
             logger.info { "Successfully fetched project information for ${project.name}" }
@@ -150,6 +160,24 @@ class GitLabProjectFetcher(
             logger.error(e) { "Failed to fetch GitLab project info: ${e.message}" }
             return NetworkResponse.Failed("Failed to fetch GitLab project info: ${e.message}")
         }
+    }
+
+    private suspend fun fetchCommitDate(
+        baseUrl: String,
+        encodedPath: String,
+        token: String?,
+        commitRef: String,
+    ): String? {
+        val response =
+            gitlabApiClient.get("$baseUrl/projects/$encodedPath/repository/commits/$commitRef") {
+                token?.let { header("PRIVATE-TOKEN", it) }
+            }
+
+        if (!response.status.isSuccess()) {
+            return null
+        }
+
+        return response.body<GitLabCommit>().committedDate
     }
 
     /**

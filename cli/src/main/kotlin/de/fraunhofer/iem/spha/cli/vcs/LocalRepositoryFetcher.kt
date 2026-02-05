@@ -32,6 +32,7 @@ class LocalRepositoryFetcher(val logger: KLogger = KotlinLogging.logger {}) : Pr
     override suspend fun getProjectInfo(
         repoOrigin: String,
         tokenOverride: String?,
+        commitSha: String?,
     ): NetworkResponse<ProjectInfo> {
         logger.info { "Fetching project information from local repository: $repoOrigin" }
 
@@ -63,12 +64,13 @@ class LocalRepositoryFetcher(val logger: KLogger = KotlinLogging.logger {}) : Pr
         }
 
         try {
+            val resolvedCommit = resolveCommitRef(repoPath, commitSha)
             val name = getRepositoryName(repoPath)
             val url = getRemoteUrl(repoPath) ?: repoPath.toString()
             val languages = detectLanguages(repoPath)
-            val contributors = getContributorCount(repoPath)
-            val commits = getCommitCount(repoPath)
-            val lastCommitDate = getLastCommitDate(repoPath)
+            val contributors = getContributorCount(repoPath, resolvedCommit)
+            val commits = getCommitCount(repoPath, resolvedCommit)
+            val lastCommitDate = getLastCommitDate(repoPath, resolvedCommit)
 
             logger.info { "Successfully fetched local repository information for $name" }
 
@@ -97,20 +99,31 @@ class LocalRepositoryFetcher(val logger: KLogger = KotlinLogging.logger {}) : Pr
         return GitUtils.runGitCommand(repoPath.toFile(), "config", "--get", "remote.origin.url")
     }
 
-    private fun getContributorCount(repoPath: Path): Int {
+    private fun getContributorCount(repoPath: Path, commitRef: String): Int {
         val output =
-            GitUtils.runGitCommand(repoPath.toFile(), "shortlog", "-s", "-n", "--all") ?: return -1
+            GitUtils.runGitCommand(repoPath.toFile(), "shortlog", "-s", "-n", commitRef)
+                ?: return -1
         return output.lines().filter { it.isNotBlank() }.size
     }
 
-    private fun getCommitCount(repoPath: Path): Int? {
+    private fun getCommitCount(repoPath: Path, commitRef: String): Int? {
         val output =
-            GitUtils.runGitCommand(repoPath.toFile(), "rev-list", "--all", "--count") ?: return null
+            GitUtils.runGitCommand(repoPath.toFile(), "rev-list", "--count", commitRef)
+                ?: return null
         return output.trim().toIntOrNull()
     }
 
-    private fun getLastCommitDate(repoPath: Path): String? {
-        return GitUtils.runGitCommand(repoPath.toFile(), "log", "-1", "--format=%cI")
+    private fun getLastCommitDate(repoPath: Path, commitRef: String): String? {
+        return GitUtils.runGitCommand(repoPath.toFile(), "log", "-1", "--format=%cI", commitRef)
+    }
+
+    private fun resolveCommitRef(repoPath: Path, commitSha: String?): String {
+        val candidate = commitSha?.trim().takeIf { !it.isNullOrEmpty() } ?: "HEAD"
+        val resolved = GitUtils.runGitCommand(repoPath.toFile(), "rev-parse", "--verify", candidate)
+        if (resolved == null) {
+            logger.warn { "Commit '$candidate' not found; using HEAD for local repository stats." }
+        }
+        return resolved ?: "HEAD"
     }
 
     private fun detectLanguages(repoPath: Path): List<Language> {

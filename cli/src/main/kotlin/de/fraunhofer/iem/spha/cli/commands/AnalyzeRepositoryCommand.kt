@@ -25,10 +25,15 @@ import de.fraunhofer.iem.spha.model.kpi.hierarchy.DefaultHierarchy
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiHierarchy
 import de.fraunhofer.iem.spha.model.project.Language
 import de.fraunhofer.iem.spha.model.project.ProjectInfo
+import java.net.URI
 import java.nio.file.FileSystem
+import java.nio.file.Path
 import kotlin.io.path.createDirectories
+import kotlin.io.path.exists
 import kotlin.io.path.inputStream
+import kotlin.io.path.isDirectory
 import kotlin.io.path.outputStream
+import kotlin.io.path.toPath
 import kotlin.time.Clock
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
@@ -117,7 +122,10 @@ internal class AnalyzeRepositoryCommand :
 
         val provider = getRepositoryFetcher(resolvedRepoOrigin, repositoryType)
 
-        val projectInfoRes = provider.use { it.getProjectInfo(resolvedRepoOrigin, token) }
+        val commitSha = resolveCommitSha(resolvedRepoOrigin)
+        val commitShaForQuery = commitSha.takeUnless { it == "unknown" }
+        val projectInfoRes =
+            provider.use { it.getProjectInfo(resolvedRepoOrigin, token, commitShaForQuery) }
         val projectInfo =
             when (projectInfoRes) {
                 is NetworkResponse.Success<ProjectInfo> -> projectInfoRes.data
@@ -167,7 +175,8 @@ internal class AnalyzeRepositoryCommand :
                 }
             }
 
-        val result = SphaToolResult(kpiResult, originsData, projectInfo, Clock.System.now())
+        val result =
+            SphaToolResult(kpiResult, originsData, projectInfo, commitSha, Clock.System.now())
         processResult(result)
     }
 
@@ -209,6 +218,34 @@ internal class AnalyzeRepositoryCommand :
             lastCommitDate = "Currently no data available",
             stars = -1,
         )
+
+    private fun resolveCommitSha(repoOrigin: String): String {
+        val repoPath = resolveRepositoryPath(repoOrigin)
+        val commitSha = GitUtils.getCurrentCommitSha(repoPath?.toFile())
+        return commitSha
+            ?: run {
+                Logger.warn {
+                    "Unable to resolve commit SHA from local repository; using placeholder."
+                }
+                "unknown"
+            }
+    }
+
+    private fun resolveRepositoryPath(repoOrigin: String): Path? {
+        val candidate =
+            try {
+                val uri = URI.create(repoOrigin)
+                when (uri.scheme) {
+                    "file" -> uri.toPath()
+                    null -> fileSystem.getPath(repoOrigin)
+                    else -> null
+                }
+            } catch (_: Exception) {
+                fileSystem.getPath(repoOrigin)
+            }
+
+        return candidate?.toAbsolutePath()?.normalize()?.takeIf { it.exists() && it.isDirectory() }
+    }
 
     @OptIn(ExperimentalSerializationApi::class)
     private fun getHierarchy(): KpiHierarchy {

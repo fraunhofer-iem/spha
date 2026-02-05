@@ -35,6 +35,7 @@ class ResultService(private val connection: Connection, private val log: Logger)
                 PROJECT_ID INT NOT NULL,
                 RESULT_HIERARCHY JSONB NOT NULL,
                 REPOSITORY_INFO JSONB NOT NULL,
+                COMMIT_SHA VARCHAR(64),
                 CREATED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (PROJECT_ID) REFERENCES PROJECTS(ID) ON DELETE CASCADE
             );"""
@@ -51,13 +52,13 @@ class ResultService(private val connection: Connection, private val log: Logger)
         private const val SELECT_PROJECT_BY_URL = "SELECT ID, NAME, URL FROM PROJECTS WHERE URL = ?"
         private const val INSERT_PROJECT = "INSERT INTO PROJECTS (NAME, URL) VALUES (?, ?)"
         private const val INSERT_RESULT =
-            "INSERT INTO TOOL_RESULTS (PROJECT_ID, RESULT_HIERARCHY, REPOSITORY_INFO, CREATED_AT) VALUES (?, ?, ?, ?)"
+            "INSERT INTO TOOL_RESULTS (PROJECT_ID, RESULT_HIERARCHY, REPOSITORY_INFO, COMMIT_SHA, CREATED_AT) VALUES (?, ?, ?, ?, ?)"
         private const val INSERT_TOOL_INFO_ORIGIN =
             "INSERT INTO TOOL_INFO_ORIGINS (RESULT_ID, TOOL_INFO, ORIGINS) VALUES (?, ?, ?)"
         private const val SELECT_ALL_PROJECT_IDS = "SELECT ID FROM PROJECTS ORDER BY ID"
         private const val SELECT_PROJECT_BY_ID = "SELECT ID, NAME, URL FROM PROJECTS WHERE ID = ?"
         private const val SELECT_RESULTS_BY_PROJECT_ID =
-            "SELECT ID, RESULT_HIERARCHY, REPOSITORY_INFO, CREATED_AT FROM TOOL_RESULTS WHERE PROJECT_ID = ? ORDER BY CREATED_AT DESC"
+            "SELECT ID, RESULT_HIERARCHY, REPOSITORY_INFO, COMMIT_SHA, CREATED_AT FROM TOOL_RESULTS WHERE PROJECT_ID = ? ORDER BY CREATED_AT DESC"
         private const val SELECT_TOOL_INFO_ORIGINS_BY_RESULT_ID =
             "SELECT TOOL_INFO, ORIGINS FROM TOOL_INFO_ORIGINS WHERE RESULT_ID = ?"
     }
@@ -120,7 +121,8 @@ class ResultService(private val connection: Connection, private val log: Logger)
                 },
             )
 
-            resultStmt.setTimestamp(4, Timestamp(result.createdAt.toEpochMilliseconds()))
+            resultStmt.setString(4, result.commitSha)
+            resultStmt.setTimestamp(5, Timestamp(result.createdAt.toEpochMilliseconds()))
             resultStmt.executeUpdate()
 
             val generatedKeys = resultStmt.generatedKeys
@@ -189,6 +191,7 @@ class ResultService(private val connection: Connection, private val log: Logger)
                 val resultId = resultsSet.getInt("ID")
                 val resultHierarchyJson = resultsSet.getString("RESULT_HIERARCHY")
                 val repositoryInfoJson = resultsSet.getString("REPOSITORY_INFO")
+                val commitSha = resultsSet.getString("COMMIT_SHA")
                 val createdAtTimestamp = resultsSet.getTimestamp("CREATED_AT")
 
                 // Get tool info and origins for this result
@@ -216,6 +219,7 @@ class ResultService(private val connection: Connection, private val log: Logger)
                         resultHierarchy = resultHierarchy,
                         origins = origins,
                         projectInfo = projectInfo,
+                        commitSha = commitSha ?: "unknown",
                         createdAt =
                             kotlin.time.Instant.fromEpochMilliseconds(createdAtTimestamp.time),
                     )

@@ -42,6 +42,7 @@ private data class Repository(
     val languages: LanguageConnection,
     val defaultBranchRef: BranchRef?,
     val collaborators: UserConnection,
+    @SerialName("object") val commitObject: Commit? = null,
 )
 
 @Serializable private data class LanguageConnection(val edges: List<LanguageEdge>)
@@ -88,6 +89,7 @@ class GitHubProjectFetcher(
     override suspend fun getProjectInfo(
         repoOrigin: String,
         tokenOverride: String?,
+        commitSha: String?,
     ): NetworkResponse<ProjectInfo> {
         val token =
             tokenOverride
@@ -102,6 +104,23 @@ class GitHubProjectFetcher(
         logger.debug { "Parsed repository URL: owner=$owner, repo=$repo" }
 
         // Create the GraphQL query
+        val commitClause =
+            if (commitSha.isNullOrBlank()) {
+                ""
+            } else {
+                """
+                object(oid: "$commitSha") {
+                  ... on Commit {
+                    history {
+                      totalCount
+                    }
+                    committedDate
+                  }
+                }
+                """
+                    .trimIndent()
+            }
+
         val query =
             """
             query {
@@ -130,14 +149,15 @@ class GitHubProjectFetcher(
                 collaborators {
                   totalCount
                 }
+                $commitClause
               }
             }
         """
                 .trimIndent()
 
-        return when (val response = executeGitHubGraphQLQuery(query, token)) {
+        return when (val response = executeGitHubGraphQLQuery<RepositoryData>(query, token)) {
             is NetworkResponse.Failed -> response
-            is NetworkResponse.Success -> processGitHubResponse(response.data)
+            is NetworkResponse.Success -> processGitHubResponse(response.data, commitSha)
         }
     }
 
@@ -164,10 +184,10 @@ class GitHubProjectFetcher(
      * @param token GitHub API token for authentication
      * @return The response from the GitHub API
      */
-    private suspend fun executeGitHubGraphQLQuery(
+    private suspend inline fun <reified T> executeGitHubGraphQLQuery(
         query: String,
         token: String,
-    ): NetworkResponse<GraphQLResponse<RepositoryData>> {
+    ): NetworkResponse<GraphQLResponse<T>> {
 
         logger.debug { "Sending GraphQL query to GitHub API" }
 
@@ -186,7 +206,7 @@ class GitHubProjectFetcher(
         }
 
         // Ktor deserializes the entire JSON response into your data classes
-        return NetworkResponse.Success(response.body<GraphQLResponse<RepositoryData>>())
+        return NetworkResponse.Success(response.body<GraphQLResponse<T>>())
     }
 
     /**
@@ -196,7 +216,8 @@ class GitHubProjectFetcher(
      * @return ProjectInfo containing repository details
      */
     private fun processGitHubResponse(
-        response: GraphQLResponse<RepositoryData>
+        response: GraphQLResponse<RepositoryData>,
+        commitSha: String?,
     ): NetworkResponse<ProjectInfo> {
         // Check for GraphQL-level errors
         response.errors?.let { errors ->
@@ -210,14 +231,27 @@ class GitHubProjectFetcher(
 
         logger.info { "Successfully fetched project information for ${repository.name}" }
 
+        val commitInfo =
+            if (commitSha.isNullOrBlank()) {
+                repository.defaultBranchRef?.target
+            } else {
+                repository.commitObject
+                    ?: repository.defaultBranchRef?.target.also {
+                        logger.warn { "Commit '$commitSha' not found; using default branch data." }
+                    }
+            }
+
+        val commitDate = commitInfo?.committedDate
+        val commitsTotal = commitInfo?.history?.totalCount
+
         return NetworkResponse.Success(
             ProjectInfo(
                 name = repository.name,
                 usedLanguages = repository.languages.edges.map { Language(it.node.name, it.size) },
                 url = repository.url,
                 numberOfContributors = repository.collaborators.totalCount,
-                numberOfCommits = repository.defaultBranchRef?.target?.history?.totalCount,
-                lastCommitDate = repository.defaultBranchRef?.target?.committedDate,
+                numberOfCommits = commitsTotal,
+                lastCommitDate = commitDate,
                 stars = repository.stargazerCount,
             )
         )

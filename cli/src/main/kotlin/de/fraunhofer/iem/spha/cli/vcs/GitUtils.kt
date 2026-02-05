@@ -71,6 +71,22 @@ object GitUtils {
     }
 
     /**
+     * Gets the current commit SHA from a git repository.
+     *
+     * @param workingDirectory The repository directory to read from, or null for current directory
+     * @return The current commit SHA or null if unavailable
+     */
+    fun getCurrentCommitSha(workingDirectory: java.io.File? = null): String? {
+        val sha = runGitCommand(workingDirectory = workingDirectory, "rev-parse", "HEAD")
+        if (sha != null) {
+            logger.info { "Detected commit SHA from git: $sha" }
+        } else {
+            logger.trace { "Unable to detect commit SHA from git" }
+        }
+        return sha
+    }
+
+    /**
      * Parses a VCS URL into host and path parts. Supports HTTPS, HTTP, and SSH (git@host:path)
      * formats. Host is normalized (lowercase, 'www.' prefix removed).
      *
@@ -99,7 +115,7 @@ object GitUtils {
                 }
                 else -> null
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Fraunhofer IEM. All rights reserved.
+ * Copyright (c) 2025-2026 Fraunhofer IEM. All rights reserved.
  *
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  *
@@ -22,10 +22,12 @@ interface ProjectInfoFetcher : Closeable {
      *
      * @param repoOrigin The repository URL or local path
      * @param tokenOverride Optional token to override environment variable token
+     * @param commitSha Optional commit SHA to fetch time-based repository data
      * @return NetworkResponse containing ProjectInfo or error
      */
     suspend fun getProjectInfo(
         repoOrigin: String,
         tokenOverride: String? = null,
+        commitSha: String? = null,
     ): NetworkResponse<ProjectInfo>
 }

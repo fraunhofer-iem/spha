@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Fraunhofer IEM. All rights reserved.
+ * Copyright (c) 2025-2026 Fraunhofer IEM. All rights reserved.
  *
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  *
@@ -159,18 +159,14 @@ object ToolResultParser {
 
     fun getAdapterResultsFromJsonFiles(jsonFiles: List<File>): List<AdapterResult<*>> {
 
-        val transformationResults = mutableListOf<AdapterResult<*>>()
-        for (file in jsonFiles) {
+        return jsonFiles.mapNotNull {
             try {
-                val adapterResult = getAdapterResultFromJsonFile(file)
-                if (adapterResult != null) {
-                    transformationResults.add(adapterResult)
-                }
+                getAdapterResultFromJsonFile(it)
             } catch (e: Exception) {
-                logger.error { "Unexpected error processing file '${file.name}': ${e.message}" }
+                logger.error { "Unexpected error processing file '${it.name}': ${e.message}" }
+                null
             }
         }
-        return transformationResults
     }
 
     private fun getAdapterResultFromJsonFile(file: File): AdapterResult<*>? {
@@ -289,7 +285,7 @@ private sealed class EnvelopeProcessResult {
     /** The content was an envelope format and processing succeeded. */
     data class Success(val result: AdapterResult<*>) : EnvelopeProcessResult()
 
-    /** The content was an envelope format but processing failed - do NOT try other processors. */
+    /** The content was an envelope format, but processing failed - do NOT try other processors. */
     data class Failed(val reason: String) : EnvelopeProcessResult()
 }
 

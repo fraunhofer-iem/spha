@@ -277,7 +277,8 @@ private sealed class EnvelopeProcessResult {
         EnvelopeProcessResult()
 
     /** The envelope processing failed - do NOT try other processors. */
-    data class Failed(val envelope: ToolResultEnvelope, val reason: String) : EnvelopeProcessResult()
+    data class Failed(val envelope: ToolResultEnvelope, val reason: String) :
+        EnvelopeProcessResult()
 }
 
 internal object ToolProcessorStore {

@@ -12,7 +12,7 @@ package de.fraunhofer.iem.spha.adapter.processors
 import de.fraunhofer.iem.spha.adapter.AdapterResult
 import de.fraunhofer.iem.spha.adapter.ToolProcessor
 import de.fraunhofer.iem.spha.adapter.TransformationResult
-import de.fraunhofer.iem.spha.adapter.TrufflehogNdjsonProcessor
+import de.fraunhofer.iem.spha.adapter.tools.trufflehog.TrufflehogNdjsonProcessor
 import de.fraunhofer.iem.spha.model.adapter.TrufflehogFindingDto
 import kotlin.test.assertEquals
 

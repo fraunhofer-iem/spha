@@ -12,7 +12,7 @@ package de.fraunhofer.iem.spha.adapter
 import de.fraunhofer.iem.spha.adapter.tools.osv.OsvAdapter
 import de.fraunhofer.iem.spha.adapter.tools.tlc.TlcAdapter
 import de.fraunhofer.iem.spha.adapter.tools.trivy.TrivyAdapter
-import de.fraunhofer.iem.spha.adapter.tools.trufflehog.TrufflehogAdapter
+import de.fraunhofer.iem.spha.adapter.tools.trufflehog.TrufflehogNdjsonProcessor
 import de.fraunhofer.iem.spha.model.adapter.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.File
@@ -72,47 +72,6 @@ internal class ToolProcessorImpl<T : ToolResult>(
             // Return null to signal that the next processor should be tried.
             null
         }
-    }
-}
-
-/**
- * A specialized processor for TruffleHog's NDJSON (newline-delimited JSON) output format. Each line
- * in the file is a separate JSON object representing a finding.
- */
-internal class TrufflehogNdjsonProcessor : ToolProcessor {
-    private val serializer = TrufflehogFindingDto.serializer()
-
-    override val name: String
-        get() = serializer.descriptor.serialName
-
-    override val id: String = ID
-
-    override fun tryProcess(content: String): AdapterResult<*>? {
-        val lines = content.lines().filter { it.isNotBlank() }
-
-        val findings = mutableListOf<TrufflehogFindingDto>()
-
-        for (line in lines) {
-            try {
-                val finding = ToolProcessor.jsonParser.decodeFromString(serializer, line)
-                findings.add(finding)
-            } catch (_: SerializationException) {
-                return null
-            }
-        }
-
-        val reportDto =
-            TrufflehogResultDto(
-                verifiedSecrets = findings.count { it.verified },
-                unverifiedSecrets = findings.count { !it.verified },
-                origins = findings,
-            )
-
-        return TrufflehogAdapter.transformDataToKpi(reportDto)
-    }
-
-    companion object {
-        const val ID = "trufflehog"
     }
 }
 

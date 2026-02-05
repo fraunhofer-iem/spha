@@ -133,7 +133,6 @@ class ToolResultParserTest {
 
     @Test
     fun testGetAdapterResultsFromJsonFiles() {
-        // Create envelope for TruffleHog to test combined processing with envelope format
         val (envelopeDir, envelopeFile) = createEnvelopeFile("trufflehog", "trufflehog-ndjson.json")
 
         try {
@@ -217,7 +216,6 @@ class ToolResultParserTest {
 
     @Test
     fun testEnvelopeFormatWithAbsolutePath() {
-        // Create envelope with absolute path
         val (envelopeDir, envelopeFile) = createEnvelopeFile("trufflehog", "trufflehog-ndjson.json")
 
         try {
@@ -243,8 +241,6 @@ class ToolResultParserTest {
 
         try {
             val results = ToolResultParser.getAdapterResultsFromJsonFiles(listOf(envelopeFile))
-
-            // Should return empty result for invalid envelope cases
             assertTrue(results.isEmpty(), "Expected empty results for: $description")
         } finally {
             envelopeDir.toFile().deleteRecursively()
@@ -253,16 +249,12 @@ class ToolResultParserTest {
 
     @Test
     fun testEnvelopeFormatWithEmptyTrufflehogResultFile() {
-        // Empty trufflehog result file via envelope should be valid (no findings)
         val (envelopeDir, envelopeFile) =
             createEnvelopeFileWithPath("trufflehog", "empty-result.json")
-        // Create empty result file in envelope directory for relative path resolution
         envelopeDir.resolve("empty-result.json").toFile().writeText("")
 
         try {
             val results = ToolResultParser.getAdapterResultsFromJsonFiles(listOf(envelopeFile))
-
-            // Should succeed with score 100 (no findings)
             assertTrue(results.isNotEmpty())
             val adapterResult = results.first()
             val kpis = adapterResult.transformationResults
@@ -341,25 +333,19 @@ class ToolResultParserTest {
         fun invalidEnvelopeTestCases(): List<Arguments> {
             val validResultFile = File("$testResourcesDir/trufflehog-ndjson.json")
             val osvResultFile = File("$testResourcesDir/osv-scanner.json")
-            // Use absolute path for directory to ensure it exists and we test the "is directory"
-            // condition
             val testResourcesDirAbsolute = File(testResourcesDir).absolutePath.replace("\\", "/")
             return listOf(
-                // Unknown tool ID
                 Arguments.of(
                     "unknown-tool",
                     validResultFile.absolutePath.replace("\\", "/"),
                     "unknown tool ID",
                 ),
-                // Valid tool ID but wrong file format
                 Arguments.of(
                     "trivy",
                     osvResultFile.absolutePath.replace("\\", "/"),
                     "trivy tool ID with osv-scanner file",
                 ),
-                // Missing file reference (non-existent file)
                 Arguments.of("trufflehog", "non-existent-file.json", "missing file reference"),
-                // Reference to directory instead of file
                 Arguments.of(
                     "trufflehog",
                     testResourcesDirAbsolute,

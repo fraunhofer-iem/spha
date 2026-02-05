@@ -89,6 +89,8 @@ class GitUtilsTest {
                 "https://gitlab.com/group/project.git,https://gitlab.com/group/project",
                 "git@gitlab.com:group/project.git,https://gitlab.com/group/project",
                 "git@bitbucket.org:user/repo.git,https://bitbucket.org/user/repo",
+                "https://www.github.com/fraunhofer-iem/spha,https://github.com/fraunhofer-iem/spha",
+                "https://www.gitlab.com/group/project,https://gitlab.com/group/project",
             ]
     )
     fun `normalizeGitUrl correctly normalizes various formats`(input: String, expected: String) {
@@ -117,5 +119,55 @@ class GitUtilsTest {
         assertNotNull(result)
         assertEquals(expectedHost, result.first)
         assertEquals(expectedPath, result.second)
+    }
+
+    @Test
+    fun `getCurrentCommitSha returns SHA from actual git repository`() {
+        // Test with the actual project repository
+        val sha = GitUtils.getCurrentCommitSha()
+
+        assertNotNull(sha, "getCurrentCommitSha should return a SHA in a git repository")
+        assertTrue(sha.isNotEmpty(), "SHA should not be empty")
+        // Git SHA is 40 hex characters
+        assertEquals(sha.length, 40, "SHA should be 40 characters, got ${sha.length}")
+        assertTrue(sha.all { it in '0'..'9' || it in 'a'..'f' }, "SHA should be hexadecimal")
+    }
+
+    @Test
+    fun `getCurrentCommitSha returns null in non-git directory`() {
+        val tempDir = Files.createTempDirectory("non-git-test")
+        try {
+            val sha = GitUtils.getCurrentCommitSha(tempDir)
+            assertNull(sha, "getCurrentCommitSha should return null in non-git directory")
+        } finally {
+            tempDir.toFile().deleteRecursively()
+        }
+    }
+
+    @Test
+    fun `getCurrentCommitSha returns correct SHA for git repository`() {
+        val tempDir = Files.createTempDirectory("git-test")
+        try {
+            // Initialize git repo
+            GitUtils.runGitCommand(tempDir, "init")
+            GitUtils.runGitCommand(tempDir, "config", "user.email", "test@example.com")
+            GitUtils.runGitCommand(tempDir, "config", "user.name", "Test User")
+
+            // Create a file and commit
+            tempDir.resolve("test.txt").toFile().writeText("test content")
+            GitUtils.runGitCommand(tempDir, "add", ".")
+            GitUtils.runGitCommand(tempDir, "commit", "-m", "Initial commit")
+
+            val sha = GitUtils.getCurrentCommitSha(tempDir)
+
+            assertNotNull(sha, "getCurrentCommitSha should return a SHA")
+            assertEquals(40, sha.length, "SHA should be 40 characters")
+
+            // Verify it matches what git rev-parse returns
+            val expectedSha = GitUtils.runGitCommand(tempDir, "rev-parse", "HEAD")
+            assertEquals(expectedSha, sha, "SHA should match git rev-parse HEAD")
+        } finally {
+            tempDir.toFile().deleteRecursively()
+        }
     }
 }

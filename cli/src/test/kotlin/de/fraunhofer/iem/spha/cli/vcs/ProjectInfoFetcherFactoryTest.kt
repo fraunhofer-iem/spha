@@ -127,7 +127,7 @@ class ProjectInfoFetcherFactoryTest {
     fun `detectRepositoryType detects local repository from existing path`() {
         val tempDir = Files.createTempDirectory("git-test")
         try {
-            GitUtils.runGitCommand(tempDir.toFile(), "init")
+            GitUtils.runGitCommand(tempDir, "init")
             val type = ProjectInfoFetcherFactory.detectRepositoryType(tempDir.toString())
             assertEquals(RepositoryType.LOCAL, type)
         } finally {
@@ -149,7 +149,7 @@ class ProjectInfoFetcherFactoryTest {
     fun `createFetcherFromUrl creates LocalRepositoryFetcher for local path`() {
         val tempDir = Files.createTempDirectory("git-test")
         try {
-            GitUtils.runGitCommand(tempDir.toFile(), "init")
+            GitUtils.runGitCommand(tempDir, "init")
             val fetcher = ProjectInfoFetcherFactory.createFetcherFromUrl(tempDir.toString())
             fetcher.use { assertTrue(it is LocalRepositoryFetcher) }
         } finally {

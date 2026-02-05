@@ -155,7 +155,7 @@ class GitHubProjectFetcher(
         """
                 .trimIndent()
 
-        return when (val response = executeGitHubGraphQLQuery<RepositoryData>(query, token)) {
+        return when (val response = executeGitHubGraphQLQuery(query, token)) {
             is NetworkResponse.Failed -> response
             is NetworkResponse.Success -> processGitHubResponse(response.data, commitSha)
         }
@@ -184,10 +184,10 @@ class GitHubProjectFetcher(
      * @param token GitHub API token for authentication
      * @return The response from the GitHub API
      */
-    private suspend inline fun <reified T> executeGitHubGraphQLQuery(
+    private suspend fun executeGitHubGraphQLQuery(
         query: String,
         token: String,
-    ): NetworkResponse<GraphQLResponse<T>> {
+    ): NetworkResponse<GraphQLResponse<RepositoryData>> {
 
         logger.debug { "Sending GraphQL query to GitHub API" }
 
@@ -206,7 +206,7 @@ class GitHubProjectFetcher(
         }
 
         // Ktor deserializes the entire JSON response into your data classes
-        return NetworkResponse.Success(response.body<GraphQLResponse<T>>())
+        return NetworkResponse.Success(response.body<GraphQLResponse<RepositoryData>>())
     }
 
     /**

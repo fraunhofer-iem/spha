@@ -14,6 +14,7 @@ import de.fraunhofer.iem.spha.adapter.ToolResultParser
 import de.fraunhofer.iem.spha.adapter.TransformationResult
 import de.fraunhofer.iem.spha.cli.SphaToolCommandBase
 import de.fraunhofer.iem.spha.cli.reporting.HttpResultSender
+import de.fraunhofer.iem.spha.cli.utilities.FileSystemUtilities
 import de.fraunhofer.iem.spha.cli.vcs.GitUtils
 import de.fraunhofer.iem.spha.cli.vcs.NetworkResponse
 import de.fraunhofer.iem.spha.cli.vcs.ProjectInfoFetcher
@@ -25,15 +26,10 @@ import de.fraunhofer.iem.spha.model.kpi.hierarchy.DefaultHierarchy
 import de.fraunhofer.iem.spha.model.kpi.hierarchy.KpiHierarchy
 import de.fraunhofer.iem.spha.model.project.Language
 import de.fraunhofer.iem.spha.model.project.ProjectInfo
-import java.net.URI
 import java.nio.file.FileSystem
-import java.nio.file.Path
 import kotlin.io.path.createDirectories
-import kotlin.io.path.exists
 import kotlin.io.path.inputStream
-import kotlin.io.path.isDirectory
 import kotlin.io.path.outputStream
-import kotlin.io.path.toPath
 import kotlin.time.Clock
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
@@ -220,8 +216,8 @@ internal class AnalyzeRepositoryCommand :
         )
 
     private fun resolveCommitSha(repoOrigin: String): String {
-        val repoPath = resolveRepositoryPath(repoOrigin)
-        val commitSha = GitUtils.getCurrentCommitSha(repoPath?.toFile())
+        val repoPath = FileSystemUtilities.resolvePathFromUriOrPath(repoOrigin, { null })
+        val commitSha = GitUtils.getCurrentCommitSha(repoPath)
         return commitSha
             ?: run {
                 Logger.warn {
@@ -229,22 +225,6 @@ internal class AnalyzeRepositoryCommand :
                 }
                 "unknown"
             }
-    }
-
-    private fun resolveRepositoryPath(repoOrigin: String): Path? {
-        val candidate =
-            try {
-                val uri = URI.create(repoOrigin)
-                when (uri.scheme) {
-                    "file" -> uri.toPath()
-                    null -> fileSystem.getPath(repoOrigin)
-                    else -> null
-                }
-            } catch (_: Exception) {
-                fileSystem.getPath(repoOrigin)
-            }
-
-        return candidate?.toAbsolutePath()?.normalize()?.takeIf { it.exists() && it.isDirectory() }
     }
 
     @OptIn(ExperimentalSerializationApi::class)

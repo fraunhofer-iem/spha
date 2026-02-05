@@ -22,7 +22,7 @@ class LocalRepositoryFetcherTest : ProjectInfoFetcherTestBase() {
 
     private fun createTestGitRepo(name: String = "test-repo"): Pair<String, () -> Unit> {
         val tempDir = Files.createTempDirectory("git-test-$name")
-        val dir = tempDir.toFile()
+        val dir = tempDir
 
         // Initialize and configure git repository
         GitUtils.runGitCommand(dir, "init")
@@ -74,6 +74,13 @@ class LocalRepositoryFetcherTest : ProjectInfoFetcherTestBase() {
             formats.add("$uri/")
         }
 
+        val relativePath = Path(System.getProperty("user.dir")).relativize(repoPath)
+
+        formats.add(relativePath.toString())
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            formats.add(repoPath.toString().replace('\\', '/'))
+        }
+
         return formats
     }
 
@@ -115,7 +122,7 @@ class LocalRepositoryFetcherTest : ProjectInfoFetcherTestBase() {
     fun `getProjectInfo counts commits correctly`() = runTest {
         val (repoPath, cleanup) = createTestGitRepo()
         try {
-            val dir = java.io.File(repoPath)
+            val dir = Path(repoPath)
             dir.resolve("file2.kt").writeText("// Another file")
             GitUtils.runGitCommand(dir, "add", ".")
             GitUtils.runGitCommand(dir, "commit", "-m", "Second commit")
@@ -187,7 +194,7 @@ class LocalRepositoryFetcherTest : ProjectInfoFetcherTestBase() {
     fun `getProjectInfo works with repository without remote`() = runTest {
         val tempDir = Files.createTempDirectory("git-no-remote")
         try {
-            val dir = tempDir.toFile()
+            val dir = tempDir
             GitUtils.runGitCommand(dir, "init")
             GitUtils.runGitCommand(dir, "config", "user.email", "test@example.com")
             GitUtils.runGitCommand(dir, "config", "user.name", "Test User")
@@ -212,7 +219,7 @@ class LocalRepositoryFetcherTest : ProjectInfoFetcherTestBase() {
     fun `getProjectInfo detects multiple languages proportionally`() = runTest {
         val (repoPath, cleanup) = createTestGitRepo()
         try {
-            val dir = java.io.File(repoPath)
+            val dir = Path(repoPath)
             dir.resolve("Main.java").writeText("public class Main { /* Large file */ }".repeat(100))
             dir.resolve("small.js").writeText("console.log('hi');")
             GitUtils.runGitCommand(dir, "add", ".")

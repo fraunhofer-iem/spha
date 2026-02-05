@@ -39,7 +39,7 @@ class GitUtilsTest {
         // Create a temporary directory without git
         val tempDir = Files.createTempDirectory("non-git-test")
         try {
-            val url = GitUtils.detectGitRepositoryUrl(tempDir.toFile())
+            val url = GitUtils.detectGitRepositoryUrl(tempDir)
             assertNull(url, "detectGitRepositoryUrl should return null in non-git directory")
         } finally {
             tempDir.toFile().deleteRecursively()
@@ -62,10 +62,10 @@ class GitUtilsTest {
         val tempDir = Files.createTempDirectory("git-test")
         try {
             // Initialize git repo using GitUtils
-            GitUtils.runGitCommand(tempDir.toFile(), "init")
-            GitUtils.runGitCommand(tempDir.toFile(), "remote", "add", "origin", remoteUrl)
+            GitUtils.runGitCommand(tempDir, "init")
+            GitUtils.runGitCommand(tempDir, "remote", "add", "origin", remoteUrl)
 
-            val detectedUrl = GitUtils.detectGitRepositoryUrl(tempDir.toFile())
+            val detectedUrl = GitUtils.detectGitRepositoryUrl(tempDir)
             assertNotNull(detectedUrl, "detectGitRepositoryUrl should return a URL")
             assertEquals(
                 remoteUrl,

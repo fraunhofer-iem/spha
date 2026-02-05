@@ -135,20 +135,25 @@ object ToolResultParser {
     private fun getAdapterResultFromJsonFile(file: File): AdapterResult<*>? {
         val content = file.readText(Charsets.UTF_8)
 
-        when (val envelopeResult = tryProcessEnvelope(content, file.parentFile)) {
-            is EnvelopeProcessResult.Success -> {
-                logger.info { "Successfully parsed '${file.name}' as envelope format" }
-                return envelopeResult.result
-            }
-            is EnvelopeProcessResult.Failed -> {
-                logger.error {
-                    "Envelope '${file.name}' failed to process: ${envelopeResult.reason}"
+        when (val parseResult = tryParseEnvelope(content)) {
+            is EnvelopeParseResult.Success -> {
+                val envelope = parseResult.envelope
+                when (val processResult = getToolResultFromEnvelope(envelope, file.parentFile)) {
+                    is EnvelopeProcessResult.Success -> {
+                        logger.info { "Successfully parsed '${file.name}' as envelope format" }
+                        return processResult.result
+                    }
+                    is EnvelopeProcessResult.Failed -> {
+                        logger.error {
+                            "Envelope '${file.name}' failed to process: ${processResult.reason}"
+                        }
+                        // Envelope was detected, but processing failed - do NOT fall back to other
+                        // processors
+                        return null
+                    }
                 }
-                // Envelope was detected, but processing failed - do NOT fall back to other
-                // processors
-                return null
             }
-            is EnvelopeProcessResult.NotAnEnvelope -> {
+            is EnvelopeParseResult.NotAnEnvelope -> {
                 // Not an envelope, continue with other processors
             }
         }
@@ -181,26 +186,39 @@ object ToolResultParser {
     }
 
     /**
-     * Tries to parse the content as an envelope format and process the referenced result file.
+     * Tries to parse the content as an envelope format.
      *
      * @param content The JSON content to parse as an envelope.
-     * @param baseDir The base directory to resolve relative paths in the envelope.
-     * @return EnvelopeProcessResult indicating whether this was an envelope and if processing
-     *   succeeded.
+     * @return EnvelopeParseResult indicating whether this was an envelope and the parsed envelope
+     *   if successful.
      */
-    private fun tryProcessEnvelope(content: String, baseDir: File?): EnvelopeProcessResult {
-        val envelope =
-            try {
+    private fun tryParseEnvelope(content: String): EnvelopeParseResult {
+        return try {
+            val envelope =
                 envelopeJsonParser.decodeFromString(ToolResultEnvelope.serializer(), content)
-            } catch (_: SerializationException) {
-                return EnvelopeProcessResult.NotAnEnvelope
-            }
+            EnvelopeParseResult.Success(envelope)
+        } catch (_: SerializationException) {
+            EnvelopeParseResult.NotAnEnvelope
+        }
+    }
 
+    /**
+     * Processes the tool results from a parsed envelope.
+     *
+     * @param envelope The parsed envelope containing tool and result file information.
+     * @param baseDir The base directory to resolve relative paths in the envelope.
+     * @return EnvelopeProcessResult containing both the envelope and the processing result.
+     */
+    private fun getToolResultFromEnvelope(
+        envelope: ToolResultEnvelope,
+        baseDir: File?,
+    ): EnvelopeProcessResult {
         // Find the processor for the specified tool_id
         val processor =
             ToolProcessorStore.processors[envelope.tool]
                 ?: return EnvelopeProcessResult.Failed(
-                    "No processor found for tool_id '${envelope.tool}'"
+                    envelope,
+                    "No processor found for tool_id '${envelope.tool}'",
                 )
 
         // Resolve the result file path (can be absolute or relative to the envelope file)
@@ -214,7 +232,8 @@ object ToolResultParser {
 
         if (!resultFile.exists() || !resultFile.isFile) {
             return EnvelopeProcessResult.Failed(
-                "Result file '${resultFile.absolutePath}' does not exist"
+                envelope,
+                "Result file '${resultFile.absolutePath}' does not exist",
             )
         }
 
@@ -226,30 +245,39 @@ object ToolResultParser {
                 logger.info {
                     "Successfully processed result file '${resultFile.name}' with processor '${processor.name}'"
                 }
-                EnvelopeProcessResult.Success(result)
+                EnvelopeProcessResult.Success(envelope, result)
             } else {
                 EnvelopeProcessResult.Failed(
-                    "Processor '${processor.name}' could not parse result file '${resultFile.name}'"
+                    envelope,
+                    "Processor '${processor.name}' could not parse result file '${resultFile.name}'",
                 )
             }
         } catch (e: Exception) {
             EnvelopeProcessResult.Failed(
-                "Error processing result file '${resultFile.name}': ${e.message}"
+                envelope,
+                "Error processing result file '${resultFile.name}': ${e.message}",
             )
         }
     }
 }
 
-/** Result of attempting to process an envelope format. */
-private sealed class EnvelopeProcessResult {
+/** Result of attempting to parse an envelope format. */
+private sealed class EnvelopeParseResult {
     /** The content was not an envelope format - try other processors. */
-    data object NotAnEnvelope : EnvelopeProcessResult()
+    data object NotAnEnvelope : EnvelopeParseResult()
 
-    /** The content was an envelope format and processing succeeded. */
-    data class Success(val result: AdapterResult<*>) : EnvelopeProcessResult()
+    /** The content was successfully parsed as an envelope format. */
+    data class Success(val envelope: ToolResultEnvelope) : EnvelopeParseResult()
+}
 
-    /** The content was an envelope format but processing failed - do NOT try other processors. */
-    data class Failed(val reason: String) : EnvelopeProcessResult()
+/** Result of attempting to process tool results from an envelope. */
+private sealed class EnvelopeProcessResult {
+    /** The envelope was processed successfully. */
+    data class Success(val envelope: ToolResultEnvelope, val result: AdapterResult<*>) :
+        EnvelopeProcessResult()
+
+    /** The envelope processing failed - do NOT try other processors. */
+    data class Failed(val envelope: ToolResultEnvelope, val reason: String) : EnvelopeProcessResult()
 }
 
 internal object ToolProcessorStore {

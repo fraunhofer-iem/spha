@@ -15,7 +15,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class TrufflehogFindingDto(
     @SerialName("origins") val origins: List<TrufflehogResultDto> = listOf(),
-) : Origin
+) : ToolResult, Origin
 
 /** Represents a single finding from TruffleHog Note: SourceMetadata is skipped */
 @Serializable
@@ -32,4 +32,4 @@ data class TrufflehogResultDto(
     @SerialName("Raw") val raw: String? = null,
     @SerialName("RawV2") val rawV2: String? = null,
     @SerialName("Redacted") val redacted: String? = null,
-) : ToolResult
+)

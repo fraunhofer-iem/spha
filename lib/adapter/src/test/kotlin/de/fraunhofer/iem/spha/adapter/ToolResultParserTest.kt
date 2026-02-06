@@ -13,10 +13,14 @@ import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.createTempDirectory
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.io.TempDir
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 
 class ToolResultParserTest {
 
@@ -64,57 +68,6 @@ class ToolResultParserTest {
     }
 
     @Test
-    fun testParseJsonFilesFromDirectoryWithOsvFile() {
-        // Copy only the OSV file to a temporary directory
-        val tempOsvDir = createTempDirectory("osv")
-        val osvFile = File("$testResourcesDir/osv-scanner.json")
-        val tempOsvFile = tempOsvDir.resolve("osv-scanner.json").toFile()
-        osvFile.copyTo(tempOsvFile)
-
-        val results = ToolResultParser.parseJsonFilesFromDirectory(tempOsvDir.toString())
-
-        // Clean up
-        tempOsvDir.toFile().deleteRecursively()
-
-        assertTrue(results.isNotEmpty())
-        results.forEach {
-            assertTrue(it.transformationResults.all { it is TransformationResult.Success<*> })
-        }
-    }
-
-    @Test
-    fun testParseJsonFilesFromDirectoryWithTrivyFile() {
-        // Copy only the Trivy file to a temporary directory
-        val tempTrivyDir = createTempDirectory("trivy")
-        val trivyFile = File("$testResourcesDir/trivy-result-v2.json")
-        val tempTrivyFile = tempTrivyDir.resolve("trivy-result-v2.json").toFile()
-        trivyFile.copyTo(tempTrivyFile)
-
-        // We're just testing that the file is processed without errors
-        // The actual results might be empty depending on the adapter implementation
-        ToolResultParser.parseJsonFilesFromDirectory(tempTrivyDir.toString())
-
-        // Clean up
-        tempTrivyDir.toFile().deleteRecursively()
-    }
-
-    @Test
-    fun testParseJsonFilesFromDirectoryWithTrufflehogFile() {
-        // Copy only the Trufflehog file to a temporary directory
-        val tempTrufflehogDir = createTempDirectory("trufflehog")
-        val trufflehogFile = File("$testResourcesDir/trufflehog.json")
-        val tempTrufflehogFile = tempTrufflehogDir.resolve("trufflehog.json").toFile()
-        trufflehogFile.copyTo(tempTrufflehogFile)
-
-        // We're just testing that the file is processed without errors
-        // The actual results might be empty depending on the adapter implementation
-        ToolResultParser.parseJsonFilesFromDirectory(tempTrufflehogDir.toString())
-
-        // Clean up
-        tempTrufflehogDir.toFile().deleteRecursively()
-    }
-
-    @Test
     fun testParseJsonFilesFromDirectoryWithInvalidJsonFile() {
         val results = ToolResultParser.parseJsonFilesFromDirectory(invalidJsonDir.toString())
         assertTrue(results.isEmpty())
@@ -136,40 +89,67 @@ class ToolResultParserTest {
     }
 
     @Test
+    fun testParseJsonFilesFromDirectoryIgnoresNonJsonFiles() {
+        // Create a directory with both JSON and non-JSON files
+        val mixedDir = createTempDirectory("mixed-files")
+
+        // Copy a valid JSON file
+        val osvFile = File("$testResourcesDir/osv-scanner.json")
+        val jsonFile = mixedDir.resolve("osv-scanner.json").toFile()
+        osvFile.copyTo(jsonFile)
+
+        // Create non-JSON files that should be ignored
+        val txtFile = mixedDir.resolve("readme.txt").toFile()
+        txtFile.writeText("This is a text file")
+
+        val xmlFile = mixedDir.resolve("config.xml").toFile()
+        xmlFile.writeText("<config><setting>value</setting></config>")
+
+        val csvFile = mixedDir.resolve("data.csv").toFile()
+        csvFile.writeText("col1,col2\nval1,val2")
+
+        val noExtensionFile = mixedDir.resolve("Dockerfile").toFile()
+        noExtensionFile.writeText("FROM alpine:latest")
+
+        val results = ToolResultParser.parseJsonFilesFromDirectory(mixedDir.toString())
+
+        // Clean up
+        mixedDir.toFile().deleteRecursively()
+
+        // Should only parse the JSON file, ignoring all non-JSON files
+        assertEquals(1, results.size)
+        // Verify that the result contains successful transformations
+        val allSuccesses =
+            results.flatMap { adapterResult ->
+                adapterResult.transformationResults.filterIsInstance<
+                    TransformationResult.Success<*>
+                >()
+            }
+        assertTrue(
+            allSuccesses.isNotEmpty(),
+            "Expected at least one successful transformation result",
+        )
+    }
+
+    @Test
     fun testGetAdapterResultsFromJsonFiles() {
-        val jsonFiles =
-            listOf(
-                File("$testResourcesDir/osv-scanner.json"),
-                File("$testResourcesDir/trivy-result-v2.json"),
-                File("$testResourcesDir/trufflehog.json"),
-                File("$testResourcesDir/techLag-npm-vuejs.json"),
-            )
+        val (envelopeDir, envelopeFile) = createEnvelopeFile("trufflehog", "trufflehog-ndjson.json")
 
-        val results = ToolResultParser.getAdapterResultsFromJsonFiles(jsonFiles)
+        try {
+            val jsonFiles =
+                listOf(
+                    File("$testResourcesDir/osv-scanner.json"),
+                    File("$testResourcesDir/trivy-result-v2.json"),
+                    envelopeFile,
+                    File("$testResourcesDir/techLag-npm-vuejs.json"),
+                )
 
-        assertTrue(results.isNotEmpty())
-    }
+            val results = ToolResultParser.getAdapterResultsFromJsonFiles(jsonFiles)
 
-    @Test
-    fun testGetAdapterResultsFromJsonFilesTlcVue() {
-        val jsonFiles = listOf(File("$testResourcesDir/techLag-npm-vuejs.json"))
-
-        val results = ToolResultParser.getAdapterResultsFromJsonFiles(jsonFiles)
-
-        assertTrue(results.isNotEmpty())
-    }
-
-    @Test
-    fun testGetAdapterResultsFromJsonFilesTlcAngular() {
-        val jsonFiles =
-            listOf(
-                // breaks
-                File("$testResourcesDir/techLag-npm-angular.json")
-            )
-
-        val results = ToolResultParser.getAdapterResultsFromJsonFiles(jsonFiles)
-
-        assertTrue(results.isNotEmpty())
+            assertEquals(4, results.size)
+        } finally {
+            envelopeDir.toFile().deleteRecursively()
+        }
     }
 
     @Test
@@ -210,5 +190,168 @@ class ToolResultParserTest {
         val results = ToolResultParser.getAdapterResultsFromJsonFiles(jsonFiles)
 
         assertTrue(results.isNotEmpty())
+    }
+
+    @Test
+    fun testEnvelopeFormatWithRelativePath() {
+        // Test envelope format with relative path to result file
+        // Create envelope and result file in same directory to test relative path resolution
+        val (envelopeDir, envelopeFile) =
+            createEnvelopeFileWithPath("trufflehog", "trufflehog-ndjson.json")
+        // Copy result file to envelope directory for relative path resolution
+        val resultFile = File("$testResourcesDir/trufflehog-ndjson.json")
+        resultFile.copyTo(envelopeDir.resolve("trufflehog-ndjson.json").toFile())
+
+        try {
+            val results = ToolResultParser.getAdapterResultsFromJsonFiles(listOf(envelopeFile))
+
+            assertTrue(results.isNotEmpty())
+            results.forEach {
+                assertTrue(it.transformationResults.all { it is TransformationResult.Success<*> })
+            }
+        } finally {
+            envelopeDir.toFile().deleteRecursively()
+        }
+    }
+
+    @Test
+    fun testEnvelopeFormatWithAbsolutePath() {
+        val (envelopeDir, envelopeFile) = createEnvelopeFile("trufflehog", "trufflehog-ndjson.json")
+
+        try {
+            val results = ToolResultParser.getAdapterResultsFromJsonFiles(listOf(envelopeFile))
+
+            assertTrue(results.isNotEmpty())
+            results.forEach { it ->
+                assertTrue(it.transformationResults.all { it is TransformationResult.Success<*> })
+            }
+        } finally {
+            envelopeDir.toFile().deleteRecursively()
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidEnvelopeTestCases")
+    fun testInvalidEnvelopeReturnsEmptyResult(
+        toolId: String,
+        resultFilePath: String,
+        description: String,
+    ) {
+        val (envelopeDir, envelopeFile) = createEnvelopeFileWithPath(toolId, resultFilePath)
+
+        try {
+            val results = ToolResultParser.getAdapterResultsFromJsonFiles(listOf(envelopeFile))
+            assertTrue(results.isEmpty(), "Expected empty results for: $description")
+        } finally {
+            envelopeDir.toFile().deleteRecursively()
+        }
+    }
+
+    @Test
+    fun testEnvelopeFormatWithEmptyTrufflehogResultFile() {
+        val (envelopeDir, envelopeFile) =
+            createEnvelopeFileWithPath("trufflehog", "empty-result.json")
+        envelopeDir.resolve("empty-result.json").toFile().writeText("")
+
+        try {
+            val results = ToolResultParser.getAdapterResultsFromJsonFiles(listOf(envelopeFile))
+            assertTrue(results.isNotEmpty())
+            val adapterResult = results.first()
+            val kpis = adapterResult.transformationResults
+            assertTrue(kpis.all { it is TransformationResult.Success<*> })
+            assertEquals(100, (kpis.first() as TransformationResult.Success.Kpi).rawValueKpi.score)
+        } finally {
+            envelopeDir.toFile().deleteRecursively()
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("envelopeTestCases")
+    fun testEnvelopeFilesProduceSuccessfulResults(toolId: String, resultFileName: String) {
+        val (envelopeDir, envelopeFile) = createEnvelopeFile(toolId, resultFileName)
+
+        try {
+            val results = ToolResultParser.getAdapterResultsFromJsonFiles(listOf(envelopeFile))
+
+            assertTrue(
+                results.isNotEmpty(),
+                "Expected non-empty results for tool: $toolId, file: $resultFileName",
+            )
+
+            // Verify that at least one transformation result is a success
+            val allSuccesses =
+                results.flatMap { adapterResult ->
+                    adapterResult.transformationResults.filterIsInstance<
+                        TransformationResult.Success<*>
+                    >()
+                }
+            assertTrue(
+                allSuccesses.isNotEmpty(),
+                "Expected at least one successful transformation result for tool: $toolId",
+            )
+        } finally {
+            envelopeDir.toFile().deleteRecursively()
+        }
+    }
+
+    private fun createEnvelopeFile(toolId: String, resultFileName: String): Pair<Path, File> {
+        val resultFile = File("$testResourcesDir/$resultFileName")
+        return createEnvelopeFileWithPath(toolId, resultFile.absolutePath.replace("\\", "/"))
+    }
+
+    private fun createEnvelopeFileWithPath(
+        toolId: String,
+        resultFilePath: String,
+    ): Pair<Path, File> {
+        val envelopeDir = createTempDirectory("envelope-$toolId")
+        val envelopeFile = envelopeDir.resolve("envelope.json").toFile()
+        envelopeFile.writeText(
+            """
+            {
+              "tool": "$toolId",
+              "result_file": "$resultFilePath"
+            }
+        """
+                .trimIndent()
+        )
+        return Pair(envelopeDir, envelopeFile)
+    }
+
+    companion object {
+        private val testResourcesDir = "src/test/resources"
+
+        @JvmStatic
+        fun envelopeTestCases() =
+            listOf(
+                Arguments.of("osv-scanner", "osv-scanner.json"),
+                Arguments.of("trivy", "trivy-result-v2.json"),
+                Arguments.of("trufflehog", "trufflehog-ndjson.json"),
+                Arguments.of("technicalLag", "techLag-npm-vuejs.json"),
+            )
+
+        @JvmStatic
+        fun invalidEnvelopeTestCases(): List<Arguments> {
+            val validResultFile = File("$testResourcesDir/trufflehog-ndjson.json")
+            val osvResultFile = File("$testResourcesDir/osv-scanner.json")
+            val testResourcesDirAbsolute = File(testResourcesDir).absolutePath.replace("\\", "/")
+            return listOf(
+                Arguments.of(
+                    "unknown-tool",
+                    validResultFile.absolutePath.replace("\\", "/"),
+                    "unknown tool ID",
+                ),
+                Arguments.of(
+                    "trivy",
+                    osvResultFile.absolutePath.replace("\\", "/"),
+                    "trivy tool ID with osv-scanner file",
+                ),
+                Arguments.of("trufflehog", "non-existent-file.json", "missing file reference"),
+                Arguments.of(
+                    "trufflehog",
+                    testResourcesDirAbsolute,
+                    "reference to directory instead of file",
+                ),
+            )
+        }
     }
 }

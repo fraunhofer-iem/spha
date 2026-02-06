@@ -32,7 +32,7 @@ data class TrivyResult(
 data class TrivyVulnerabilityDto(
     // NB: Because the names of its inner elements are not fixed, this needs to be a JsonObject.
     // This way we can iterate over those when required. Their type is always CVSSData.
-    @SerialName("CVSS") val cvss: JsonObject?,
+    @SerialName("CVSS") val cvss: JsonObject? = null,
     @SerialName("VulnerabilityID") val vulnerabilityID: String,
     @SerialName("InstalledVersion") val installedVersion: String,
     @SerialName("PkgName") val pkgName: String,

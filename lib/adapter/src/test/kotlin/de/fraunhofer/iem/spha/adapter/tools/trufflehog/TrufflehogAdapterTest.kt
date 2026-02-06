@@ -10,26 +10,16 @@
 package de.fraunhofer.iem.spha.adapter.tools.trufflehog
 
 import de.fraunhofer.iem.spha.adapter.TransformationResult
-import de.fraunhofer.iem.spha.model.adapter.TrufflehogReportDto
-import java.nio.file.Files
-import kotlin.io.path.Path
+import de.fraunhofer.iem.spha.model.adapter.TrufflehogFindingDto
+import de.fraunhofer.iem.spha.model.adapter.TrufflehogResultDto
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
 class TrufflehogAdapterTest {
 
-    val emptyDto =
-        TrufflehogReportDto(
-            chunks = null,
-            bytes = null,
-            verifiedSecrets = null,
-            unverifiedSecrets = null,
-            scanDuration = null,
-            trufflehogVersion = null,
-        )
+    val emptyDto = TrufflehogResultDto(findings = emptyList())
 
     @ParameterizedTest
     @ValueSource(
@@ -42,7 +32,7 @@ class TrufflehogAdapterTest {
         input.byteInputStream().use {
             assertEquals(
                 emptyDto,
-                TrufflehogAdapter.dtoFromJson(it, TrufflehogReportDto.serializer()),
+                TrufflehogAdapter.dtoFromJson(it, TrufflehogResultDto.serializer()),
             )
         }
     }
@@ -51,44 +41,135 @@ class TrufflehogAdapterTest {
     @ValueSource(strings = ["{}"])
     fun testEmptyDto(input: String) {
         input.byteInputStream().use {
-            val dto = TrufflehogAdapter.dtoFromJson(it, TrufflehogReportDto.serializer())
-            assertEquals(null, dto.verifiedSecrets)
+            val dto = TrufflehogAdapter.dtoFromJson(it, TrufflehogResultDto.serializer())
+            assertEquals(emptyList(), dto.findings)
         }
     }
 
     @Test
-    fun testResultDto() {
-        Files.newInputStream(Path("src/test/resources/trufflehog-no-result.json")).use {
-            val dto = assertDoesNotThrow {
-                TrufflehogAdapter.dtoFromJson(it, TrufflehogReportDto.serializer())
-            }
+    fun testTransformDataToKpiWithNoSecrets() {
+        val dto = TrufflehogResultDto(findings = emptyList())
 
-            val adapterResult = assertDoesNotThrow { TrufflehogAdapter.transformDataToKpi(dto) }
-            val kpis = adapterResult.transformationResults
+        val adapterResult = TrufflehogAdapter.transformDataToKpi(dto)
+        val results = adapterResult.transformationResults
 
-            assertEquals(1, kpis.size)
-
-            kpis.forEach { assert(it is TransformationResult.Success) }
-
-            assertEquals(100, (kpis.first() as TransformationResult.Success.Kpi).rawValueKpi.score)
-        }
+        assertEquals(1, results.size)
+        val result = results.first()
+        assert(result is TransformationResult.Success.Kpi)
+        assertEquals(100, (result as TransformationResult.Success.Kpi).rawValueKpi.score)
     }
 
     @Test
-    fun testResultResultDto() {
-        Files.newInputStream(Path("src/test/resources/trufflehog.json")).use {
-            val dto = assertDoesNotThrow {
-                TrufflehogAdapter.dtoFromJson(it, TrufflehogReportDto.serializer())
-            }
+    fun testTransformDataToKpiWithVerifiedSecrets() {
+        val dto =
+            TrufflehogResultDto(
+                findings =
+                    listOf(
+                        TrufflehogFindingDto(verified = true),
+                        TrufflehogFindingDto(verified = true),
+                        TrufflehogFindingDto(verified = false),
+                        TrufflehogFindingDto(verified = false),
+                        TrufflehogFindingDto(verified = false),
+                    )
+            )
 
-            val adapterResult = assertDoesNotThrow { TrufflehogAdapter.transformDataToKpi(dto) }
-            val kpis = adapterResult.transformationResults
+        val adapterResult = TrufflehogAdapter.transformDataToKpi(dto)
+        val results = adapterResult.transformationResults
 
-            assertEquals(1, kpis.size)
+        // Single KPI for all findings
+        assertEquals(1, results.size)
+        val result = results.first()
+        assert(result is TransformationResult.Success.Kpi)
+        // Verified secrets found, so score should be 0
+        assertEquals(0, (result as TransformationResult.Success.Kpi).rawValueKpi.score)
+    }
 
-            kpis.forEach { assert(it is TransformationResult.Success) }
+    @Test
+    fun testTransformDataToKpiWithOnlyUnverifiedSecrets() {
+        val dto =
+            TrufflehogResultDto(
+                findings =
+                    listOf(
+                        TrufflehogFindingDto(verified = false),
+                        TrufflehogFindingDto(verified = false),
+                    )
+            )
 
-            assertEquals(0, (kpis.first() as TransformationResult.Success.Kpi).rawValueKpi.score)
-        }
+        val adapterResult = TrufflehogAdapter.transformDataToKpi(dto)
+        val results = adapterResult.transformationResults
+
+        // Single KPI for all findings
+        assertEquals(1, results.size)
+        val result = results.first()
+        assert(result is TransformationResult.Success.Kpi)
+        // No verified secrets, so score should be 100
+        assertEquals(100, (result as TransformationResult.Success.Kpi).rawValueKpi.score)
+    }
+
+    @Test
+    fun testTransformDataToKpiWithEmptyOrigins() {
+        val dto = TrufflehogResultDto(findings = emptyList())
+
+        val adapterResult = TrufflehogAdapter.transformDataToKpi(dto)
+        val results = adapterResult.transformationResults
+
+        // Empty origins should result in single KPI with score 100
+        assertEquals(1, results.size)
+        val result = results.first()
+        assert(result is TransformationResult.Success.Kpi)
+        assertEquals(100, (result as TransformationResult.Success.Kpi).rawValueKpi.score)
+    }
+
+    @Test
+    fun testTransformDataToKpiWithNoSecretsAgain() {
+        val dto = TrufflehogResultDto(findings = emptyList())
+
+        val adapterResult = TrufflehogAdapter.transformDataToKpi(dto)
+        val results = adapterResult.transformationResults
+
+        assertEquals(1, results.size)
+        val result = results.first()
+        assert(result is TransformationResult.Success.Kpi)
+        assertEquals(100, (result as TransformationResult.Success.Kpi).rawValueKpi.score)
+    }
+
+    @Test
+    fun testTransformDataToKpiWithSingleVerifiedSecret() {
+        val dto = TrufflehogResultDto(findings = listOf(TrufflehogFindingDto(verified = true)))
+
+        val adapterResult = TrufflehogAdapter.transformDataToKpi(dto)
+        val results = adapterResult.transformationResults
+
+        // Single verified secret should create a single KPI with score 0
+        assertEquals(1, results.size)
+        val result = results.first()
+        assert(result is TransformationResult.Success.Kpi)
+        assertEquals(0, (result as TransformationResult.Success.Kpi).rawValueKpi.score)
+    }
+
+    @Test
+    fun testTransformDataToKpiToolInfo() {
+        val dto = TrufflehogResultDto(findings = emptyList())
+
+        val adapterResult = TrufflehogAdapter.transformDataToKpi(dto)
+
+        assertEquals("Trufflehog", adapterResult.toolInfo?.name)
+        assertEquals("Secrets Scanner", adapterResult.toolInfo?.description)
+    }
+
+    @Test
+    fun testTransformDataToKpiMultipleDtos() {
+        val dto1 = TrufflehogResultDto(findings = listOf(TrufflehogFindingDto(verified = false)))
+        val dto2 = TrufflehogResultDto(findings = listOf(TrufflehogFindingDto(verified = true)))
+
+        val adapterResult = TrufflehogAdapter.transformDataToKpi(dto1, dto2)
+        val results = adapterResult.transformationResults
+
+        // Multiple DTOs are combined into a single KPI
+        assertEquals(1, results.size)
+
+        // One verified secret found across all DTOs, so score should be 0
+        val result = results.first() as TransformationResult.Success.Kpi<*>
+        assertEquals(0, result.rawValueKpi.score)
     }
 }

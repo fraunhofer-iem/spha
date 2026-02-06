@@ -143,7 +143,7 @@ class HttpResultSenderTest {
         val result = loadTestResult()
 
         assertEquals("spha", result.projectInfo.name)
-        assertEquals(7, result.projectInfo.stars)
+        assertEquals(10, result.projectInfo.stars)
         assertEquals(
             "https://github.com/fraunhofer-iem/spha",
             de.fraunhofer.iem.spha.cli.vcs.TestGitUtils.normalizeGitUrl(result.projectInfo.url),

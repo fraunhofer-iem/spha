@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Fraunhofer IEM. All rights reserved.
+ * Copyright (c) 2025-2026 Fraunhofer IEM. All rights reserved.
  *
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  *
@@ -9,26 +9,25 @@
 
 package de.fraunhofer.iem.spha.adapter
 
-import de.fraunhofer.iem.spha.adapter.ToolProcessorImpl.Companion.getAllToolProcessors
 import de.fraunhofer.iem.spha.adapter.tools.osv.OsvAdapter
 import de.fraunhofer.iem.spha.adapter.tools.tlc.TlcAdapter
 import de.fraunhofer.iem.spha.adapter.tools.trivy.TrivyAdapter
-import de.fraunhofer.iem.spha.adapter.tools.trufflehog.TrufflehogAdapter
-import de.fraunhofer.iem.spha.model.adapter.OsvScannerDto
-import de.fraunhofer.iem.spha.model.adapter.TlcDto
-import de.fraunhofer.iem.spha.model.adapter.ToolResult
-import de.fraunhofer.iem.spha.model.adapter.TrivyDtoV2
-import de.fraunhofer.iem.spha.model.adapter.TrufflehogReportDto
+import de.fraunhofer.iem.spha.adapter.tools.trufflehog.TrufflehogNdjsonProcessor
+import de.fraunhofer.iem.spha.model.adapter.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.File
+import java.nio.file.Paths
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 
 /** A processor that attempts to parse and transform content for a specific tool. */
-private interface ToolProcessor {
+internal interface ToolProcessor {
     /** The name of the tool or format this processor handles, used for logging. */
     val name: String
+
+    /** The unique identifier for this tool processor, used for configuration and identification. */
+    val id: String
 
     /**
      * Tries to process the given JSON content.
@@ -39,6 +38,13 @@ private interface ToolProcessor {
      * @throws Exception for unexpected errors during transformation logic.
      */
     fun tryProcess(content: String): AdapterResult<*>?
+
+    companion object {
+        val jsonParser = Json {
+            isLenient = true
+            ignoreUnknownKeys = true
+        }
+    }
 }
 
 /**
@@ -46,12 +52,11 @@ private interface ToolProcessor {
  *
  * @param T The specific [ToolResult] DTO type.
  * @property serializer The `KSerializer` for the type `T`.
- * @property jsonParser The `Json` instance to use for decoding.
  * @property transform The function to convert the decoded object of type `T` into the result.
  */
-private class ToolProcessorImpl<T : ToolResult>(
+internal class ToolProcessorImpl<T : ToolResult>(
+    override val id: String,
     private val serializer: KSerializer<T>,
-    private val jsonParser: Json,
     private val transform: (T) -> AdapterResult<*>,
 ) : ToolProcessor {
 
@@ -60,7 +65,7 @@ private class ToolProcessorImpl<T : ToolResult>(
 
     override fun tryProcess(content: String): AdapterResult<*>? {
         return try {
-            val resultObject = jsonParser.decodeFromString(serializer, content)
+            val resultObject = ToolProcessor.jsonParser.decodeFromString(serializer, content)
             transform(resultObject)
         } catch (_: SerializationException) {
             // This is an expected failure when the JSON does not match the DTO.
@@ -68,38 +73,12 @@ private class ToolProcessorImpl<T : ToolResult>(
             null
         }
     }
-
-    companion object {
-        private val jsonParser = Json {
-            isLenient = true
-            ignoreUnknownKeys = true
-        }
-
-        // List of all supported tool processors. Adding a new tool is a single-line change here.
-        fun getAllToolProcessors(): List<ToolProcessor> {
-            return listOf(
-                ToolProcessorImpl(OsvScannerDto.serializer(), jsonParser) {
-                    OsvAdapter.transformDataToKpi(it)
-                },
-                ToolProcessorImpl(TrivyDtoV2.serializer(), jsonParser) {
-                    TrivyAdapter.transformDataToKpi(it)
-                },
-                ToolProcessorImpl(TrufflehogReportDto.serializer(), jsonParser) {
-                    TrufflehogAdapter.transformDataToKpi(it)
-                },
-                ToolProcessorImpl(TlcDto.serializer(), jsonParser) {
-                    TlcAdapter.transformDataToKpi(it)
-                },
-            )
-        }
-    }
 }
 
 object ToolResultParser {
-
     private val logger = KotlinLogging.logger {}
 
-    private val processors: List<ToolProcessor> = getAllToolProcessors()
+    private val envelopeJsonParser = Json
 
     private fun getJsonFiles(directoryPath: String): List<File> {
         val directory = File(directoryPath)
@@ -139,39 +118,181 @@ object ToolResultParser {
 
     fun getAdapterResultsFromJsonFiles(jsonFiles: List<File>): List<AdapterResult<*>> {
 
-        val transformationResults = mutableListOf<AdapterResult<*>>()
-        for (file in jsonFiles) {
+        return jsonFiles.mapNotNull {
             try {
-                val content = file.readText(Charsets.UTF_8)
-                if (content.isBlank()) {
-                    logger.warn { "Warning: Skipping empty file: ${file.name}" }
-                    continue
-                }
-
-                for (processor in processors) {
-                    try {
-                        // tryProcess returns results on success or null on format mismatch
-                        val results = processor.tryProcess(content)
-                        if (results != null) {
-                            transformationResults.add(results)
-                            logger.info {
-                                "Successfully parsed '${file.name}' as '${processor.name}'"
-                            }
-                            break // Move to the next file
-                        }
-                    } catch (e: Exception) {
-                        // Catch unexpected errors from the transform logic
-                        logger.error {
-                            "Unexpected error processing '${file.name}' with '${processor.name}': ${e.message}"
-                        }
-                        // Mark as parsed to avoid the "unsuitable parser" warning
-                        break
-                    }
-                }
+                getAdapterResultFromJsonFile(it)
             } catch (e: Exception) {
-                logger.error { "Unexpected error processing file '${file.name}': ${e.message}" }
+                logger.error { "Unexpected error processing file '${it.name}': ${e.message}" }
+                null
             }
         }
-        return transformationResults
     }
+
+    private fun getAdapterResultFromJsonFile(file: File): AdapterResult<*>? {
+        val content = file.readText(Charsets.UTF_8)
+
+        when (val parseResult = tryParseEnvelope(content)) {
+            is EnvelopeParseResult.Success -> {
+                val envelope = parseResult.envelope
+                when (val processResult = getToolResultFromEnvelope(envelope, file.parentFile)) {
+                    is EnvelopeProcessResult.Success -> {
+                        logger.info { "Successfully parsed '${file.name}' as envelope format" }
+                        return processResult.result
+                    }
+                    is EnvelopeProcessResult.Failed -> {
+                        logger.error {
+                            "Envelope '${file.name}' failed to process: ${processResult.reason}"
+                        }
+                        // Envelope was detected, but processing failed - do NOT fall back to other
+                        // processors
+                        return null
+                    }
+                }
+            }
+            is EnvelopeParseResult.NotAnEnvelope -> {
+                // Not an envelope, continue with other processors
+            }
+        }
+
+        // At this point empty files are not allowed because they would cause an ambiguity.
+        // It would be undecidable which tool produced the file, and thus
+        // the first processor that supports empty files would always win.
+        if (content.isBlank()) {
+            return null
+        }
+
+        for (processor in ToolProcessorStore.processors.values) {
+            try {
+                // tryProcess returns results on success or null on format mismatch
+                val results = processor.tryProcess(content)
+                if (results != null) {
+                    logger.info { "Successfully parsed '${file.name}' as '${processor.name}'" }
+                    return results
+                }
+            } catch (e: Exception) {
+                logger.error {
+                    "Unexpected error processing '${file.name}' with '${processor.name}': ${e.message}"
+                }
+                break
+            }
+        }
+
+        logger.warn { "No suitable tool processor found for '${file.name}' " }
+        return null
+    }
+
+    /**
+     * Tries to parse the content as an envelope format.
+     *
+     * @param content The JSON content to parse as an envelope.
+     * @return EnvelopeParseResult indicating whether this was an envelope and the parsed envelope
+     *   if successful.
+     */
+    private fun tryParseEnvelope(content: String): EnvelopeParseResult {
+        return try {
+            val envelope =
+                envelopeJsonParser.decodeFromString(ToolResultEnvelope.serializer(), content)
+            EnvelopeParseResult.Success(envelope)
+        } catch (_: SerializationException) {
+            EnvelopeParseResult.NotAnEnvelope
+        }
+    }
+
+    /**
+     * Processes the tool results from a parsed envelope.
+     *
+     * @param envelope The parsed envelope containing tool and result file information.
+     * @param baseDir The base directory to resolve relative paths in the envelope.
+     * @return EnvelopeProcessResult containing both the envelope and the processing result.
+     */
+    private fun getToolResultFromEnvelope(
+        envelope: ToolResultEnvelope,
+        baseDir: File?,
+    ): EnvelopeProcessResult {
+        // Find the processor for the specified tool_id
+        val processor =
+            ToolProcessorStore.processors[envelope.tool]
+                ?: return EnvelopeProcessResult.Failed(
+                    envelope,
+                    "No processor found for tool_id '${envelope.tool}'",
+                )
+
+        // Resolve the result file path (can be absolute or relative to the envelope file)
+        val resultFilePath = Paths.get(envelope.resultFile)
+        val resultFile =
+            if (resultFilePath.isAbsolute) {
+                resultFilePath.toFile()
+            } else {
+                baseDir?.resolve(envelope.resultFile) ?: File(envelope.resultFile)
+            }
+
+        if (!resultFile.exists() || !resultFile.isFile) {
+            return EnvelopeProcessResult.Failed(
+                envelope,
+                "Result file '${resultFile.absolutePath}' does not exist",
+            )
+        }
+
+        // Read and process the result file content
+        val resultContent = resultFile.readText(Charsets.UTF_8)
+        return try {
+            val result = processor.tryProcess(resultContent)
+            if (result != null) {
+                logger.info {
+                    "Successfully processed result file '${resultFile.name}' with processor '${processor.name}'"
+                }
+                EnvelopeProcessResult.Success(envelope, result)
+            } else {
+                EnvelopeProcessResult.Failed(
+                    envelope,
+                    "Processor '${processor.name}' could not parse result file '${resultFile.name}'",
+                )
+            }
+        } catch (e: Exception) {
+            EnvelopeProcessResult.Failed(
+                envelope,
+                "Error processing result file '${resultFile.name}': ${e.message}",
+            )
+        }
+    }
+}
+
+/** Result of attempting to parse an envelope format. */
+private sealed class EnvelopeParseResult {
+    /** The content was not an envelope format - try other processors. */
+    data object NotAnEnvelope : EnvelopeParseResult()
+
+    /** The content was successfully parsed as an envelope format. */
+    data class Success(val envelope: ToolResultEnvelope) : EnvelopeParseResult()
+}
+
+/** Result of attempting to process tool results from an envelope. */
+private sealed class EnvelopeProcessResult {
+    /** The envelope was processed successfully. */
+    data class Success(val envelope: ToolResultEnvelope, val result: AdapterResult<*>) :
+        EnvelopeProcessResult()
+
+    /** The envelope processing failed */
+    data class Failed(val envelope: ToolResultEnvelope, val reason: String) :
+        EnvelopeProcessResult()
+}
+
+internal object ToolProcessorStore {
+
+    val processors =
+        mapOf(
+            "osv-scanner" to
+                ToolProcessorImpl("osv-scanner", OsvScannerDto.serializer()) {
+                    OsvAdapter.transformDataToKpi(it)
+                },
+            "trivy" to
+                ToolProcessorImpl("trivy", TrivyDtoV2.serializer()) {
+                    TrivyAdapter.transformDataToKpi(it)
+                },
+            TrufflehogNdjsonProcessor.ID to TrufflehogNdjsonProcessor(),
+            "technicalLag" to
+                ToolProcessorImpl("technicalLag", TlcDto.serializer()) {
+                    TlcAdapter.transformDataToKpi(it)
+                },
+        )
 }

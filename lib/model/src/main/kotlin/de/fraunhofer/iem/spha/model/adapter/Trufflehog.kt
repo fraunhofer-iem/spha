@@ -13,11 +13,23 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class TrufflehogReportDto(
-    val chunks: Int?,
-    val bytes: Int?,
-    @SerialName("verified_secrets") val verifiedSecrets: Int?,
-    @SerialName("unverified_secrets") val unverifiedSecrets: Int?,
-    @SerialName("scan_duration") val scanDuration: String?,
-    @SerialName("trufflehog_version") val trufflehogVersion: String?,
+data class TrufflehogResultDto(
+    @SerialName("findings") val findings: List<TrufflehogFindingDto> = listOf()
 ) : ToolResult, Origin
+
+/** Represents a single finding from TruffleHog Note: SourceMetadata is skipped */
+@Serializable
+data class TrufflehogFindingDto(
+    @SerialName("SourceID") val sourceId: Int? = null,
+    @SerialName("SourceType") val sourceType: Int? = null,
+    @SerialName("SourceName") val sourceName: String? = null,
+    @SerialName("DetectorType") val detectorType: Int? = null,
+    @SerialName("DetectorName") val detectorName: String? = null,
+    @SerialName("DetectorDescription") val detectorDescription: String? = null,
+    @SerialName("DecoderName") val decoderName: String? = null,
+    @SerialName("Verified") val verified: Boolean,
+    @SerialName("VerificationFromCache") val verificationFromCache: Boolean? = null,
+    @SerialName("Raw") val raw: String? = null,
+    @SerialName("RawV2") val rawV2: String? = null,
+    @SerialName("Redacted") val redacted: String? = null,
+)

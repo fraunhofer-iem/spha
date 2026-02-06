@@ -25,6 +25,7 @@ object TestGitUtils {
         val matchResult = regex.find(url) ?: return url
 
         val (host, owner, repo) = matchResult.destructured
-        return "https://$host/$owner/$repo"
+        val normalizedHost = host.removePrefix("www.")
+        return "https://$normalizedHost/$owner/$repo"
     }
 }

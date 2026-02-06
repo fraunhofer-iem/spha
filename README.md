@@ -21,7 +21,7 @@ The core library is divided into three modules that are individually published:
 ### CLI (`cli/`)
 
 A command-line tool that wraps the core library, providing commands to:
-- `transform` - Convert tool results into SPHA's internal format
+- `analyze` - Analyzes a specified project and writes the SPHA results to a file or reports them to a SPHA server.
 - `calculate` - Compute health scores from KPI hierarchies
 - `report` - Generate human-readable reports
 

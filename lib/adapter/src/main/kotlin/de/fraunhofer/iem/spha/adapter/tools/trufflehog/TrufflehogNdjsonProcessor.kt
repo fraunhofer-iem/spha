@@ -20,7 +20,7 @@ import kotlinx.serialization.SerializationException
  * in the file is a separate JSON object representing a finding.
  */
 internal class TrufflehogNdjsonProcessor : ToolProcessor {
-    private val serializer = TrufflehogResultDto.serializer()
+    private val serializer = TrufflehogFindingDto.serializer()
 
     override val name: String
         get() = serializer.descriptor.serialName
@@ -30,7 +30,7 @@ internal class TrufflehogNdjsonProcessor : ToolProcessor {
     override fun tryProcess(content: String): AdapterResult<*>? {
         val lines = content.lines().filter { it.isNotBlank() }
 
-        val findings = mutableListOf<TrufflehogResultDto>()
+        val findings = mutableListOf<TrufflehogFindingDto>()
 
         for (line in lines) {
             try {
@@ -40,7 +40,7 @@ internal class TrufflehogNdjsonProcessor : ToolProcessor {
                 return null
             }
         }
-        return TrufflehogAdapter.transformDataToKpi(TrufflehogFindingDto(origins = findings))
+        return TrufflehogAdapter.transformDataToKpi(TrufflehogResultDto(findings = findings))
     }
 
     companion object {

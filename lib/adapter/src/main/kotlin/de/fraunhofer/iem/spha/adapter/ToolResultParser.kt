@@ -272,7 +272,7 @@ private sealed class EnvelopeProcessResult {
     data class Success(val envelope: ToolResultEnvelope, val result: AdapterResult<*>) :
         EnvelopeProcessResult()
 
-    /** The envelope processing failed - do NOT try other processors. */
+    /** The envelope processing failed */
     data class Failed(val envelope: ToolResultEnvelope, val reason: String) :
         EnvelopeProcessResult()
 }

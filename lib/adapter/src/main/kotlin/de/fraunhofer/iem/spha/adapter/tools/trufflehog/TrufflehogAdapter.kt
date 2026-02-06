@@ -18,17 +18,20 @@ import de.fraunhofer.iem.spha.model.kpi.KpiType
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 
 object TrufflehogAdapter : KpiAdapter<TrufflehogFindingDto, TrufflehogFindingDto>() {
-    override fun transformDataToKpi(vararg data: TrufflehogFindingDto): AdapterResult<TrufflehogFindingDto> {
+    override fun transformDataToKpi(
+        vararg data: TrufflehogFindingDto
+    ): AdapterResult<TrufflehogFindingDto> {
         val transformedData = data.flatMap { it.origins }
         val score = if (transformedData.any { it.verified }) 0 else 100
         return AdapterResult(
             toolInfo = ToolInfo(name = "Trufflehog", description = "Secrets Scanner"),
-            transformationResults = listOf(
-                TransformationResult.Success.Kpi(
-                    RawValueKpi(score = score, typeId = KpiType.SECRETS.name),
-                    origin = TrufflehogFindingDto(origins = transformedData),
-                )
-            ),
+            transformationResults =
+                listOf(
+                    TransformationResult.Success.Kpi(
+                        RawValueKpi(score = score, typeId = KpiType.SECRETS.name),
+                        origin = TrufflehogFindingDto(origins = transformedData),
+                    )
+                ),
         )
     }
 }

@@ -14,7 +14,6 @@ import de.fraunhofer.iem.spha.adapter.ToolProcessor
 import de.fraunhofer.iem.spha.adapter.TransformationResult
 import de.fraunhofer.iem.spha.adapter.tools.trufflehog.TrufflehogNdjsonProcessor
 import de.fraunhofer.iem.spha.model.adapter.TrufflehogFindingDto
-import de.fraunhofer.iem.spha.model.adapter.TrufflehogResultDto
 import kotlin.test.assertEquals
 
 class TrufflehogNdjsonProcessorTest : AbstractProcessorTest<TrufflehogFindingDto>() {

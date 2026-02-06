@@ -10,8 +10,8 @@
 package de.fraunhofer.iem.spha.adapter.tools.trufflehog
 
 import de.fraunhofer.iem.spha.adapter.TransformationResult
-import de.fraunhofer.iem.spha.model.adapter.TrufflehogResultDto
 import de.fraunhofer.iem.spha.model.adapter.TrufflehogFindingDto
+import de.fraunhofer.iem.spha.model.adapter.TrufflehogResultDto
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
@@ -70,7 +70,7 @@ class TrufflehogAdapterTest {
                         TrufflehogResultDto(verified = false),
                         TrufflehogResultDto(verified = false),
                         TrufflehogResultDto(verified = false),
-                    ),
+                    )
             )
 
         val adapterResult = TrufflehogAdapter.transformDataToKpi(dto)
@@ -92,7 +92,7 @@ class TrufflehogAdapterTest {
                     listOf(
                         TrufflehogResultDto(verified = false),
                         TrufflehogResultDto(verified = false),
-                    ),
+                    )
             )
 
         val adapterResult = TrufflehogAdapter.transformDataToKpi(dto)
@@ -159,14 +159,8 @@ class TrufflehogAdapterTest {
 
     @Test
     fun testTransformDataToKpiMultipleDtos() {
-        val dto1 =
-            TrufflehogFindingDto(
-                origins = listOf(TrufflehogResultDto(verified = false)),
-            )
-        val dto2 =
-            TrufflehogFindingDto(
-                origins = listOf(TrufflehogResultDto(verified = true)),
-            )
+        val dto1 = TrufflehogFindingDto(origins = listOf(TrufflehogResultDto(verified = false)))
+        val dto2 = TrufflehogFindingDto(origins = listOf(TrufflehogResultDto(verified = true)))
 
         val adapterResult = TrufflehogAdapter.transformDataToKpi(dto1, dto2)
         val results = adapterResult.transformationResults

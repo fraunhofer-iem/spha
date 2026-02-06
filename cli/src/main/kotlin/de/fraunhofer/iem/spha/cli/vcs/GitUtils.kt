@@ -10,6 +10,7 @@
 package de.fraunhofer.iem.spha.cli.vcs
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import java.nio.file.Path
 
 /** Utility functions for Git operations. */
 object GitUtils {
@@ -23,12 +24,12 @@ object GitUtils {
      * @param args The git command arguments (without "git" prefix)
      * @return The command output or null if command failed
      */
-    fun runGitCommand(workingDirectory: java.io.File? = null, vararg args: String): String? {
+    fun runGitCommand(workingDirectory: Path? = null, vararg args: String): String? {
         return try {
             val processBuilder = ProcessBuilder("git", *args).redirectErrorStream(true)
 
             if (workingDirectory != null) {
-                processBuilder.directory(workingDirectory)
+                processBuilder.directory(workingDirectory.toFile())
             }
 
             val process = processBuilder.start()
@@ -54,7 +55,7 @@ object GitUtils {
      *   directory
      * @return The repository URL or null if unable to detect
      */
-    fun detectGitRepositoryUrl(workingDirectory: java.io.File? = null): String? {
+    fun detectGitRepositoryUrl(workingDirectory: Path? = null): String? {
         val url =
             runGitCommand(
                 workingDirectory = workingDirectory,
@@ -68,6 +69,22 @@ object GitUtils {
             logger.trace { "Unable to detect repository URL from git" }
         }
         return url
+    }
+
+    /**
+     * Gets the current commit SHA from a git repository.
+     *
+     * @param workingDirectory The repository directory to read from, or null for current directory
+     * @return The current commit SHA or null if unavailable
+     */
+    fun getCurrentCommitSha(workingDirectory: Path? = null): String? {
+        val sha = runGitCommand(workingDirectory = workingDirectory, "rev-parse", "HEAD")
+        if (sha != null) {
+            logger.info { "Detected commit SHA from git: $sha" }
+        } else {
+            logger.trace { "Unable to detect commit SHA from git" }
+        }
+        return sha
     }
 
     /**
@@ -99,7 +116,7 @@ object GitUtils {
                 }
                 else -> null
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
     }

@@ -88,6 +88,7 @@ class ProjectsEndpointTest {
             resultHierarchy = createTestKpiResultHierarchy(),
             origins = listOf(ToolInfoAndOrigin(toolInfo = toolInfo, origins = emptyList())),
             projectInfo = createTestProjectInfo(name = projectName, url = projectUrl),
+            commitSha = "test-sha",
             createdAt = kotlin.time.Instant.fromEpochMilliseconds(System.currentTimeMillis()),
         )
     }
@@ -355,6 +356,7 @@ class ProjectsEndpointTest {
                         ),
                     projectInfo =
                         createTestProjectInfo(name = "complex-structure", url = projectUrl),
+                    commitSha = "complex-sha",
                     createdAt =
                         kotlin.time.Instant.fromEpochMilliseconds(System.currentTimeMillis()),
                 )

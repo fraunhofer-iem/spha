@@ -14,6 +14,7 @@ import de.fraunhofer.iem.spha.adapter.ToolResultParser
 import de.fraunhofer.iem.spha.adapter.TransformationResult
 import de.fraunhofer.iem.spha.cli.SphaToolCommandBase
 import de.fraunhofer.iem.spha.cli.reporting.HttpResultSender
+import de.fraunhofer.iem.spha.cli.utilities.FileSystemUtilities
 import de.fraunhofer.iem.spha.cli.vcs.GitUtils
 import de.fraunhofer.iem.spha.cli.vcs.NetworkResponse
 import de.fraunhofer.iem.spha.cli.vcs.ProjectInfoFetcher
@@ -117,7 +118,10 @@ internal class AnalyzeRepositoryCommand :
 
         val provider = getRepositoryFetcher(resolvedRepoOrigin, repositoryType)
 
-        val projectInfoRes = provider.use { it.getProjectInfo(resolvedRepoOrigin, token) }
+        val commitSha = resolveCommitSha(resolvedRepoOrigin)
+        val commitShaForQuery = commitSha.takeUnless { it == "unknown" }
+        val projectInfoRes =
+            provider.use { it.getProjectInfo(resolvedRepoOrigin, token, commitShaForQuery) }
         val projectInfo =
             when (projectInfoRes) {
                 is NetworkResponse.Success<ProjectInfo> -> projectInfoRes.data
@@ -167,7 +171,8 @@ internal class AnalyzeRepositoryCommand :
                 }
             }
 
-        val result = SphaToolResult(kpiResult, originsData, projectInfo, Clock.System.now())
+        val result =
+            SphaToolResult(kpiResult, originsData, projectInfo, commitSha, Clock.System.now())
         processResult(result)
     }
 
@@ -209,6 +214,18 @@ internal class AnalyzeRepositoryCommand :
             lastCommitDate = "Currently no data available",
             stars = -1,
         )
+
+    private fun resolveCommitSha(repoOrigin: String): String {
+        val repoPath = FileSystemUtilities.resolvePathFromUriOrPath(repoOrigin, { null })
+        val commitSha = GitUtils.getCurrentCommitSha(repoPath)
+        return commitSha
+            ?: run {
+                Logger.warn {
+                    "Unable to resolve commit SHA from local repository; using placeholder."
+                }
+                "unknown"
+            }
+    }
 
     @OptIn(ExperimentalSerializationApi::class)
     private fun getHierarchy(): KpiHierarchy {

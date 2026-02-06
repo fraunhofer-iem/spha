@@ -21,6 +21,7 @@ data class SphaToolResult(
     val resultHierarchy: KpiResultHierarchy,
     val origins: List<ToolInfoAndOrigin>,
     val projectInfo: ProjectInfo,
+    val commitSha: String,
     val createdAt: Instant,
 )
 

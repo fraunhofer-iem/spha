@@ -22,7 +22,7 @@ class LocalRepositoryFetcherTest : ProjectInfoFetcherTestBase() {
 
     private fun createTestGitRepo(name: String = "test-repo"): Pair<String, () -> Unit> {
         val tempDir = Files.createTempDirectory("git-test-$name")
-        val dir = tempDir.toFile()
+        val dir = tempDir
 
         // Initialize and configure git repository
         GitUtils.runGitCommand(dir, "init")
@@ -74,6 +74,13 @@ class LocalRepositoryFetcherTest : ProjectInfoFetcherTestBase() {
             formats.add("$uri/")
         }
 
+        val relativePath = Path(System.getProperty("user.dir")).relativize(repoPath)
+
+        formats.add(relativePath.toString())
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            formats.add(repoPath.toString().replace('\\', '/'))
+        }
+
         return formats
     }
 
@@ -94,7 +101,7 @@ class LocalRepositoryFetcherTest : ProjectInfoFetcherTestBase() {
         testRepoCleanup = null
     }
 
-    // Special tests for LocalRepositoryFetcher
+    // Local-specific tests (not covered by base class)
 
     @Test
     fun `getProjectInfo detects languages from file extensions`() = runTest {
@@ -109,62 +116,6 @@ class LocalRepositoryFetcherTest : ProjectInfoFetcherTestBase() {
         } finally {
             cleanup()
         }
-    }
-
-    @Test
-    fun `getProjectInfo counts commits correctly`() = runTest {
-        val (repoPath, cleanup) = createTestGitRepo()
-        try {
-            val dir = java.io.File(repoPath)
-            dir.resolve("file2.kt").writeText("// Another file")
-            GitUtils.runGitCommand(dir, "add", ".")
-            GitUtils.runGitCommand(dir, "commit", "-m", "Second commit")
-
-            val result = LocalRepositoryFetcher().getProjectInfo(repoPath)
-
-            assertTrue(result is NetworkResponse.Success)
-            assertEquals(2, result.data.numberOfCommits, "Should count 2 commits")
-        } finally {
-            cleanup()
-        }
-    }
-
-    @Test
-    fun `getProjectInfo gets last commit date`() = runTest {
-        val (repoPath, cleanup) = createTestGitRepo()
-        try {
-            val result = LocalRepositoryFetcher().getProjectInfo(repoPath)
-
-            assertTrue(result is NetworkResponse.Success)
-            assertEquals(
-                result.data.lastCommitDate?.isNotEmpty(),
-                true,
-                "Should have last commit date",
-            )
-        } finally {
-            cleanup()
-        }
-    }
-
-    @Test
-    fun `getProjectInfo counts contributors`() = runTest {
-        val (repoPath, cleanup) = createTestGitRepo()
-        try {
-            val result = LocalRepositoryFetcher().getProjectInfo(repoPath)
-
-            assertTrue(result is NetworkResponse.Success)
-            assertTrue(result.data.numberOfContributors >= 1, "Should have at least 1 contributor")
-        } finally {
-            cleanup()
-        }
-    }
-
-    @Test
-    fun `getProjectInfo returns failed for non-existent directory`() = runTest {
-        val result = LocalRepositoryFetcher().getProjectInfo("/non/existent/path")
-
-        assertTrue(result is NetworkResponse.Failed, "Should fail for non-existent path")
-        assertTrue(result.msg.contains("does not exist"), "Error should mention non-existent path")
     }
 
     @Test
@@ -187,7 +138,7 @@ class LocalRepositoryFetcherTest : ProjectInfoFetcherTestBase() {
     fun `getProjectInfo works with repository without remote`() = runTest {
         val tempDir = Files.createTempDirectory("git-no-remote")
         try {
-            val dir = tempDir.toFile()
+            val dir = tempDir
             GitUtils.runGitCommand(dir, "init")
             GitUtils.runGitCommand(dir, "config", "user.email", "test@example.com")
             GitUtils.runGitCommand(dir, "config", "user.name", "Test User")
@@ -212,7 +163,7 @@ class LocalRepositoryFetcherTest : ProjectInfoFetcherTestBase() {
     fun `getProjectInfo detects multiple languages proportionally`() = runTest {
         val (repoPath, cleanup) = createTestGitRepo()
         try {
-            val dir = java.io.File(repoPath)
+            val dir = Path(repoPath)
             dir.resolve("Main.java").writeText("public class Main { /* Large file */ }".repeat(100))
             dir.resolve("small.js").writeText("console.log('hi');")
             GitUtils.runGitCommand(dir, "add", ".")
@@ -252,6 +203,111 @@ class LocalRepositoryFetcherTest : ProjectInfoFetcherTestBase() {
             )
         } finally {
             tempFile.deleteIfExists()
+        }
+    }
+
+    // Local-specific commitSha tests (testing specific commit behavior)
+
+    @Test
+    fun `getProjectInfo with specific commitSha returns data for that commit`() = runTest {
+        val (repoPath, cleanup) = createTestGitRepo()
+        try {
+            val dir = Path(repoPath)
+
+            // Get the SHA of the first commit
+            val firstCommitSha = GitUtils.runGitCommand(dir, "rev-parse", "HEAD")!!
+
+            // Add a second commit
+            dir.resolve("file2.kt").writeText("// Second file")
+            GitUtils.runGitCommand(dir, "add", ".")
+            GitUtils.runGitCommand(dir, "commit", "-m", "Second commit")
+
+            // Verify we now have 2 commits at HEAD
+            val resultAtHead = LocalRepositoryFetcher().getProjectInfo(repoPath)
+            assertTrue(resultAtHead is NetworkResponse.Success)
+            assertEquals(2, resultAtHead.data.numberOfCommits, "Should have 2 commits at HEAD")
+
+            // Query with the first commit SHA - should only count 1 commit
+            val resultAtFirstCommit =
+                LocalRepositoryFetcher().getProjectInfo(repoPath, null, firstCommitSha)
+            assertTrue(resultAtFirstCommit is NetworkResponse.Success)
+            assertEquals(
+                1,
+                resultAtFirstCommit.data.numberOfCommits,
+                "Should have 1 commit at first commit SHA",
+            )
+        } finally {
+            cleanup()
+        }
+    }
+
+    @Test
+    fun `getProjectInfo with commitSha returns correct last commit date`() = runTest {
+        val (repoPath, cleanup) = createTestGitRepo()
+        try {
+            val dir = Path(repoPath)
+
+            // Get the date of the first commit
+            val firstCommitSha = GitUtils.runGitCommand(dir, "rev-parse", "HEAD")!!
+            val firstCommitDate =
+                GitUtils.runGitCommand(dir, "log", "-1", "--format=%cI", firstCommitSha)
+
+            // Wait a moment and add a second commit
+            Thread.sleep(1000)
+            dir.resolve("file2.kt").writeText("// Second file")
+            GitUtils.runGitCommand(dir, "add", ".")
+            GitUtils.runGitCommand(dir, "commit", "-m", "Second commit")
+
+            // Query with the first commit SHA
+            val result = LocalRepositoryFetcher().getProjectInfo(repoPath, null, firstCommitSha)
+
+            assertTrue(result is NetworkResponse.Success)
+            assertEquals(
+                firstCommitDate,
+                result.data.lastCommitDate,
+                "Last commit date should match the first commit's date",
+            )
+        } finally {
+            cleanup()
+        }
+    }
+
+    @Test
+    fun `getProjectInfo with commitSha returns correct contributor count`() = runTest {
+        val (repoPath, cleanup) = createTestGitRepo()
+        try {
+            val dir = Path(repoPath)
+
+            // Get the SHA of the first commit (made by "Test User")
+            val firstCommitSha = GitUtils.runGitCommand(dir, "rev-parse", "HEAD")!!
+
+            // Add a second commit with a different author
+            GitUtils.runGitCommand(dir, "config", "user.email", "another@example.com")
+            GitUtils.runGitCommand(dir, "config", "user.name", "Another User")
+            dir.resolve("file2.kt").writeText("// Second file")
+            GitUtils.runGitCommand(dir, "add", ".")
+            GitUtils.runGitCommand(dir, "commit", "-m", "Second commit")
+
+            // At HEAD, should have 2 contributors
+            val resultAtHead = LocalRepositoryFetcher().getProjectInfo(repoPath)
+            assertTrue(resultAtHead is NetworkResponse.Success)
+            assertEquals(
+                2,
+                resultAtHead.data.numberOfContributors,
+                "Should have 2 contributors at HEAD",
+            )
+
+            // At first commit, should have 1 contributor
+            val resultAtFirstCommit =
+                LocalRepositoryFetcher().getProjectInfo(repoPath, null, firstCommitSha)
+            assertTrue(resultAtFirstCommit is NetworkResponse.Success)
+            assertEquals(
+                1,
+                resultAtFirstCommit.data.numberOfContributors,
+                "Should have 1 contributor at first commit",
+            )
+        } finally {
+            cleanup()
         }
     }
 }

@@ -162,6 +162,12 @@ class AnalyzeRepositoryCommandTest : KoinTest {
                     "Should detect Kotlin language",
                 )
             }
+
+            assertNotNull(sphaResult.commitSha, "commitSha should not be null")
+            assertTrue(
+                sphaResult.commitSha.length == 40 || sphaResult.commitSha == "unknown",
+                "commitSha should be a 40-char SHA or 'unknown', got: ${sphaResult.commitSha}",
+            )
         }
     }
 
@@ -250,6 +256,18 @@ class AnalyzeRepositoryCommandTest : KoinTest {
             )
             // origins might be empty if no tool results were parsed
             assertNotNull(sphaResult.resultHierarchy.root, "KPI result root should not be null")
+
+            // Verify commitSha is present and valid
+            assertNotNull(sphaResult.commitSha, "commitSha should not be null")
+            assertEquals(
+                sphaResult.commitSha.length,
+                40,
+                "commitSha should be a 40-char SHA for local repo, got: ${sphaResult.commitSha}",
+            )
+            assertTrue(
+                sphaResult.commitSha.all { it in '0'..'9' || it in 'a'..'f' },
+                "commitSha should be hexadecimal",
+            )
         } finally {
             server.stop(100, 100)
         }
@@ -283,6 +301,41 @@ class AnalyzeRepositoryCommandTest : KoinTest {
             assertContains(exception.message!!, "Server returned error status 500")
         } finally {
             server.stop(100, 100)
+        }
+    }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    @Test
+    fun `command uses unknown commitSha when SHA cannot be determined`() = runTest {
+        // Create a temporary directory that is NOT a git repository
+        val tempDir = Files.createTempDirectory("non-git-test")
+        try {
+            val command = AnalyzeRepositoryCommand()
+            // Use the non-git temp directory as repoOrigin with github repositoryType
+            // The resolveCommitSha function will try to get SHA from tempDir (not a git repo)
+            // and should fall back to "unknown"
+            val result =
+                command.test(
+                    "--repoOrigin \"$tempDir\" --output \"$OUTPUT_FILE\" --repositoryType github --token invalid-token"
+                )
+
+            // Command succeeds with fallback project info
+            assertEquals(0, result.statusCode)
+            assertTrue(Files.exists(Path(OUTPUT_FILE)), "Output file should exist at $OUTPUT_FILE")
+
+            Files.newInputStream(Path(OUTPUT_FILE)).use { inputStream ->
+                val sphaResult = Json.decodeFromStream<SphaToolResult>(inputStream)
+                // commitSha should never be null - it should be "unknown" when SHA cannot be
+                // determined
+                assertNotNull(sphaResult.commitSha, "commitSha should not be null")
+                assertEquals(
+                    "unknown",
+                    sphaResult.commitSha,
+                    "commitSha should be 'unknown' when SHA cannot be determined, got: ${sphaResult.commitSha}",
+                )
+            }
+        } finally {
+            tempDir.toFile().deleteRecursively()
         }
     }
 }

@@ -76,6 +76,7 @@ class ReportEndpointTest {
     private fun createTestSphaToolResult(
         projectName: String = "test-project",
         projectUrl: String = "https://github.com/test/test-project",
+        commitSha: String = "test-sha",
     ): SphaToolResult {
         val toolInfo =
             ToolInfo(
@@ -88,6 +89,7 @@ class ReportEndpointTest {
             resultHierarchy = createTestKpiResultHierarchy(),
             origins = listOf(ToolInfoAndOrigin(toolInfo = toolInfo, origins = emptyList())),
             projectInfo = createTestProjectInfo(name = projectName, url = projectUrl),
+            commitSha = commitSha,
             createdAt = kotlin.time.Instant.fromEpochMilliseconds(System.currentTimeMillis()),
         )
     }
@@ -251,6 +253,7 @@ class ReportEndpointTest {
                 resultHierarchy = KpiResultHierarchy.create(minimalNode),
                 origins = emptyList(),
                 projectInfo = minimalProjectInfo,
+                commitSha = "minimal-sha",
                 createdAt = kotlin.time.Instant.fromEpochMilliseconds(System.currentTimeMillis()),
             )
 
@@ -350,6 +353,7 @@ class ReportEndpointTest {
                         ),
                     ),
                 projectInfo = createTestProjectInfo(name = "complex-project"),
+                commitSha = "complex-sha",
                 createdAt = kotlin.time.Instant.fromEpochMilliseconds(System.currentTimeMillis()),
             )
 
@@ -390,6 +394,7 @@ class ReportEndpointTest {
                 resultHierarchy = KpiResultHierarchy.create(errorNode),
                 origins = emptyList(),
                 projectInfo = createTestProjectInfo(name = "error-project"),
+                commitSha = "error-sha",
                 createdAt = kotlin.time.Instant.fromEpochMilliseconds(System.currentTimeMillis()),
             )
 

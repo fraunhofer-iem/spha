@@ -9,18 +9,36 @@
 
 package de.fraunhofer.iem.spha.cli.vcs
 
+import java.util.stream.Stream
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assumptions.assumeTrue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 
 /**
  * Base test class for ProjectInfoFetcher implementations. Concrete test classes should extend this
  * and implement the abstract methods.
  */
 abstract class ProjectInfoFetcherTestBase {
+
+    companion object {
+        @JvmStatic
+        fun commitShaCases(): Stream<Arguments> =
+            Stream.of(
+                Arguments.of("null commitSha", null, "Expected success with null commitSha"),
+                Arguments.of("empty commitSha", "", "Expected success with empty commitSha"),
+                Arguments.of(
+                    "invalid commitSha",
+                    "0000000000000000000000000000000000000000",
+                    "Expected success with fallback for invalid commitSha",
+                ),
+            )
+    }
 
     /** Creates the fetcher instance to test */
     protected abstract fun createFetcher(): ProjectInfoFetcher
@@ -230,6 +248,28 @@ abstract class ProjectInfoFetcherTestBase {
                     "Expected failure for URL with wrong origin: $url",
                 )
             }
+        }
+    }
+
+    @ParameterizedTest(name = "getProjectInfo with {0} succeeds")
+    @MethodSource("commitShaCases")
+    fun `getProjectInfo with various commitSha values succeeds`(
+        description: String,
+        commitSha: String?,
+        expectedMessage: String,
+    ): Unit = runBlocking {
+        val token = getAuthToken()
+        if (skipTestsIfNoToken && requiresAuthentication) {
+            assumeTrue(token != null, "Authentication token not available - skipping test")
+        }
+
+        val fetcher = createFetcher()
+        fetcher.use {
+            val result = it.getProjectInfo(getTestRepositoryUrl(), token, commitSha)
+
+            assertTrue(result is NetworkResponse.Success, expectedMessage)
+            assertNotNull(result.data.name, "Name should not be null")
+            assertNotNull(result.data.url, "URL should not be null")
         }
     }
 }

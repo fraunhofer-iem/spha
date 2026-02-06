@@ -19,7 +19,7 @@ import org.junit.jupiter.params.provider.ValueSource
 
 class TrufflehogAdapterTest {
 
-    val emptyDto = TrufflehogFindingDto(origins = emptyList())
+    val emptyDto = TrufflehogResultDto(findings = emptyList())
 
     @ParameterizedTest
     @ValueSource(
@@ -32,7 +32,7 @@ class TrufflehogAdapterTest {
         input.byteInputStream().use {
             assertEquals(
                 emptyDto,
-                TrufflehogAdapter.dtoFromJson(it, TrufflehogFindingDto.serializer()),
+                TrufflehogAdapter.dtoFromJson(it, TrufflehogResultDto.serializer()),
             )
         }
     }
@@ -41,14 +41,14 @@ class TrufflehogAdapterTest {
     @ValueSource(strings = ["{}"])
     fun testEmptyDto(input: String) {
         input.byteInputStream().use {
-            val dto = TrufflehogAdapter.dtoFromJson(it, TrufflehogFindingDto.serializer())
-            assertEquals(emptyList(), dto.origins)
+            val dto = TrufflehogAdapter.dtoFromJson(it, TrufflehogResultDto.serializer())
+            assertEquals(emptyList(), dto.findings)
         }
     }
 
     @Test
     fun testTransformDataToKpiWithNoSecrets() {
-        val dto = TrufflehogFindingDto(origins = emptyList())
+        val dto = TrufflehogResultDto(findings = emptyList())
 
         val adapterResult = TrufflehogAdapter.transformDataToKpi(dto)
         val results = adapterResult.transformationResults
@@ -62,14 +62,14 @@ class TrufflehogAdapterTest {
     @Test
     fun testTransformDataToKpiWithVerifiedSecrets() {
         val dto =
-            TrufflehogFindingDto(
-                origins =
+            TrufflehogResultDto(
+                findings =
                     listOf(
-                        TrufflehogResultDto(verified = true),
-                        TrufflehogResultDto(verified = true),
-                        TrufflehogResultDto(verified = false),
-                        TrufflehogResultDto(verified = false),
-                        TrufflehogResultDto(verified = false),
+                        TrufflehogFindingDto(verified = true),
+                        TrufflehogFindingDto(verified = true),
+                        TrufflehogFindingDto(verified = false),
+                        TrufflehogFindingDto(verified = false),
+                        TrufflehogFindingDto(verified = false),
                     )
             )
 
@@ -87,11 +87,11 @@ class TrufflehogAdapterTest {
     @Test
     fun testTransformDataToKpiWithOnlyUnverifiedSecrets() {
         val dto =
-            TrufflehogFindingDto(
-                origins =
+            TrufflehogResultDto(
+                findings =
                     listOf(
-                        TrufflehogResultDto(verified = false),
-                        TrufflehogResultDto(verified = false),
+                        TrufflehogFindingDto(verified = false),
+                        TrufflehogFindingDto(verified = false),
                     )
             )
 
@@ -108,7 +108,7 @@ class TrufflehogAdapterTest {
 
     @Test
     fun testTransformDataToKpiWithEmptyOrigins() {
-        val dto = TrufflehogFindingDto(origins = emptyList())
+        val dto = TrufflehogResultDto(findings = emptyList())
 
         val adapterResult = TrufflehogAdapter.transformDataToKpi(dto)
         val results = adapterResult.transformationResults
@@ -122,7 +122,7 @@ class TrufflehogAdapterTest {
 
     @Test
     fun testTransformDataToKpiWithNoSecretsAgain() {
-        val dto = TrufflehogFindingDto(origins = emptyList())
+        val dto = TrufflehogResultDto(findings = emptyList())
 
         val adapterResult = TrufflehogAdapter.transformDataToKpi(dto)
         val results = adapterResult.transformationResults
@@ -135,7 +135,7 @@ class TrufflehogAdapterTest {
 
     @Test
     fun testTransformDataToKpiWithSingleVerifiedSecret() {
-        val dto = TrufflehogFindingDto(origins = listOf(TrufflehogResultDto(verified = true)))
+        val dto = TrufflehogResultDto(findings = listOf(TrufflehogFindingDto(verified = true)))
 
         val adapterResult = TrufflehogAdapter.transformDataToKpi(dto)
         val results = adapterResult.transformationResults
@@ -149,7 +149,7 @@ class TrufflehogAdapterTest {
 
     @Test
     fun testTransformDataToKpiToolInfo() {
-        val dto = TrufflehogFindingDto(origins = emptyList())
+        val dto = TrufflehogResultDto(findings = emptyList())
 
         val adapterResult = TrufflehogAdapter.transformDataToKpi(dto)
 
@@ -159,8 +159,8 @@ class TrufflehogAdapterTest {
 
     @Test
     fun testTransformDataToKpiMultipleDtos() {
-        val dto1 = TrufflehogFindingDto(origins = listOf(TrufflehogResultDto(verified = false)))
-        val dto2 = TrufflehogFindingDto(origins = listOf(TrufflehogResultDto(verified = true)))
+        val dto1 = TrufflehogResultDto(findings = listOf(TrufflehogFindingDto(verified = false)))
+        val dto2 = TrufflehogResultDto(findings = listOf(TrufflehogFindingDto(verified = true)))
 
         val adapterResult = TrufflehogAdapter.transformDataToKpi(dto1, dto2)
         val results = adapterResult.transformationResults

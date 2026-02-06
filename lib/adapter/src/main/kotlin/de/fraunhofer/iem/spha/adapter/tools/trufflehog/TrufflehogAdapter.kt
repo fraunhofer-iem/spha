@@ -13,15 +13,15 @@ import de.fraunhofer.iem.spha.adapter.AdapterResult
 import de.fraunhofer.iem.spha.adapter.KpiAdapter
 import de.fraunhofer.iem.spha.adapter.TransformationResult
 import de.fraunhofer.iem.spha.model.adapter.ToolInfo
-import de.fraunhofer.iem.spha.model.adapter.TrufflehogFindingDto
+import de.fraunhofer.iem.spha.model.adapter.TrufflehogResultDto
 import de.fraunhofer.iem.spha.model.kpi.KpiType
 import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 
-object TrufflehogAdapter : KpiAdapter<TrufflehogFindingDto, TrufflehogFindingDto>() {
+object TrufflehogAdapter : KpiAdapter<TrufflehogResultDto, TrufflehogResultDto>() {
     override fun transformDataToKpi(
-        vararg data: TrufflehogFindingDto
-    ): AdapterResult<TrufflehogFindingDto> {
-        val transformedData = data.flatMap { it.origins }
+        vararg data: TrufflehogResultDto
+    ): AdapterResult<TrufflehogResultDto> {
+        val transformedData = data.flatMap { it.findings }
         val score = if (transformedData.any { it.verified }) 0 else 100
         return AdapterResult(
             toolInfo = ToolInfo(name = "Trufflehog", description = "Secrets Scanner"),
@@ -29,7 +29,7 @@ object TrufflehogAdapter : KpiAdapter<TrufflehogFindingDto, TrufflehogFindingDto
                 listOf(
                     TransformationResult.Success.Kpi(
                         RawValueKpi(score = score, typeId = KpiType.SECRETS.name),
-                        origin = TrufflehogFindingDto(origins = transformedData),
+                        origin = TrufflehogResultDto(findings = transformedData),
                     )
                 ),
         )

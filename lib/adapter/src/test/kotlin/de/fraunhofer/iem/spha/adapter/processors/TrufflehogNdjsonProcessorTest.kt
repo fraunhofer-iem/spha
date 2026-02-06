@@ -13,10 +13,10 @@ import de.fraunhofer.iem.spha.adapter.AdapterResult
 import de.fraunhofer.iem.spha.adapter.ToolProcessor
 import de.fraunhofer.iem.spha.adapter.TransformationResult
 import de.fraunhofer.iem.spha.adapter.tools.trufflehog.TrufflehogNdjsonProcessor
-import de.fraunhofer.iem.spha.model.adapter.TrufflehogFindingDto
+import de.fraunhofer.iem.spha.model.adapter.TrufflehogResultDto
 import kotlin.test.assertEquals
 
-class TrufflehogNdjsonProcessorTest : AbstractProcessorTest<TrufflehogFindingDto>() {
+class TrufflehogNdjsonProcessorTest : AbstractProcessorTest<TrufflehogResultDto>() {
 
     override fun getProcessor(): ToolProcessor = TrufflehogNdjsonProcessor()
 
@@ -29,7 +29,7 @@ class TrufflehogNdjsonProcessorTest : AbstractProcessorTest<TrufflehogFindingDto
     override val supportsEmptyInput: Boolean
         get() = true
 
-    override fun validateEmptyInputResult(result: AdapterResult<TrufflehogFindingDto>) {
+    override fun validateEmptyInputResult(result: AdapterResult<TrufflehogResultDto>) {
         val kpis = result.transformationResults
 
         assertEquals(1, kpis.size)
@@ -37,24 +37,26 @@ class TrufflehogNdjsonProcessorTest : AbstractProcessorTest<TrufflehogFindingDto
         assertEquals(100, (kpis.first() as TransformationResult.Success.Kpi).rawValueKpi.score)
     }
 
-    override fun validateResult(result: AdapterResult<TrufflehogFindingDto>, resourceFile: String) {
+    override fun validateResult(result: AdapterResult<TrufflehogResultDto>, resourceFile: String) {
         val kpis = result.transformationResults
 
         when (resourceFile) {
             "trufflehog-ndjson.json" -> {
-                // 2 findings = 2 KPIs (one per finding)
-                assertEquals(2, kpis.size)
+                // 2 findings in one file = 1 KPI with two origins
+                assertEquals(1, kpis.size)
                 // No verified secrets (both findings have Verified=false), so score should be 100
                 kpis.forEach {
                     assertEquals(100, (it as TransformationResult.Success.Kpi).rawValueKpi.score)
+                    assertEquals(2, it.origin.findings.size)
                 }
             }
             "trufflehog-ndjson-verified.json" -> {
-                // 2 findings = 2 KPIs (one per finding)
-                assertEquals(2, kpis.size)
+                // 2 findings in one file = 1 KPI with two origins
+                assertEquals(1, kpis.size)
                 // One verified secret found, so score should be 0 for all KPIs
                 kpis.forEach {
                     assertEquals(0, (it as TransformationResult.Success.Kpi).rawValueKpi.score)
+                    assertEquals(2, it.origin.findings.size)
                 }
             }
         }

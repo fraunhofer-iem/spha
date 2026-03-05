@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-05T10:03:52.363Z",
+  "generated_at": "2026-03-05T10:27:08.851Z",
   "phases": [
     {
       "id": "plan",
@@ -173,13 +173,6 @@
       ],
       "markdown": "# Description\n\nMeasure how many deployment environments meet the defined hardening baseline.\n\n# Measurement\n\nDivide the number of environments passing hardening checks by the total number of environments.\n\n# Notes\n\nEnsures production environments remain aligned with security baselines.",
       "source_path": "metrics/deploy-hardening-compliance.md"
-    },
-    {
-      "id": "test",
-      "title": "f",
-      "phase": "plan",
-      "markdown": "# Description\n\nf",
-      "source_path": "metrics/plan/test.md"
     },
     {
       "id": "operate-incident-response-readiness",

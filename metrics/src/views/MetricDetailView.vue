@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import { useRoute, RouterLink } from "vue-router";
 import { useMetricsCatalogue } from "../lib/useMetricsCatalogue";
 import { renderMarkdown } from "../lib/markdown";
@@ -21,15 +21,12 @@ const renderedMarkdown = computed(() => {
   return renderMarkdown(metric.value.markdown);
 });
 
-const feedbackType = ref<"question" | "improvement" | "general">("general");
-
 const feedbackUrl = computed(() => {
   if (!metric.value) return null;
   return buildMetricFeedbackUrl({
     id: metric.value.id,
     title: metric.value.title,
     sourcePath: metric.value.source_path,
-    feedbackType: feedbackType.value,
   });
 });
 
@@ -99,21 +96,9 @@ const sourceUrl = computed(() => {
           <div class="metric-detail__title-row">
             <h1>{{ metric.title }}</h1>
             <div class="metric-detail__actions panel-actions">
-              <label class="metric-detail__feedback-type">
-                <span class="metric-detail__feedback-label">Feedback type</span>
-                <select
-                  v-model="feedbackType"
-                  class="metric-detail__feedback-select"
-                  aria-label="Feedback type"
-                >
-                  <option value="question">Question</option>
-                  <option value="improvement">Improvement</option>
-                  <option value="general">General feedback</option>
-                </select>
-              </label>
               <a
                 v-if="feedbackUrl"
-                class="ghost"
+                class="primary"
                 :href="feedbackUrl"
                 target="_blank"
                 rel="noopener noreferrer"

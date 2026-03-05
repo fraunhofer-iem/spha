@@ -17,7 +17,7 @@ body:
     id: id
     attributes:
       label: Metric id
-      description: Use kebab-case. This becomes the filename.
+      description: Use kebab-case. This becomes the filename under metrics/metrics/<phase>/.
       placeholder: plan-security-requirements-coverage
     validations:
       required: true

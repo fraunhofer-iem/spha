@@ -36,7 +36,7 @@ body:
     attributes:
       label: Metric page URL
       description: Optional link to the metric detail page.
-      placeholder: https://example.com/metrics/plan-security-requirements-coverage
+      placeholder: https://example.com/spha/metrics/plan-security-requirements-coverage
 
   - type: textarea
     id: feedback

@@ -16,9 +16,12 @@ jobs:
         with:
           node-version: 25.2.1
           cache: npm
+          cache-dependency-path: metrics/package-lock.json
 
       - name: Install dependencies
         run: npm ci
+        working-directory: ./metrics
 
       - name: Validate metrics
         run: npm run metrics:build
+        working-directory: ./metrics

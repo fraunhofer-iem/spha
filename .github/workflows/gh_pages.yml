@@ -42,7 +42,7 @@ jobs:
         run: npm ci
         working-directory: ./metrics
       - name: Build
-        run: npm run build:demo --base=/spha/
+        run: npm run build
         working-directory: ./metrics
       - name: Setup Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b

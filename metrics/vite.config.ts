@@ -2,7 +2,7 @@ import { defineConfig } from "vitest/config";
 import vue from "@vitejs/plugin-vue";
 
 export default defineConfig({
-  base: process.env.VITE_BASE_PATH ?? "/metric-catalogue/",
+  base: process.env.VITE_BASE_PATH ?? "/spha/metrics/",
   plugins: [vue()],
   test: {
     globals: true,

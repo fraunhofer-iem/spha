@@ -23,7 +23,7 @@ describe("getRepositoryBaseUrl", () => {
 
   it("returns the fallback when env is missing", () => {
     vi.stubEnv("VITE_REPO_URL", undefined as unknown as string);
-    expect(getRepositoryBaseUrl()).toBe("https://github.com/janniclas/metric-catalogue");
+    expect(getRepositoryBaseUrl()).toBe("https://github.com/fraunhofer-iem/spha");
   });
 
   it("returns null when env is an empty string", () => {

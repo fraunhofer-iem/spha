@@ -1,4 +1,4 @@
-const DEFAULT_REPO_URL = "https://github.com/janniclas/metric-catalogue";
+const DEFAULT_REPO_URL = "https://github.com/fraunhofer-iem/spha/metrics";
 
 const normalizeRepositoryUrl = (value: string): string | null => {
   const trimmed = value.trim();

@@ -1,0 +1,48 @@
+name: Metric feedback
+description: Share feedback or ask questions about a metric
+title: "Feedback: [metric-id]"
+labels:
+  - metric-feedback
+body:
+  - type: dropdown
+    id: feedback_type
+    attributes:
+      label: Feedback type
+      options:
+        - Question
+        - Improvement
+        - General feedback
+    validations:
+      required: true
+
+  - type: input
+    id: metric_id
+    attributes:
+      label: Metric ID
+      description: Use the metric id as shown in the catalogue.
+      placeholder: plan-security-requirements-coverage
+    validations:
+      required: true
+
+  - type: input
+    id: metric_title
+    attributes:
+      label: Metric title
+      description: Optional metric title.
+      placeholder: Security Requirements Coverage
+
+  - type: input
+    id: page_url
+    attributes:
+      label: Metric page URL
+      description: Optional link to the metric detail page.
+      placeholder: https://example.com/spha/metrics/plan-security-requirements-coverage
+
+  - type: textarea
+    id: feedback
+    attributes:
+      label: Feedback
+      description: Describe your feedback or question.
+      placeholder: Share details about your feedback or question.
+    validations:
+      required: true

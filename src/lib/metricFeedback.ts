@@ -1,9 +1,11 @@
+import { getRepoBranch } from "./config";
 import { getRepositoryBaseUrl } from "./repository";
 
 type MetricFeedbackInput = {
   id: string;
   title?: string;
-  pageUrl?: string;
+  sourcePath?: string;
+  feedbackType?: "question" | "improvement" | "general";
 };
 
 export function buildMetricFeedbackUrl(metric: MetricFeedbackInput): string | null {
@@ -15,9 +17,14 @@ export function buildMetricFeedbackUrl(metric: MetricFeedbackInput): string | nu
     ? `Feedback: [${metric.id}] ${trimmedTitle}`
     : `Feedback: [${metric.id}]`;
 
+  const labels = ["metric-feedback"];
+  if (metric.feedbackType) {
+    labels.push(`feedback-${metric.feedbackType}`);
+  }
+
   const params: Array<[string, string]> = [
     ["template", "metric-feedback.yml"],
-    ["labels", "metric-feedback"],
+    ["labels", labels.join(",")],
     ["title", feedbackTitle],
     ["metric_id", metric.id],
   ];
@@ -26,8 +33,19 @@ export function buildMetricFeedbackUrl(metric: MetricFeedbackInput): string | nu
     params.push(["metric_title", trimmedTitle]);
   }
 
-  if (metric.pageUrl) {
-    params.push(["page_url", metric.pageUrl]);
+  if (metric.sourcePath) {
+    const branch = getRepoBranch();
+    params.push(["page_url", `${repoUrl}/blob/${branch}/${metric.sourcePath}`]);
+  }
+
+  if (metric.feedbackType) {
+    const feedbackTypeLabel =
+      metric.feedbackType === "question"
+        ? "Question"
+        : metric.feedbackType === "improvement"
+          ? "Improvement"
+          : "General feedback";
+    params.push(["feedback_type", feedbackTypeLabel]);
   }
 
   const query = params.map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join("&");

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useRoute, RouterLink } from "vue-router";
 import { useMetricsCatalogue } from "../lib/useMetricsCatalogue";
 import { renderMarkdown } from "../lib/markdown";
@@ -21,19 +21,15 @@ const renderedMarkdown = computed(() => {
   return renderMarkdown(metric.value.markdown);
 });
 
-const pageUrl = computed(() => {
-  if (typeof window === "undefined") return undefined;
-  const origin = window.location?.origin;
-  if (!origin) return undefined;
-  return new URL(route.fullPath ?? "/", origin).toString();
-});
+const feedbackType = ref<"question" | "improvement" | "general">("general");
 
 const feedbackUrl = computed(() => {
   if (!metric.value) return null;
   return buildMetricFeedbackUrl({
     id: metric.value.id,
     title: metric.value.title,
-    pageUrl: pageUrl.value,
+    sourcePath: metric.value.source_path,
+    feedbackType: feedbackType.value,
   });
 });
 
@@ -103,9 +99,21 @@ const sourceUrl = computed(() => {
           <div class="metric-detail__title-row">
             <h1>{{ metric.title }}</h1>
             <div class="metric-detail__actions panel-actions">
+              <label class="metric-detail__feedback-type">
+                <span class="metric-detail__feedback-label">Feedback type</span>
+                <select
+                  v-model="feedbackType"
+                  class="metric-detail__feedback-select"
+                  aria-label="Feedback type"
+                >
+                  <option value="question">Question</option>
+                  <option value="improvement">Improvement</option>
+                  <option value="general">General feedback</option>
+                </select>
+              </label>
               <a
                 v-if="feedbackUrl"
-                class="primary"
+                class="ghost"
                 :href="feedbackUrl"
                 target="_blank"
                 rel="noopener noreferrer"

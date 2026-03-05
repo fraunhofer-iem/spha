@@ -60,17 +60,15 @@ describe("MetricDetailView", () => {
     await findByText("Security Requirements Coverage");
 
     const feedbackLink = getByRole("link", { name: "Give feedback" });
-    const origin = window.location.origin;
-    const pageUrl = new URL("/metrics/plan-security-requirements-coverage", origin).toString();
-
     expect(feedbackLink.getAttribute("href")).toBe(
       "https://github.com/example/metric-catalogue/issues/new?" +
         "template=metric-feedback.yml&" +
-        "labels=metric-feedback&" +
+        "labels=metric-feedback%2Cfeedback-general&" +
         "title=Feedback%3A%20%5Bplan-security-requirements-coverage%5D%20Security%20Requirements%20Coverage&" +
         "metric_id=plan-security-requirements-coverage&" +
         "metric_title=Security%20Requirements%20Coverage&" +
-        `page_url=${encodeURIComponent(pageUrl)}`,
+        "page_url=https%3A%2F%2Fgithub.com%2Fexample%2Fmetric-catalogue%2Fblob%2Fmain%2Fmetrics%2Fplan-security-requirements-coverage.md&" +
+        "feedback_type=General%20feedback",
     );
     expect(feedbackLink.getAttribute("target")).toBe("_blank");
     expect(feedbackLink.getAttribute("rel")).toBe("noopener noreferrer");

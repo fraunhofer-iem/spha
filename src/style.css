@@ -1054,9 +1054,37 @@ button.ghost:hover,
   gap: 12px;
 }
 
+.metric-detail__feedback-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--text-muted);
+}
+
+.metric-detail__feedback-select {
+  appearance: none;
+  border-radius: 999px;
+  padding: 8px 14px;
+  border: 1px solid rgba(34, 29, 62, 0.35);
+  background: #2c2652;
+  color: #fff;
+  font-family: "Outfit", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.metric-detail__feedback-select:focus-visible {
+  outline: 2px solid rgba(90, 76, 242, 0.55);
+  outline-offset: 2px;
+}
+
 .metric-detail__actions .ghost {
-  background: var(--text-dark);
-  border: 1px solid rgba(34, 29, 62, 0.2);
+  background: #2c2652;
+  border: 1px solid rgba(34, 29, 62, 0.35);
   color: #fff;
 }
 

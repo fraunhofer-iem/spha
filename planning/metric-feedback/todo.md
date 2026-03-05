@@ -10,6 +10,7 @@
 - [x] Add required textarea: feedback content.
 - [x] Add metadata labels: `["metric-feedback"]`.
 - [ ] Ensure repository has label: `metric-feedback` (manual in GitHub UI).
+- [ ] Ensure repository has labels: `feedback-question`, `feedback-improvement`, `feedback-general` (manual in GitHub UI).
 
 Acceptance Criteria
 
@@ -40,6 +41,8 @@ Acceptance Criteria
 - [x] Encode with `encodeURIComponent`.
 - [x] Omit undefined parameters.
 - [x] Preserve parameter order.
+- [x] Use repo file URL (`/blob/<branch>/<source_path>`) for `page_url`.
+- [x] Add feedback-type label (`feedback-question|feedback-improvement|feedback-general`).
 
 Acceptance Criteria
 
@@ -70,6 +73,7 @@ Acceptance Criteria
 - [x] Render disabled button with tooltip if URL is null.
 - [x] Ensure `target="_blank"` and `rel="noopener noreferrer"`.
 - [x] Add styling for actions and disabled state.
+- [x] Add feedback type selector and map it to labels.
 
 Acceptance Criteria
 
@@ -86,7 +90,8 @@ Acceptance Criteria
 ## Chunk 7 – Regression Safety
 
 - [x] Ensure proposeMetric flow unchanged (tests pass).
-- [x] Run full test suite.
+- [ ] Run full test suite.
+- [x] Run UI test suite (`npm run test:ui`).
 - [x] Fix lint/TypeScript issues if any.
 - [x] Confirm no unused imports introduced.
 

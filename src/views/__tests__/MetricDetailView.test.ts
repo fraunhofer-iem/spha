@@ -50,4 +50,48 @@ describe("MetricDetailView", () => {
     await findByText("Dependency graph");
     expect(queryByText("Dependencies")).toBeNull();
   });
+
+  it("renders a feedback button with a valid link when repo is configured", async () => {
+    const { findByText, getByRole } = await renderWithRouter(MetricDetailView, {
+      route: "/metrics/plan-security-requirements-coverage",
+      routes: [detailRoute, listRoute],
+    });
+
+    await findByText("Security Requirements Coverage");
+
+    const feedbackLink = getByRole("link", { name: "Give feedback" });
+    const origin = window.location.origin;
+    const pageUrl = new URL("/metrics/plan-security-requirements-coverage", origin).toString();
+
+    expect(feedbackLink.getAttribute("href")).toBe(
+      "https://github.com/example/metric-catalogue/issues/new?" +
+        "template=metric-feedback.yml&" +
+        "labels=metric-feedback&" +
+        "title=Feedback%3A%20%5Bplan-security-requirements-coverage%5D%20Security%20Requirements%20Coverage&" +
+        "metric_id=plan-security-requirements-coverage&" +
+        "metric_title=Security%20Requirements%20Coverage&" +
+        `page_url=${encodeURIComponent(pageUrl)}`,
+    );
+    expect(feedbackLink.getAttribute("target")).toBe("_blank");
+    expect(feedbackLink.getAttribute("rel")).toBe("noopener noreferrer");
+  });
+
+  it("renders a disabled feedback button when repo URL is missing", async () => {
+    vi.stubEnv("VITE_REPO_URL", "");
+
+    const { findByText, getByRole, queryByRole } = await renderWithRouter(MetricDetailView, {
+      route: "/metrics/plan-security-requirements-coverage",
+      routes: [detailRoute, listRoute],
+    });
+
+    await findByText("Security Requirements Coverage");
+
+    expect(queryByRole("link", { name: "Give feedback" })).toBeNull();
+
+    const feedbackButton = getByRole("button", { name: "Give feedback" });
+    expect(feedbackButton.getAttribute("disabled")).not.toBeNull();
+    expect(feedbackButton.getAttribute("title")).toBe(
+      "Feedback requires repository configuration.",
+    );
+  });
 });

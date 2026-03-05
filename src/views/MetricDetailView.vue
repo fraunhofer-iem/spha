@@ -5,6 +5,7 @@ import { useMetricsCatalogue } from "../lib/useMetricsCatalogue";
 import { renderMarkdown } from "../lib/markdown";
 import { getRepoBranch, getRepoUrl } from "../lib/config";
 import { buildDependencyMaps } from "../lib/metricGraph";
+import { buildMetricFeedbackUrl } from "../lib/metricFeedback";
 import MetricDependencyGraph from "../components/MetricDependencyGraph.vue";
 
 const route = useRoute();
@@ -18,6 +19,22 @@ const metric = computed(() => {
 const renderedMarkdown = computed(() => {
   if (!metric.value) return "";
   return renderMarkdown(metric.value.markdown);
+});
+
+const pageUrl = computed(() => {
+  if (typeof window === "undefined") return undefined;
+  const origin = window.location?.origin;
+  if (!origin) return undefined;
+  return new URL(route.fullPath ?? "/", origin).toString();
+});
+
+const feedbackUrl = computed(() => {
+  if (!metric.value) return null;
+  return buildMetricFeedbackUrl({
+    id: metric.value.id,
+    title: metric.value.title,
+    pageUrl: pageUrl.value,
+  });
 });
 
 const dependencyMaps = computed(() => buildDependencyMaps(metrics.value));
@@ -83,7 +100,29 @@ const sourceUrl = computed(() => {
       <div v-else class="metric-detail__content">
         <header class="metric-detail__header">
           <p class="metric-phase">{{ phaseLabelMap.get(metric.phase) ?? metric.phase }}</p>
-          <h1>{{ metric.title }}</h1>
+          <div class="metric-detail__title-row">
+            <h1>{{ metric.title }}</h1>
+            <div class="metric-detail__actions panel-actions">
+              <a
+                v-if="feedbackUrl"
+                class="primary"
+                :href="feedbackUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Give feedback
+              </a>
+              <button
+                v-else
+                class="ghost"
+                type="button"
+                disabled
+                title="Feedback requires repository configuration."
+              >
+                Give feedback
+              </button>
+            </div>
+          </div>
           <p class="metric-id">{{ metric.id }}</p>
         </header>
 

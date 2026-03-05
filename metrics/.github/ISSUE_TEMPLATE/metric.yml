@@ -1,0 +1,100 @@
+name: Propose a metric
+description: Propose a new security metric for the catalogue
+title: "Metric proposal: <short title>"
+labels:
+  - metric-proposal
+body:
+  - type: input
+    id: title
+    attributes:
+      label: Metric title
+      description: Short, human-readable name for the metric.
+      placeholder: Security Requirements Coverage
+    validations:
+      required: true
+
+  - type: input
+    id: id
+    attributes:
+      label: Metric id
+      description: Use kebab-case. This becomes the filename.
+      placeholder: plan-security-requirements-coverage
+    validations:
+      required: true
+
+  - type: dropdown
+    id: phase
+    attributes:
+      label: SSDLC phase
+      options:
+        - plan
+        - code
+        - build
+        - test
+        - release
+        - deploy
+        - operate
+        - monitor
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe what the metric measures and why it matters.
+      placeholder: Explain the metric.
+    validations:
+      required: true
+
+  - type: textarea
+    id: measurement
+    attributes:
+      label: Measurement
+      description: How should this metric be measured?
+      placeholder: Define the calculation or data sources.
+
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Rationale
+      description: Why is this metric important?
+      placeholder: Explain the rationale.
+
+  - type: input
+    id: tags
+    attributes:
+      label: Tags (comma-separated)
+      placeholder: requirements, governance
+
+  - type: input
+    id: related_tools
+    attributes:
+      label: Related tools (comma-separated)
+      placeholder: jira, github
+
+  - type: input
+    id: depends_on
+    attributes:
+      label: Depends on (comma-separated metric ids)
+      placeholder: plan-security-requirements-coverage
+
+  - type: textarea
+    id: thresholds
+    attributes:
+      label: Thresholds (one per line)
+      description: Format each line as "Name | Value | Optional description".
+      placeholder: Coverage target | >= 90% | Percentage of epics with explicit security requirements.
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References (one URL per line)
+      placeholder: https://owasp.org/www-project-application-security-verification-standard/
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Caveats, constraints, or interpretation guidance.
+      placeholder: Additional notes.

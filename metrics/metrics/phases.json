@@ -1,0 +1,58 @@
+[
+  {
+    "id": "plan",
+    "name": "Plan",
+    "description": "Define security goals, requirements, and risk assumptions.",
+    "icon": "calendar-check",
+    "order": 1
+  },
+  {
+    "id": "code",
+    "name": "Code",
+    "description": "Implement features with secure coding practices.",
+    "icon": "code-2",
+    "order": 2
+  },
+  {
+    "id": "build",
+    "name": "Build",
+    "description": "Produce build artifacts and manage dependencies.",
+    "icon": "hammer",
+    "order": 3
+  },
+  {
+    "id": "test",
+    "name": "Test",
+    "description": "Validate behavior and security properties before release.",
+    "icon": "flask-conical",
+    "order": 4
+  },
+  {
+    "id": "release",
+    "name": "Release",
+    "description": "Prepare release packages and approvals.",
+    "icon": "package",
+    "order": 5
+  },
+  {
+    "id": "deploy",
+    "name": "Deploy",
+    "description": "Ship and configure software in target environments.",
+    "icon": "rocket",
+    "order": 6
+  },
+  {
+    "id": "operate",
+    "name": "Operate",
+    "description": "Run and maintain services in production.",
+    "icon": "settings",
+    "order": 7
+  },
+  {
+    "id": "monitor",
+    "name": "Monitor",
+    "description": "Detect, analyze, and respond to security signals.",
+    "icon": "activity",
+    "order": 8
+  }
+]

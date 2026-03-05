@@ -1,0 +1,74 @@
+name: Metric Proposal Automation
+
+on:
+  issues:
+    types: [opened, labeled]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  propose:
+    if: contains(github.event.issue.labels.*.name, 'metric-proposal')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Write issue body
+        run: |
+          printf "%s" "$ISSUE_BODY" > /tmp/issue.md
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+
+      - name: Generate metric file
+        id: generate
+        run: |
+          node --import tsx scripts/issue-to-metric.ts --issue-file /tmp/issue.md --metrics-dir metrics --issue-number $ISSUE_NUMBER > /tmp/result.env
+          cat /tmp/result.env >> $GITHUB_ENV
+        env:
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+
+      - name: Format metric file
+        run: npx prettier --write "$METRIC_PATH"
+
+      - name: Create branch and commit
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git checkout -b "$BRANCH_NAME"
+          git add "$METRIC_PATH"
+          git commit -m "Add metric: $METRIC_ID (from #$ISSUE_NUMBER)"
+          git push origin "$BRANCH_NAME"
+        env:
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+
+      - name: Open pull request
+        uses: actions/github-script@v8
+        env:
+          BRANCH_NAME: ${{ env.BRANCH_NAME }}
+          METRIC_ID: ${{ env.METRIC_ID }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const title = `Add metric: ${process.env.METRIC_ID}`;
+            const body = `Closes #${process.env.ISSUE_NUMBER}`;
+            await github.rest.pulls.create({
+              owner,
+              repo,
+              title,
+              head: process.env.BRANCH_NAME,
+              base: "main",
+              body,
+            });

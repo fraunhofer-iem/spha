@@ -30,9 +30,7 @@ export function buildMetricFeedbackUrl(metric: MetricFeedbackInput): string | nu
     params.push(["page_url", metric.pageUrl]);
   }
 
-  const query = params
-    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-    .join("&");
+  const query = params.map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join("&");
 
   return `${repoUrl}/issues/new?${query}`;
 }

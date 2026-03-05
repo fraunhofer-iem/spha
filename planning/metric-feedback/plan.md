@@ -1,4 +1,5 @@
 Metric Feedback Button – Implementation Plan
+
 1. Goals
    Add a feedback button to each metric detail page.
    Open a GitHub Issue Form in a new tab with:
@@ -39,7 +40,7 @@ Metric Feedback Button – Implementation Plan
    4.2 Behavior
    On click:
    Opens new tab:
-   target="_blank"
+   target="\_blank"
    rel="noopener noreferrer"
    Navigates to GitHub issue creation page.
    4.3 Prefilled Title Format

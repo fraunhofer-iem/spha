@@ -59,7 +59,7 @@ describe("MetricDetailView", () => {
 
     await findByText("Security Requirements Coverage");
 
-    const feedbackLink = getByRole("link", { name: "Give feedback" });
+    const feedbackLink = getByRole("link", { name: "Feedback" });
     expect(feedbackLink.getAttribute("href")).toBe(
       "https://github.com/example/metric-catalogue/issues/new?" +
         "template=metric-feedback.yml&" +
@@ -84,9 +84,9 @@ describe("MetricDetailView", () => {
 
     await findByText("Security Requirements Coverage");
 
-    expect(queryByRole("link", { name: "Give feedback" })).toBeNull();
+    expect(queryByRole("link", { name: "Feedback" })).toBeNull();
 
-    const feedbackButton = getByRole("button", { name: "Give feedback" });
+    const feedbackButton = getByRole("button", { name: "Feedback" });
     expect(feedbackButton.getAttribute("disabled")).not.toBeNull();
     expect(feedbackButton.getAttribute("title")).toBe(
       "Feedback requires repository configuration.",

@@ -118,7 +118,7 @@ const sourceUrl = computed(() => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Give feedback
+                Feedback
               </a>
               <button
                 v-else
@@ -127,7 +127,7 @@ const sourceUrl = computed(() => {
                 disabled
                 title="Feedback requires repository configuration."
               >
-                Give feedback
+                Feedback
               </button>
             </div>
           </div>

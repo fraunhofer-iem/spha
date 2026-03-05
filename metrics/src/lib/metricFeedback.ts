@@ -13,8 +13,8 @@ export function buildMetricFeedbackUrl(metric: MetricFeedbackInput): string | nu
 
   const trimmedTitle = metric.title?.trim();
   const feedbackTitle = trimmedTitle
-    ? `Feedback: [${metric.id}] ${trimmedTitle}`
-    : `Feedback: [${metric.id}]`;
+    ? `Comment: [${metric.id}] ${trimmedTitle}`
+    : `Comment: [${metric.id}]`;
 
   const labels = ["metric-feedback"];
 

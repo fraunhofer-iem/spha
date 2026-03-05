@@ -59,12 +59,12 @@ describe("MetricDetailView", () => {
 
     await findByText("Security Requirements Coverage");
 
-    const feedbackLink = getByRole("link", { name: "Feedback" });
+    const feedbackLink = getByRole("link", { name: "Comment" });
     expect(feedbackLink.getAttribute("href")).toBe(
       "https://github.com/example/metric-catalogue/issues/new?" +
         "template=metric-feedback.yml&" +
         "labels=metric-feedback&" +
-        "title=Feedback%3A%20%5Bplan-security-requirements-coverage%5D%20Security%20Requirements%20Coverage&" +
+        "title=Comment%3A%20%5Bplan-security-requirements-coverage%5D%20Security%20Requirements%20Coverage&" +
         "metric_id=plan-security-requirements-coverage&" +
         "metric_title=Security%20Requirements%20Coverage&" +
         "page_url=https%3A%2F%2Fgithub.com%2Fexample%2Fmetric-catalogue%2Fblob%2Fmain%2Fmetrics%2Fplan-security-requirements-coverage.md",
@@ -83,12 +83,12 @@ describe("MetricDetailView", () => {
 
     await findByText("Security Requirements Coverage");
 
-    expect(queryByRole("link", { name: "Feedback" })).toBeNull();
+    expect(queryByRole("link", { name: "Comment" })).toBeNull();
 
-    const feedbackButton = getByRole("button", { name: "Feedback" });
+    const feedbackButton = getByRole("button", { name: "Comment" });
     expect(feedbackButton.getAttribute("disabled")).not.toBeNull();
     expect(feedbackButton.getAttribute("title")).toBe(
-      "Feedback requires repository configuration.",
+      "Comment requires repository configuration.",
     );
   });
 });

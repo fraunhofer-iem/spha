@@ -103,16 +103,16 @@ const sourceUrl = computed(() => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Feedback
+                Comment
               </a>
               <button
                 v-else
                 class="ghost"
                 type="button"
                 disabled
-                title="Feedback requires repository configuration."
+                title="Comment requires repository configuration."
               >
-                Feedback
+                Comment
               </button>
             </div>
           </div>

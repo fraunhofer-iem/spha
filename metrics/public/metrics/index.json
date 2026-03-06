@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-05T10:27:08.851Z",
+  "generated_at": "2026-03-06T07:26:58.305Z",
   "phases": [
     {
       "id": "plan",
@@ -60,400 +60,133 @@
   ],
   "metrics": [
     {
-      "id": "plan-asset-inventory-completeness",
-      "title": "Asset Inventory Completeness",
-      "phase": "plan",
-      "thresholds": [
-        {
-          "name": "Coverage target",
-          "value": ">= 95%",
-          "description": "Percentage of in-scope systems mapped to an owner and data classification."
-        }
-      ],
-      "tags": [
-        "asset-management",
-        "governance"
-      ],
-      "related_tools": [
-        "confluence",
-        "cmdb"
-      ],
-      "depends_on": [
-        "plan-security-requirements-coverage",
-        "plan-threat-model-coverage"
-      ],
-      "references": [
-        "https://owasp.org/www-project-application-security-verification-standard/"
-      ],
-      "markdown": "# Description\n\nMeasure how many in-scope applications and services are represented in the asset inventory with owner, data classification, and criticality recorded.\n\n# Measurement\n\nCalculate the percentage of scoped systems with a complete inventory record before development planning starts.\n\n# Notes\n\nA complete inventory reduces blind spots during threat modeling and downstream controls.",
-      "source_path": "metrics/plan-asset-inventory-completeness.md"
-    },
-    {
-      "id": "monitor-attack-surface-detection-latency",
-      "title": "Attack Surface Detection Latency",
-      "phase": "monitor",
-      "thresholds": [
-        {
-          "name": "Detection target",
-          "value": "<= 24 hours",
-          "description": "Time to detect newly exposed services or assets."
-        }
-      ],
-      "tags": [
-        "monitoring",
-        "detection"
-      ],
-      "related_tools": [
-        "splunk",
-        "crowdstrike"
-      ],
-      "depends_on": [
-        "monitor-detection-coverage",
-        "deploy-hardening-compliance",
-        "operate-incident-response-readiness"
-      ],
-      "references": [
-        "https://owasp.org/www-project-top-ten/"
-      ],
-      "markdown": "# Description\n\nMeasure how quickly new exposed services or asset changes are detected by monitoring.\n\n# Measurement\n\nTrack the median time between an asset change and its first detection in monitoring systems.\n\n# Notes\n\nLower latency helps reduce dwell time for misconfigurations and unexpected exposure.",
-      "source_path": "metrics/monitor-attack-surface-detection-latency.md"
-    },
-    {
-      "id": "build-dependency-vulnerability-rate",
-      "title": "Dependency Vulnerability Rate",
-      "phase": "build",
-      "thresholds": [
-        {
-          "name": "Critical vulns target",
-          "value": "= 0",
-          "description": "Number of critical vulnerabilities in production dependencies."
-        }
-      ],
-      "tags": [
-        "dependencies",
-        "supply-chain"
-      ],
-      "related_tools": [
-        "snyk",
-        "dependabot"
-      ],
-      "depends_on": [
-        "code-secure-review-coverage"
-      ],
-      "references": [
-        "https://owasp.org/www-project-dependency-check/"
-      ],
-      "markdown": "# Description\n\nTrack the count of critical vulnerabilities present in dependencies at build time.\n\n# Measurement\n\nCount critical CVEs reported by dependency scanning tools for the build.\n\n# Notes\n\nSupports reducing supply-chain exposure before release.",
-      "source_path": "metrics/build-dependency-vulnerability-rate.md"
-    },
-    {
-      "id": "deploy-hardening-compliance",
-      "title": "Deployment Hardening Compliance",
-      "phase": "deploy",
-      "thresholds": [
-        {
-          "name": "Compliance target",
-          "value": ">= 90%",
-          "description": "Percentage of environments meeting hardening baseline."
-        }
-      ],
-      "tags": [
-        "hardening",
-        "compliance"
-      ],
-      "related_tools": [
-        "ansible",
-        "terraform"
-      ],
-      "depends_on": [
-        "release-security-approval-latency"
-      ],
-      "references": [
-        "https://www.cisecurity.org/cis-benchmarks"
-      ],
-      "markdown": "# Description\n\nMeasure how many deployment environments meet the defined hardening baseline.\n\n# Measurement\n\nDivide the number of environments passing hardening checks by the total number of environments.\n\n# Notes\n\nEnsures production environments remain aligned with security baselines.",
-      "source_path": "metrics/deploy-hardening-compliance.md"
-    },
-    {
-      "id": "operate-incident-response-readiness",
-      "title": "Incident Response Readiness",
+      "id": "vuln-cvss-max-score",
+      "title": "Maximum Vulnerability CVSS Score",
       "phase": "operate",
       "thresholds": [
         {
-          "name": "Readiness target",
-          "value": ">= 95%",
-          "description": "Percentage of services with up-to-date runbooks."
+          "name": "Critical",
+          "value": ">= 9.0",
+          "description": "CVSS v3.1 Critical severity. Immediate remediation required."
+        },
+        {
+          "name": "High",
+          "value": ">= 7.0",
+          "description": "CVSS v3.1 High severity. Remediation required within defined SLA."
+        },
+        {
+          "name": "Target",
+          "value": "< 7.0",
+          "description": "No unresolved High or Critical CVSS-rated vulnerabilities present."
         }
       ],
       "tags": [
-        "incident-response",
-        "readiness"
+        "vulnerability-management",
+        "cvss",
+        "security-posture"
       ],
       "related_tools": [
-        "pagerduty",
-        "splunk"
+        "Dependabot",
+        "Snyk",
+        "Grype",
+        "Trivy",
+        "Black Duck"
       ],
-      "depends_on": [
-        "deploy-hardening-compliance"
-      ],
+      "depends_on": [],
       "references": [
-        "https://www.cisa.gov/resources-tools/services/incident-response"
+        "https://www.first.org/cvss/specification-document",
+        "https://nvd.nist.gov/vuln-metrics/cvss"
       ],
-      "markdown": "# Description\n\nMeasure the percentage of services with current incident response runbooks and on-call coverage.\n\n# Measurement\n\nCount services with reviewed runbooks in the last 6 months divided by total services.\n\n# Notes\n\nKeeps response posture aligned with operational reality.",
-      "source_path": "metrics/operate-incident-response-readiness.md"
+      "markdown": "# Description\n\nMeasures the highest CVSS (Common Vulnerability Scoring System) score across all known, unresolved vulnerabilities in a software product. CVSS provides a standardised, vendor-neutral severity rating on a scale of 0.0–10.0, capturing characteristics such as attack vector, attack complexity, privileges required, and impact on confidentiality, integrity, and availability.\n\nTracking the maximum CVSS score gives a quick indicator of the worst-case severity exposure of a product at any point in time. It is used as a sub-metric to compute the composite Maximum Vulnerability Score (`vuln-max-score`), which also incorporates exploitability likelihood via the EPSS score.\n\n> **Note:** This metric should always be evaluated against CVSS v3.1 or later. CVSS v2 scores are not comparable and should be re-scored or excluded.\n\n# Measurement\n\n**Data sources:**\n- Software Composition Analysis (SCA) tools (e.g. Snyk, Grype, Trivy, Black Duck) scanning application dependencies\n- Static Application Security Testing (SAST) tools for first-party code vulnerabilities\n- National Vulnerability Database (NVD) or OSV for CVSS base scores\n\n**Calculation:**\n```\nvuln-cvss-max-score = MAX(CVSS_base_score) over all unresolved vulnerabilities in scope\n```\n\n1. Collect all open, unresolved vulnerabilities for the product from the scanning toolchain.\n2. Filter to vulnerabilities that have a valid CVSS v3.x base score assigned.\n3. Return the single highest score across that set.\n\n**Automation:** Can be extracted directly from most SCA/SAST tool APIs or SARIF output. The NVD API can be used to enrich findings with CVSS scores where the tool does not provide them.\n\n# Notes\n\n- **Base score only:** Use the CVSS *base* score for consistency. Temporal and environmental scores may be more accurate for your context but vary by organisation and are harder to automate reliably.\n- **Scope:** Define clearly whether \"in scope\" includes all dependencies (transitive included), first-party code findings, container base image vulnerabilities, or a subset. Consistency is critical for trend tracking.\n- **False positives:** Accepted/suppressed vulnerabilities (with documented justification) should be excluded from the calculation to avoid metric noise.\n- **Versioning:** If CVSS v4.0 scores become available for a vulnerability, prefer v4.0, but do not mix versions across findings in the same calculation.",
+      "source_path": "metrics/vuln-cvss-max-score.md"
     },
     {
-      "id": "release-change-risk-score",
-      "title": "Release Change Risk Score",
-      "phase": "release",
+      "id": "vuln-epss-max-score",
+      "title": "Maximum Vulnerability EPSS Score",
+      "phase": "operate",
       "thresholds": [
         {
-          "name": "Risk threshold",
-          "value": "<= 2",
-          "description": "Average weighted risk score for approved releases."
+          "name": "Critical Exploitability",
+          "value": ">= 0.90",
+          "description": "Over 90% probability of exploitation in the wild within 30 days. Treat as immediate priority regardless of CVSS score."
+        },
+        {
+          "name": "High Exploitability",
+          "value": ">= 0.50",
+          "description": "Greater than 50% exploitation probability. Accelerate remediation timeline."
+        },
+        {
+          "name": "Target",
+          "value": "< 0.10",
+          "description": "All unresolved vulnerabilities have low exploitation probability."
         }
       ],
       "tags": [
-        "release",
-        "risk"
+        "vulnerability-management",
+        "epss",
+        "exploitability",
+        "security-posture"
       ],
       "related_tools": [
-        "servicenow",
-        "jira"
+        "Snyk",
+        "Grype",
+        "Nucleus Security",
+        "Tenable"
       ],
-      "depends_on": [
-        "test-security-coverage",
-        "release-security-approval-latency",
-        "code-secure-review-coverage"
-      ],
+      "depends_on": [],
       "references": [
-        "https://owasp.org/www-project-application-security-verification-standard/"
+        "https://www.first.org/epss/",
+        "https://api.first.org/epss"
       ],
-      "markdown": "# Description\n\nCombine test coverage, review completeness, and approval readiness into a weighted risk score for each release.\n\n# Measurement\n\nScore each release based on defined criteria and track the average score over time.\n\n# Notes\n\nA stable risk score signals consistent release readiness and control maturity.",
-      "source_path": "metrics/release-change-risk-score.md"
+      "markdown": "# Description\n\nMeasures the highest EPSS (Exploit Prediction Scoring System) score across all known, unresolved vulnerabilities in a software product. EPSS is a data-driven model maintained by FIRST that estimates the probability (0.0–1.0) that a given CVE will be exploited in the wild within the next 30 days, based on threat intelligence, public exploit availability, and historical exploitation patterns.\n\nUnlike CVSS, which measures the *severity* of a vulnerability in isolation, EPSS measures *real-world exploitability likelihood*. A vulnerability with a moderate CVSS score but a high EPSS score may represent a greater immediate risk than a critical CVSS-rated vulnerability that has never been observed being exploited.\n\nThis metric is used as a sub-metric to compute the composite Maximum Vulnerability Score (`vuln-max-score`).\n\n# Measurement\n\n**Data sources:**\n- FIRST EPSS API (`https://api.first.org/data/v1/epss`) — queryable by CVE ID, updated daily\n- SCA tools with native EPSS enrichment (e.g. Grype, Nucleus Security, Tenable)\n\n**Calculation:**\n```\nvuln-epss-max-score = MAX(EPSS_score) over all unresolved vulnerabilities in scope\n```\n\n1. Collect all open, unresolved vulnerabilities with valid CVE identifiers.\n2. Query the EPSS API (or use tool-native enrichment) to retrieve the current EPSS score for each CVE.\n3. Return the single highest EPSS score across the set.\n\n**Automation:** The FIRST EPSS API is free and publicly accessible. It supports bulk CVE lookups, making it straightforward to enrich an existing vulnerability list as part of a CI/CD pipeline or scheduled scan job.\n\n# Notes\n\n- **EPSS is dynamic:** Scores are updated daily as new threat intelligence is ingested. The same CVE can shift significantly in score over time. Point-in-time snapshots should be timestamped.\n- **CVE requirement:** EPSS scores are only available for CVEs with an assigned CVE ID. Vulnerabilities without a CVE (e.g. some proprietary code findings) cannot be scored with EPSS.\n- **Not all vulnerabilities have EPSS scores:** Newly published CVEs may not yet have an EPSS score. These should be tracked separately and not excluded silently.\n- **Complement to CVSS:** EPSS should never be used as a standalone replacement for CVSS. The two scores measure different dimensions of risk and are most useful in combination (see `vuln-max-score`).",
+      "source_path": "metrics/vuln-epss-max-score.md"
     },
     {
-      "id": "code-secret-scanning-remediation-rate",
-      "title": "Secret Scanning Remediation Rate",
-      "phase": "code",
+      "id": "vuln-max-score",
+      "title": "Maximum Vulnerability Score",
+      "phase": "operate",
       "thresholds": [
         {
-          "name": "Remediation SLA",
-          "value": "<= 3 days",
-          "description": "Time to remediate a detected secret in source control."
+          "name": "Critical Risk",
+          "value": ">= 0.85",
+          "description": "Composite score indicates a severe, likely-to-be-exploited vulnerability. Immediate remediation required."
+        },
+        {
+          "name": "High Risk",
+          "value": ">= 0.60",
+          "description": "Significant combined risk. Remediation should be scheduled within the high-severity SLA."
+        },
+        {
+          "name": "Target",
+          "value": "< 0.40",
+          "description": "No vulnerability presents a combination of high severity and high exploitability likelihood."
         }
       ],
       "tags": [
-        "secrets",
-        "code-quality"
+        "vulnerability-management",
+        "risk-prioritisation",
+        "security-posture",
+        "cvss",
+        "epss"
       ],
       "related_tools": [
-        "github",
-        "gitleaks"
+        "Snyk",
+        "Grype",
+        "Trivy",
+        "Nucleus Security",
+        "Tenable"
       ],
       "depends_on": [
-        "plan-security-requirements-coverage",
-        "code-secure-review-coverage"
+        "vuln-cvss-max-score",
+        "vuln-epss-max-score"
       ],
       "references": [
-        "https://owasp.org/www-project-top-ten/"
+        "https://www.first.org/cvss/specification-document",
+        "https://www.first.org/epss/",
+        "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
       ],
-      "markdown": "# Description\n\nTrack how quickly detected secrets in source control are removed, rotated, or revoked.\n\n# Measurement\n\nMeasure the median time between secret detection and remediation across all repositories.\n\n# Notes\n\nFast remediation reduces the window of exposure for leaked credentials.",
-      "source_path": "metrics/code-secret-scanning-remediation-rate.md"
-    },
-    {
-      "id": "code-secure-review-coverage",
-      "title": "Secure Code Review Coverage",
-      "phase": "code",
-      "thresholds": [
-        {
-          "name": "Coverage target",
-          "value": ">= 95%",
-          "description": "Percentage of pull requests that include a secure review."
-        }
-      ],
-      "tags": [
-        "code-review",
-        "governance"
-      ],
-      "related_tools": [
-        "github",
-        "gitlab"
-      ],
-      "depends_on": [
-        "plan-security-requirements-coverage"
-      ],
-      "references": [
-        "https://owasp.org/www-project-code-review-guide/"
-      ],
-      "markdown": "# Description\n\nMeasure the percentage of pull requests that include a documented secure code review.\n\n# Measurement\n\nCount pull requests marked with a secure review label divided by all merged pull requests.\n\n# Notes\n\nProvides insight into adherence to secure review requirements.",
-      "source_path": "metrics/code-secure-review-coverage.md"
-    },
-    {
-      "id": "release-security-approval-latency",
-      "title": "Security Approval Latency",
-      "phase": "release",
-      "thresholds": [
-        {
-          "name": "Approval SLA",
-          "value": "<= 2 days",
-          "description": "Median time for security approval."
-        }
-      ],
-      "tags": [
-        "approvals",
-        "governance"
-      ],
-      "related_tools": [
-        "jira",
-        "servicenow"
-      ],
-      "depends_on": [
-        "test-security-coverage"
-      ],
-      "references": [
-        "https://owasp.org/www-project-application-security-verification-standard/"
-      ],
-      "markdown": "# Description\n\nTrack the median time to obtain security approval for release packages.\n\n# Measurement\n\nMeasure the time between security review request and approval completion.\n\n# Notes\n\nHelps identify bottlenecks in release governance.",
-      "source_path": "metrics/release-security-approval-latency.md"
-    },
-    {
-      "id": "monitor-detection-coverage",
-      "title": "Security Detection Coverage",
-      "phase": "monitor",
-      "thresholds": [
-        {
-          "name": "Coverage target",
-          "value": ">= 90%",
-          "description": "Percentage of critical assets with detection rules."
-        }
-      ],
-      "tags": [
-        "monitoring",
-        "detection"
-      ],
-      "related_tools": [
-        "splunk",
-        "datadog"
-      ],
-      "depends_on": [
-        "operate-incident-response-readiness"
-      ],
-      "references": [
-        "https://attack.mitre.org/techniques/"
-      ],
-      "markdown": "# Description\n\nTrack coverage of security detection rules for critical assets.\n\n# Measurement\n\nDivide the number of critical assets with active detection rules by the total number of critical assets.\n\n# Notes\n\nEnsures monitoring keeps pace with expanding infrastructure.",
-      "source_path": "metrics/monitor-detection-coverage.md"
-    },
-    {
-      "id": "test-security-regression-coverage",
-      "title": "Security Regression Coverage",
-      "phase": "test",
-      "thresholds": [
-        {
-          "name": "Regression target",
-          "value": ">= 85%",
-          "description": "Percentage of security test cases executed in regression runs."
-        }
-      ],
-      "tags": [
-        "testing",
-        "regression"
-      ],
-      "related_tools": [
-        "junit",
-        "zap"
-      ],
-      "depends_on": [
-        "code-secure-review-coverage",
-        "test-security-coverage",
-        "build-dependency-vulnerability-rate"
-      ],
-      "references": [
-        "https://owasp.org/www-project-web-security-testing-guide/"
-      ],
-      "markdown": "# Description\n\nMeasure how much of the security test suite is exercised in every regression run.\n\n# Measurement\n\nCalculate the percentage of security test cases executed in nightly or pre-release regression pipelines.\n\n# Notes\n\nHigh regression coverage prevents known vulnerabilities from resurfacing.",
-      "source_path": "metrics/test-security-regression-coverage.md"
-    },
-    {
-      "id": "plan-security-requirements-coverage",
-      "title": "Security Requirements Coverage",
-      "phase": "plan",
-      "thresholds": [
-        {
-          "name": "Coverage target",
-          "value": ">= 90%",
-          "description": "Percentage of epics with explicit security requirements."
-        }
-      ],
-      "tags": [
-        "requirements",
-        "governance"
-      ],
-      "related_tools": [
-        "jira"
-      ],
-      "references": [
-        "https://owasp.org/www-project-application-security-verification-standard/"
-      ],
-      "markdown": "# Description\n\nMeasure how many planned epics or features have explicit security requirements before implementation begins.\n\n# Measurement\n\nCalculate the percentage of epics with at least one security requirement documented in the planning system.\n\n# Notes\n\nHigher coverage reduces late-stage security surprises and rework.",
-      "source_path": "metrics/plan-security-requirements-coverage.md"
-    },
-    {
-      "id": "test-security-coverage",
-      "title": "Security Test Coverage",
-      "phase": "test",
-      "thresholds": [
-        {
-          "name": "Coverage target",
-          "value": ">= 85%",
-          "description": "Percentage of security test cases executed."
-        }
-      ],
-      "tags": [
-        "testing",
-        "coverage"
-      ],
-      "related_tools": [
-        "zap",
-        "burp-suite"
-      ],
-      "depends_on": [
-        "build-dependency-vulnerability-rate"
-      ],
-      "references": [
-        "https://owasp.org/www-project-web-security-testing-guide/"
-      ],
-      "markdown": "# Description\n\nMeasure coverage of security-focused test cases in the test suite.\n\n# Measurement\n\nCalculate the percentage of required security tests executed in CI.\n\n# Notes\n\nHelps ensure regression tests cover known security scenarios.",
-      "source_path": "metrics/test-security-coverage.md"
-    },
-    {
-      "id": "plan-threat-model-coverage",
-      "title": "Threat Model Coverage",
-      "phase": "plan",
-      "thresholds": [
-        {
-          "name": "Coverage target",
-          "value": ">= 80%",
-          "description": "Percentage of critical features with a threat model."
-        }
-      ],
-      "tags": [
-        "requirements",
-        "threat-modeling"
-      ],
-      "related_tools": [
-        "threatmodeler",
-        "miro"
-      ],
-      "depends_on": [
-        "plan-security-requirements-coverage"
-      ],
-      "references": [
-        "https://owasp.org/www-community/Threat_Modeling"
-      ],
-      "markdown": "# Description\n\nTrack how many critical features have a documented threat model before implementation begins.\n\n# Measurement\n\nDivide the count of critical features with a threat model by the total number of critical features planned for the release.\n\n# Notes\n\nHelps ensure that high-risk areas are assessed before coding starts.",
-      "source_path": "metrics/plan-threat-model-coverage.md"
+      "markdown": "# Description\n\nMeasures the highest composite vulnerability risk score across all unresolved vulnerabilities in a software product, by combining each vulnerability's CVSS severity rating with its EPSS exploitability probability. The result is a single normalised score (0.0–1.0) that surfaces the vulnerability posing the greatest *combined* risk — not just the most severe in theory, but the most likely to be actively exploited.\n\nThis metric addresses a common prioritisation failure: teams focusing exclusively on CVSS scores may spend effort on high-severity vulnerabilities that are never exploited in the wild, while overlooking moderate-severity CVEs with near-certain exploitation likelihood. By combining both dimensions, this metric enables more accurate, risk-based remediation prioritisation.\n\nThis is the primary vulnerability risk indicator and is intended for use in security dashboards, SLA tracking, and risk reporting.\n\n# Measurement\n\n**Data sources:**\n- `vuln-cvss-max-score` — the highest CVSS v3.x base score across unresolved vulnerabilities\n- `vuln-epss-max-score` — the highest EPSS score across unresolved vulnerabilities\n- The vulnerability inventory must be consistent between both sub-metrics (same scope, same snapshot time)\n\n**Calculation:**\n\nThe composite score is computed per vulnerability, then the maximum is taken across all unresolved findings:\n\n```\ncomposite_score(v) = (CVSS_score(v) / 10.0) * 0.6 + EPSS_score(v) * 0.4\n\nvuln-max-score = MAX(composite_score(v)) over all unresolved vulnerabilities in scope\n```\n\n- `CVSS_score / 10.0` normalises CVSS to a 0.0–1.0 range\n- The **60/40 weighting** reflects that severity provides the baseline risk floor, while exploitability probability modulates urgency. This weighting should be reviewed and adjusted to fit organisational risk appetite.\n- The result is a single score in the range 0.0–1.0\n\n**Example:**\n\n| CVE | CVSS | CVSS (norm) | EPSS | Composite |\n|-----|------|------------|------|-----------|\n| CVE-A | 9.8 | 0.98 | 0.05 | 0.98×0.6 + 0.05×0.4 = **0.61** |\n| CVE-B | 6.5 | 0.65 | 0.91 | 0.65×0.6 + 0.91×0.4 = **0.75** |\n| CVE-C | 7.2 | 0.72 | 0.60 | 0.72×0.6 + 0.60×0.4 = **0.67** |\n\n→ `vuln-max-score = 0.75` (driven by CVE-B, which has high exploitability despite moderate severity)\n\n**Automation:** Can be implemented as a pipeline step that queries the SCA tool output and FIRST EPSS API, computes the composite score per CVE, and emits the maximum. Output should include the winning CVE ID for traceability.\n\n# Notes\n\n- **Weighting is configurable:** The 60/40 split is a recommended default. Organisations in high-threat environments (e.g. internet-facing products) may want to increase the EPSS weight. Document any deviation from the default.\n- **Identify the worst offender:** Always report the CVE ID that produced the maximum score alongside the score itself. The raw number alone is not actionable.\n- **CISA KEV as a signal:** Consider flagging any vulnerability that appears in the CISA Known Exploited Vulnerabilities (KEV) catalogue as automatically elevated, regardless of composite score — active exploitation is confirmed, not just predicted.\n- **Snapshot consistency:** CVSS and EPSS data must be pulled at the same point in time and from the same vulnerability inventory. Mismatched snapshots can produce misleading results.\n- **Scope alignment:** The vulnerability scope (dependencies, first-party, containers, etc.) must be identical to that defined in `vuln-cvss-max-score` and `vuln-epss-max-score`.\n- **Not a replacement for full inventory metrics:** This metric tracks the *worst case*. Complementary metrics (e.g. count of critical vulnerabilities, mean time to remediate) are needed for a complete picture of vulnerability health.",
+      "source_path": "metrics/vuln-max-score.md"
     }
   ]
 }

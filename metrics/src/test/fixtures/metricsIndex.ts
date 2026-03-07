@@ -1,4 +1,72 @@
 import type { MetricsIndex } from "../../lib/metrics";
+import { buildMetricSearchText } from "../../lib/metricsFilter";
+
+const m1 = {
+  id: "plan-security-requirements-coverage",
+  title: "Security Requirements Coverage",
+  phase: "plan",
+  tags: ["requirements", "governance"],
+  related_tools: ["jira"],
+  thresholds: [
+    {
+      name: "Coverage target",
+      value: ">= 90%",
+    },
+  ],
+  markdown: "# Description\nMeasure security requirements coverage.",
+  source_path: "metrics/plan-security-requirements-coverage.md",
+};
+
+const m2 = {
+  id: "plan-threat-model-coverage",
+  title: "Threat Model Coverage",
+  phase: "plan",
+  tags: ["requirements", "threat-modeling"],
+  related_tools: ["miro"],
+  depends_on: ["plan-security-requirements-coverage"],
+  thresholds: [
+    {
+      name: "Coverage target",
+      value: ">= 80%",
+    },
+  ],
+  markdown: "# Description\nMeasure threat model coverage.",
+  source_path: "metrics/plan-threat-model-coverage.md",
+};
+
+const m3 = {
+  id: "code-secure-review-coverage",
+  title: "Secure Code Review Coverage",
+  phase: "code",
+  tags: ["code-review", "governance"],
+  related_tools: ["github"],
+  depends_on: ["plan-security-requirements-coverage"],
+  thresholds: [
+    {
+      name: "Coverage target",
+      value: ">= 95%",
+    },
+  ],
+  markdown: "# Description\nMeasure secure code review coverage.",
+  source_path: "metrics/code-secure-review-coverage.md",
+};
+
+const m4 = {
+  id: "build-dependency-vulnerability-rate",
+  title: "Dependency Vulnerability Rate",
+  phase: "build",
+  tags: ["dependencies"],
+  related_tools: ["snyk"],
+  depends_on: ["code-secure-review-coverage"],
+  thresholds: [
+    {
+      name: "Critical vulns target",
+      value: "= 0",
+    },
+  ],
+  markdown: "# Description\nMeasure dependency vulnerabilities.",
+  source_path: "metrics/build-dependency-vulnerability-rate.md",
+};
 
 export const metricsIndexFixture: MetricsIndex = {
   generated_at: "2026-02-25T00:00:00.000Z",
@@ -27,67 +95,33 @@ export const metricsIndexFixture: MetricsIndex = {
   ],
   metrics: [
     {
-      id: "plan-security-requirements-coverage",
-      title: "Security Requirements Coverage",
-      phase: "plan",
-      tags: ["requirements", "governance"],
-      related_tools: ["jira"],
-      thresholds: [
-        {
-          name: "Coverage target",
-          value: ">= 90%",
-        },
-      ],
-      markdown: "# Description\nMeasure security requirements coverage.",
-      source_path: "metrics/plan-security-requirements-coverage.md",
+      ...m1,
+      search_text: buildMetricSearchText(m1),
+      parents: [],
+      children: ["plan-threat-model-coverage", "code-secure-review-coverage"],
+      missing_dependencies: [],
     },
     {
-      id: "plan-threat-model-coverage",
-      title: "Threat Model Coverage",
-      phase: "plan",
-      tags: ["requirements", "threat-modeling"],
-      related_tools: ["miro"],
-      depends_on: ["plan-security-requirements-coverage"],
-      thresholds: [
-        {
-          name: "Coverage target",
-          value: ">= 80%",
-        },
-      ],
-      markdown: "# Description\nMeasure threat model coverage.",
-      source_path: "metrics/plan-threat-model-coverage.md",
+      ...m2,
+      search_text: buildMetricSearchText(m2),
+      parents: ["plan-security-requirements-coverage"],
+      children: [],
+      missing_dependencies: [],
     },
     {
-      id: "code-secure-review-coverage",
-      title: "Secure Code Review Coverage",
-      phase: "code",
-      tags: ["code-review", "governance"],
-      related_tools: ["github"],
-      depends_on: ["plan-security-requirements-coverage"],
-      thresholds: [
-        {
-          name: "Coverage target",
-          value: ">= 95%",
-        },
-      ],
-      markdown: "# Description\nMeasure secure code review coverage.",
-      source_path: "metrics/code-secure-review-coverage.md",
+      ...m3,
+      search_text: buildMetricSearchText(m3),
+      parents: ["plan-security-requirements-coverage"],
+      children: ["build-dependency-vulnerability-rate"],
+      missing_dependencies: [],
     },
     {
-      id: "build-dependency-vulnerability-rate",
-      title: "Dependency Vulnerability Rate",
-      phase: "build",
-      tags: ["dependencies"],
-      related_tools: ["snyk"],
-      depends_on: ["code-secure-review-coverage"],
-      thresholds: [
-        {
-          name: "Critical vulns target",
-          value: "= 0",
-        },
-      ],
-      markdown: "# Description\nMeasure dependency vulnerabilities.",
-      source_path: "metrics/build-dependency-vulnerability-rate.md",
+      ...m4,
+      search_text: buildMetricSearchText(m4),
+      parents: ["code-secure-review-coverage"],
+      children: [],
+      missing_dependencies: [],
     },
   ],
+  dependency_cycles: [],
 };

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { buildMetricFeedbackUrl } from "../metricFeedback";
+import { buildMetricFeedbackUrl } from "../config";
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -60,9 +60,11 @@ describe("buildMetricFeedbackUrl", () => {
     );
   });
 
-  it("returns null when the repo URL is missing", () => {
+  it("returns the default repo URL when env is empty", () => {
     vi.stubEnv("VITE_REPO_URL", "");
 
-    expect(buildMetricFeedbackUrl({ id: "metric-a" })).toBeNull();
+    const url = buildMetricFeedbackUrl({ id: "metric-a" });
+    expect(url).toContain("https://github.com/fraunhofer-iem/spha");
+    expect(url).toContain("metric_id=metric-a");
   });
 });

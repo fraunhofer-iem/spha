@@ -25,12 +25,17 @@ export type Metric = {
   references?: string[];
   markdown: string;
   source_path: string;
+  search_text: string;
+  parents: string[];
+  children: string[];
+  missing_dependencies: string[];
 };
 
 export type MetricsIndex = {
   generated_at: string;
   phases: Phase[];
   metrics: Metric[];
+  dependency_cycles: string[][];
 };
 
 const PhaseSchema = z
@@ -63,6 +68,10 @@ const MetricSchema = z
     references: z.array(z.string().min(1)).optional(),
     markdown: z.string().min(1),
     source_path: z.string().min(1),
+    search_text: z.string().min(1),
+    parents: z.array(z.string().min(1)),
+    children: z.array(z.string().min(1)),
+    missing_dependencies: z.array(z.string().min(1)),
   })
   .strict();
 
@@ -71,6 +80,7 @@ const MetricsIndexSchema = z
     generated_at: z.string().min(1),
     phases: z.array(PhaseSchema),
     metrics: z.array(MetricSchema),
+    dependency_cycles: z.array(z.array(z.string().min(1))),
   })
   .strict();
 

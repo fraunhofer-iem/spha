@@ -31,6 +31,7 @@ describe("buildDependencyMaps", () => {
         depends_on: ["metric-b", "metric-missing"],
         markdown: "# A",
         source_path: "metrics/a.md",
+        search_text: "metric-a metric a # a plan",
       },
       {
         id: "metric-b",
@@ -38,6 +39,7 @@ describe("buildDependencyMaps", () => {
         phase: "plan",
         markdown: "# B",
         source_path: "metrics/b.md",
+        search_text: "metric-b metric b # b plan",
       },
     ];
 
@@ -57,6 +59,7 @@ describe("buildDependencyMaps", () => {
         depends_on: ["metric-b"],
         markdown: "# A",
         source_path: "metrics/a.md",
+        search_text: "metric-a metric a # a plan",
       },
       {
         id: "metric-b",
@@ -65,6 +68,7 @@ describe("buildDependencyMaps", () => {
         depends_on: ["metric-a"],
         markdown: "# B",
         source_path: "metrics/b.md",
+        search_text: "metric-b metric b # b plan",
       },
     ];
 

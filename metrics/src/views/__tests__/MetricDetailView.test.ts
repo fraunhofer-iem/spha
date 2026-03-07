@@ -73,22 +73,18 @@ describe("MetricDetailView", () => {
     expect(feedbackLink.getAttribute("rel")).toBe("noopener noreferrer");
   });
 
-  it("renders a disabled feedback button when repo URL is missing", async () => {
+  it("renders an enabled feedback link with default repo URL when env is empty", async () => {
     vi.stubEnv("VITE_REPO_URL", "");
 
-    const { findByText, getByRole, queryByRole } = await renderWithRouter(MetricDetailView, {
+    const { findByText, getByRole } = await renderWithRouter(MetricDetailView, {
       route: "/metrics/plan-security-requirements-coverage",
       routes: [detailRoute, listRoute],
     });
 
     await findByText("Security Requirements Coverage");
 
-    expect(queryByRole("link", { name: "Comment" })).toBeNull();
-
-    const feedbackButton = getByRole("button", { name: "Comment" });
-    expect(feedbackButton.getAttribute("disabled")).not.toBeNull();
-    expect(feedbackButton.getAttribute("title")).toBe(
-      "Comment requires repository configuration.",
-    );
+    const feedbackLink = getByRole("link", { name: "Comment" });
+    expect(feedbackLink.getAttribute("href")).toContain("https://github.com/fraunhofer-iem/spha");
+    expect(feedbackLink.getAttribute("href")).toContain("metric-feedback.yml");
   });
 });

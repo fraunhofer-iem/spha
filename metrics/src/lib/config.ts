@@ -1,4 +1,105 @@
-import { getProposeMetricUrl } from "./proposeMetric";
+// ============================================================================
+// Constants
+// ============================================================================
+
+const DEFAULT_REPO_URL = "https://github.com/fraunhofer-iem/spha";
+const METRIC_PROPOSAL_TEMPLATE = "metric.yml";
+const METRIC_FEEDBACK_TEMPLATE = "metric-feedback.yml";
+
+// ============================================================================
+// Environment Variable Helpers
+// ============================================================================
+
+function getEnvString(key: string, defaultValue?: string): string | undefined {
+  const value = import.meta.env[key];
+  if (value === undefined || value === "") {
+    return defaultValue;
+  }
+  if (typeof value !== "string") {
+    console.warn(`Environment variable ${key} is not a string, got: ${typeof value}`);
+    return defaultValue;
+  }
+  return value;
+}
+
+export const getRepoUrl = () => getEnvString("VITE_REPO_URL");
+export const getRepoBranch = () => getEnvString("VITE_REPO_BRANCH", "main");
+
+// ============================================================================
+// Repository URL Helpers
+// ============================================================================
+
+function normalizeRepositoryUrl(value: string): string | null {
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+
+  let normalized = trimmed.replace(/\/+$/, "");
+  if (normalized.endsWith("/issues")) {
+    normalized = normalized.slice(0, -"/issues".length);
+  }
+  normalized = normalized.replace(/\/+$/, "");
+
+  return normalized || null;
+}
+
+export function getRepositoryBaseUrl(): string | null {
+  const envValue = getRepoUrl();
+  if (envValue) {
+    return normalizeRepositoryUrl(envValue);
+  }
+  return normalizeRepositoryUrl(DEFAULT_REPO_URL);
+}
+
+// ============================================================================
+// GitHub Issue URLs
+// ============================================================================
+
+export function getProposeMetricUrl(): string {
+  const template = encodeURIComponent(METRIC_PROPOSAL_TEMPLATE);
+  return `${DEFAULT_REPO_URL}/issues/new?template=${template}`;
+}
+
+type MetricFeedbackInput = {
+  id: string;
+  title?: string;
+  sourcePath?: string;
+};
+
+export function buildMetricFeedbackUrl(metric: MetricFeedbackInput): string | null {
+  const repoUrl = getRepositoryBaseUrl();
+  if (!repoUrl) return null;
+
+  const trimmedTitle = metric.title?.trim();
+  const feedbackTitle = trimmedTitle
+    ? `Comment: [${metric.id}] ${trimmedTitle}`
+    : `Comment: [${metric.id}]`;
+
+  const labels = ["metric-feedback"];
+
+  const params: Array<[string, string]> = [
+    ["template", METRIC_FEEDBACK_TEMPLATE],
+    ["labels", labels.join(",")],
+    ["title", feedbackTitle],
+    ["metric_id", metric.id],
+  ];
+
+  if (trimmedTitle) {
+    params.push(["metric_title", trimmedTitle]);
+  }
+
+  if (metric.sourcePath) {
+    const branch = getRepoBranch();
+    params.push(["page_url", `${repoUrl}/blob/${branch}/${metric.sourcePath}`]);
+  }
+
+  const query = params.map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join("&");
+
+  return `${repoUrl}/issues/new?${query}`;
+}
+
+// ============================================================================
+// Social Links Configuration
+// ============================================================================
 
 type LinkConfig = {
   id: "github" | "linkedin" | "fraunhofer";
@@ -42,6 +143,4 @@ const fraunhofer: LinkConfig = {
 export const proposeMetricUrl = getProposeMetricUrl();
 export const headerSocialLinks = [github, linkedin];
 export const footerLinks = [github, linkedin, fraunhofer];
-export const getRepoUrl = () => import.meta.env.VITE_REPO_URL;
-export const getRepoBranch = () => import.meta.env.VITE_REPO_BRANCH ?? "main";
 export type { LinkConfig };

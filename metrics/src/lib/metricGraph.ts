@@ -1,4 +1,3 @@
-import type { Metric } from "./metrics";
 
 export type DependencyMaps = {
   parentsById: Map<string, string[]>;
@@ -59,7 +58,9 @@ function detectDependencyCycles(parentsById: Map<string, string[]>): string[][] 
   return cycles;
 }
 
-export function buildDependencyMaps(metrics: Metric[]): DependencyMaps {
+export function buildDependencyMaps(
+  metrics: Array<{ id: string; depends_on?: string[] }>,
+): DependencyMaps {
   const parentsById = new Map<string, string[]>();
   const childrenById = new Map<string, string[]>();
   const missingDependenciesById = new Map<string, string[]>();

@@ -12,6 +12,10 @@ function buildMetricsIndex(count: number) {
     phase: "plan",
     markdown: `# Description\nMetric ${index + 1} description.`,
     source_path: `metrics/metric-${index + 1}.md`,
+    search_text: `metric ${index + 1} metric-${index + 1} # description metric ${index + 1} description. plan`,
+    parents: [],
+    children: [],
+    missing_dependencies: [],
   }));
 
   return {
@@ -26,6 +30,7 @@ function buildMetricsIndex(count: number) {
       },
     ],
     metrics,
+    dependency_cycles: [],
   };
 }
 

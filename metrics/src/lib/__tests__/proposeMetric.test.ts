@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getProposeMetricUrl } from "../proposeMetric";
+import { getProposeMetricUrl } from "../config";
 
 describe("getProposeMetricUrl", () => {
   it("returns the issue template link for the hardcoded repo", () => {

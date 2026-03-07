@@ -39,11 +39,13 @@ Tracking the maximum CVSS score gives a quick indicator of the worst-case severi
 # Measurement
 
 **Data sources:**
+
 - Software Composition Analysis (SCA) tools (e.g. Snyk, Grype, Trivy, Black Duck) scanning application dependencies
 - Static Application Security Testing (SAST) tools for first-party code vulnerabilities
 - National Vulnerability Database (NVD) or OSV for CVSS base scores
 
 **Calculation:**
+
 ```
 vuln-cvss-max-score = MAX(CVSS_base_score) over all unresolved vulnerabilities in scope
 ```
@@ -56,7 +58,7 @@ vuln-cvss-max-score = MAX(CVSS_base_score) over all unresolved vulnerabilities i
 
 # Notes
 
-- **Base score only:** Use the CVSS *base* score for consistency. Temporal and environmental scores may be more accurate for your context but vary by organisation and are harder to automate reliably.
+- **Base score only:** Use the CVSS _base_ score for consistency. Temporal and environmental scores may be more accurate for your context but vary by organisation and are harder to automate reliably.
 - **Scope:** Define clearly whether "in scope" includes all dependencies (transitive included), first-party code findings, container base image vulnerabilities, or a subset. Consistency is critical for trend tracking.
 - **False positives:** Accepted/suppressed vulnerabilities (with documented justification) should be excluded from the calculation to avoid metric noise.
 - **Versioning:** If CVSS v4.0 scores become available for a vulnerability, prefer v4.0, but do not mix versions across findings in the same calculation.

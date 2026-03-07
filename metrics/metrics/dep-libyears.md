@@ -30,17 +30,19 @@ references:
 
 # Description
 
-Measures how outdated a single dependency version is, expressed in fractional years between the release date of the version currently in use and the release date of the latest stable version of that package. This concept is known as *libyears* — one libyear equals one year of accumulated lag for a single dependency.
+Measures how outdated a single dependency version is, expressed in fractional years between the release date of the version currently in use and the release date of the latest stable version of that package. This concept is known as _libyears_ — one libyear equals one year of accumulated lag for a single dependency.
 
 A high libyear value indicates that a dependency has not been updated in a long time relative to the pace of its upstream development. This is a proxy for accumulated technical debt, exposure to unpatched historical vulnerabilities, and the risk of future incompatibility or abandonment. It is used as a sub-metric to compute the dependency risk score (`dep-risk-score`).
 
 # Measurement
 
 **Data sources:**
+
 - SBOM (CycloneDX or SPDX format) for the product — provides the dependency name and currently used version
 - Package registry APIs (e.g. npm registry, PyPI, Maven Central, crates.io, RubyGems) — provide release date of the current version and the latest stable version
 
 **Calculation:**
+
 ```
 dep-libyears(d) = (release_date(latest_stable_version(d)) - release_date(used_version(d))) / 365.25
 ```

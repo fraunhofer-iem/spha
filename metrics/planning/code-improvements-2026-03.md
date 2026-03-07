@@ -15,9 +15,11 @@
 **Status**: ✅ Completed
 
 **Files fixed**:
+
 - `src/components/MetricDependencyGraph.vue:59,68` - Removed unused loop index parameters
 
 **Changes**:
+
 - Changed `forEach((parent, _) =>` to `forEach((parent) =>`
 - Changed `forEach((child, _) =>` to `forEach((child) =>`
 
@@ -34,6 +36,7 @@
 **Issue**: `--localstorage-file` warnings in vitest output (Node.js warning, not happy-dom)
 
 **Files modified**:
+
 - `package.json` - Added `NODE_NO_WARNINGS=1` to `test:ui` script
 - `vite.config.ts` - Added environmentOptions for happy-dom (not needed but keeps config complete)
 
@@ -50,17 +53,20 @@
 **Status**: ✅ Completed
 
 **Tasks completed**:
+
 - [x] Lazy-load `MetricDependencyGraph.vue` using `defineAsyncComponent`
 - [x] Tree-shake D3.js - replaced `import * as d3 from "d3"` with specific module imports
 - [x] Code-split routes using dynamic imports
 
 **Files modified**:
+
 - `src/router.ts` - All routes now use dynamic imports `() => import(...)`
 - `src/views/MetricDetailView.vue` - MetricDependencyGraph loaded asynchronously
 - `src/components/MetricDependencyGraph.vue` - D3 imports optimized (d3-selection, d3-scale, d3-scale-chromatic)
 - `src/views/MetricGraphView.vue` - D3 imports optimized (d3-force, d3-zoom, d3-shape modules)
 
 **Results**:
+
 - **Before**: Single bundle of 323.95 KB (109.74 KB gzipped)
 - **After**: Code-split into multiple chunks:
   - Main bundle: 100.74 KB (39.56 KB gzipped) - **64% smaller!**
@@ -77,6 +83,7 @@
 **Status**: ✅ Completed
 
 **Implementation**:
+
 - Added `buildSearchText()` function to `scripts/metrics-index.ts`
 - Updated `Metric` type and Zod schema to include required `search_text` field
 - Modified build script to generate `search_text` for each metric at build time
@@ -84,6 +91,7 @@
 - Changed `buildMetricSearchText()` parameter type to `Omit<Metric, "search_text">` for reusability
 
 **Files modified**:
+
 - `scripts/metrics-index.ts` - Added `buildSearchText()` and call it for each metric
 - `src/lib/metrics.ts` - Added `search_text: string` to `Metric` type and schema
 - `src/lib/useMetricsCatalogue.ts` - Changed from computing to reading `metric.search_text`
@@ -91,6 +99,7 @@
 - Test files updated to include `search_text` field in fixtures
 
 **Results**:
+
 - Search text now generated once at build time instead of on every page load
 - Eliminates client-side string concatenation and `.toLowerCase()` calls for all metrics
 - `public/metrics/index.json` now contains pre-computed search text
@@ -106,14 +115,17 @@
 **Status**: ✅ Completed
 
 **Implementation**:
+
 - Added `getEnvString()` helper function with runtime type checking
 - Added console.warn for type mismatches
 - Proper handling of undefined and empty string values
 
 **Files modified**:
+
 - `src/lib/config.ts` - Added `getEnvString()` helper, updated `getRepoUrl()` and `getRepoBranch()`
 
 **Result**:
+
 ```typescript
 function getEnvString(key: string, defaultValue?: string): string | undefined {
   const value = import.meta.env[key];
@@ -135,6 +147,7 @@ function getEnvString(key: string, defaultValue?: string): string | undefined {
 **Status**: ✅ Completed
 
 **Implementation**:
+
 - Merged all configuration logic into single `src/lib/config.ts` file
 - Organized into clear sections with comments (Constants, Environment Helpers, Repository URLs, GitHub Issues, Social Links)
 - Moved functions from `repository.ts`, `proposeMetric.ts`, and `metricFeedback.ts`
@@ -143,6 +156,7 @@ function getEnvString(key: string, defaultValue?: string): string | undefined {
 - Improved behavior: empty environment variables now fall back to defaults instead of returning null
 
 **Files modified**:
+
 - `src/lib/config.ts` - Now contains all configuration (150+ lines, well-organized)
 - `src/lib/repository.ts` - **DELETED**
 - `src/lib/proposeMetric.ts` - **DELETED**
@@ -150,6 +164,7 @@ function getEnvString(key: string, defaultValue?: string): string | undefined {
 - Test files updated to import from `config.ts` and expect default URL fallback behavior
 
 **Benefits**:
+
 - Single source of truth for all configuration
 - No duplicate DEFAULT_REPO_URL constant
 - Clear organization with section headers
@@ -168,6 +183,7 @@ function getEnvString(key: string, defaultValue?: string): string | undefined {
 **Status**: ✅ Completed
 
 **Implementation**:
+
 - Moved dependency map computation from runtime to build time
 - Added `buildDependencyMaps()` function to `scripts/metrics-index.ts`
 - Added new fields to Metric type: `parents`, `children`, `missing_dependencies`
@@ -175,6 +191,7 @@ function getEnvString(key: string, defaultValue?: string): string | undefined {
 - Updated `MetricDetailView.vue` to read pre-computed data directly
 
 **Files modified**:
+
 - `scripts/metrics-index.ts` - Added dependency map builder (copied from metricGraph.ts), called during build
 - `src/lib/metrics.ts` - Updated Metric type and Zod schema with new required fields
 - `src/lib/metricGraph.ts` - Made function signature flexible (accepts `{id, depends_on?}`), removed unused Metric import
@@ -182,6 +199,7 @@ function getEnvString(key: string, defaultValue?: string): string | undefined {
 - Test fixtures updated with new required fields
 
 **Results**:
+
 - Dependency maps now generated once at build time in `public/metrics/index.json`
 - Each metric includes pre-computed `parents`, `children`, and `missing_dependencies` arrays
 - Global `dependency_cycles` array available in index for cycle detection
@@ -207,10 +225,12 @@ function getEnvString(key: string, defaultValue?: string): string | undefined {
 **Completed Priorities**:
 
 **Priority 1: Critical Issues** ✅
+
 - Fixed TypeScript strict mode violations (removed unused loop variables)
 - Suppressed test warnings (NODE_NO_WARNINGS for cleaner output)
 
 **Priority 2: Performance & User Experience** ✅
+
 - **2.1**: Optimized bundle size - 64% reduction (110KB → 40KB gzipped)
   - Lazy-loaded all routes with dynamic imports
   - Lazy-loaded MetricDependencyGraph component
@@ -223,6 +243,7 @@ function getEnvString(key: string, defaultValue?: string): string | undefined {
   - Zero runtime cost for search functionality
 
 **Priority 3: Code Quality** ✅
+
 - **3.1**: Improved type safety for environment variables
   - Added `getEnvString()` helper with runtime validation
   - Added console.warn for type mismatches
@@ -234,6 +255,7 @@ function getEnvString(key: string, defaultValue?: string): string | undefined {
   - Improved fallback behavior for empty environment variables
 
 **Priority 4: Build-Time Optimizations** ✅
+
 - **4.1**: Pre-computed dependency maps at build time
   - Moved buildDependencyMaps to scripts/metrics-index.ts
   - Added parents, children, missing_dependencies to each metric
@@ -242,6 +264,7 @@ function getEnvString(key: string, defaultValue?: string): string | undefined {
   - Zero runtime cost for dependency computation
 
 **Summary**:
+
 - 9 priorities completed (Priority 1: 2/2, Priority 2: 2/2, Priority 3: 2/2, Priority 4: 1/1)
 - All tests passing (31/31)
 - Build successful (101.44 KB main bundle, 39.87 KB gzipped)

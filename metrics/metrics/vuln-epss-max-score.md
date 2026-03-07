@@ -32,17 +32,19 @@ references:
 
 Measures the highest EPSS (Exploit Prediction Scoring System) score across all known, unresolved vulnerabilities in a software product. EPSS is a data-driven model maintained by FIRST that estimates the probability (0.0–1.0) that a given CVE will be exploited in the wild within the next 30 days, based on threat intelligence, public exploit availability, and historical exploitation patterns.
 
-Unlike CVSS, which measures the *severity* of a vulnerability in isolation, EPSS measures *real-world exploitability likelihood*. A vulnerability with a moderate CVSS score but a high EPSS score may represent a greater immediate risk than a critical CVSS-rated vulnerability that has never been observed being exploited.
+Unlike CVSS, which measures the _severity_ of a vulnerability in isolation, EPSS measures _real-world exploitability likelihood_. A vulnerability with a moderate CVSS score but a high EPSS score may represent a greater immediate risk than a critical CVSS-rated vulnerability that has never been observed being exploited.
 
 This metric is used as a sub-metric to compute the composite Maximum Vulnerability Score (`vuln-max-score`).
 
 # Measurement
 
 **Data sources:**
+
 - FIRST EPSS API (`https://api.first.org/data/v1/epss`) — queryable by CVE ID, updated daily
 - SCA tools with native EPSS enrichment (e.g. Grype, Nucleus Security, Tenable)
 
 **Calculation:**
+
 ```
 vuln-epss-max-score = MAX(EPSS_score) over all unresolved vulnerabilities in scope
 ```

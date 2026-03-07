@@ -31,18 +31,20 @@ references:
 
 # Description
 
-Measures the count of currently known, unresolved vulnerabilities that affect the specific version of a dependency as declared in the product's SBOM. Unlike `dep-vuln-rate`, which captures historical vulnerability frequency at the package level, this metric is scoped to the *exact pinned version* and reflects the *current, unpatched exposure* of that dependency.
+Measures the count of currently known, unresolved vulnerabilities that affect the specific version of a dependency as declared in the product's SBOM. Unlike `dep-vuln-rate`, which captures historical vulnerability frequency at the package level, this metric is scoped to the _exact pinned version_ and reflects the _current, unpatched exposure_ of that dependency.
 
 This is the most direct signal of immediate risk from a dependency: a non-zero count means the product is knowingly shipping with a vulnerable version. It is used as a sub-metric to compute the dependency risk score (`dep-risk-score`).
 
 # Measurement
 
 **Data sources:**
+
 - SBOM (CycloneDX or SPDX) — provides package name, ecosystem, and pinned version
 - OSV.dev API or OSV Scanner — version-aware vulnerability matching
 - Grype / Trivy — local SCA scanners that match SBOM components to vulnerability databases by version range
 
 **Calculation:**
+
 ```
 dep-vuln-active(d) = COUNT(distinct vulnerabilities where
                            affected_version_range contains used_version(d)
@@ -57,6 +59,7 @@ dep-vuln-active(d) = COUNT(distinct vulnerabilities where
 **Severity breakdown (recommended output):**
 
 In addition to the raw count, emit a severity-stratified breakdown for use in downstream metrics:
+
 ```
 dep-vuln-active(d) = {
   critical: COUNT(CVSS >= 9.0),

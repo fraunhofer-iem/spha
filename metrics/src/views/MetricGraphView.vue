@@ -195,7 +195,9 @@ function renderGraph() {
     });
 
   svg.call(
-    zoomBehavior as unknown as (selection: Selection<SVGSVGElement, unknown, null, undefined>) => void,
+    zoomBehavior as unknown as (
+      selection: Selection<SVGSVGElement, unknown, null, undefined>,
+    ) => void,
   );
 
   stopSimulation();
@@ -335,7 +337,9 @@ function renderGraph() {
       "link",
       forceLink<GraphNode, GraphLink>(linkList)
         .id((node: any) => node.id)
-        .distance((link: any) => (link.role === "phase-link" ? phaseLinkDistance : dependencyDistance))
+        .distance((link: any) =>
+          link.role === "phase-link" ? phaseLinkDistance : dependencyDistance,
+        )
         .strength((link: any) => (link.role === "phase-link" ? 0.95 : 0.7)),
     )
     .force(

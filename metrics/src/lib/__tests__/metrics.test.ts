@@ -1,6 +1,15 @@
+/*
+ * Copyright (c) Fraunhofer IEM. All rights reserved.
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for details.
+ *
+ * SPDX-License-Identifier: MIT
+ * License-Filename: LICENSE
+ */
+
 import { describe, expect, it, afterEach } from "vitest";
-import { loadMetricsIndex } from "./metrics";
-import { mockFetch } from "../test/utils";
+import { loadMetricsIndex } from "./../metrics";
+import { mockFetch } from "./../../test/utils";
 import { vi } from "vitest";
 
 afterEach(() => {

@@ -47,6 +47,7 @@ This score serves as a per-dependency risk signal that enables prioritisation of
 # Measurement
 
 **Data sources:**
+
 - `dep-libyears(d)` — fractional years of version lag
 - `dep-vuln-rate(d)` — count of CVEs published against the package in the past 12 months
 - `dep-vuln-active(d)` — count of unresolved vulnerabilities affecting the pinned version (severity-weighted)
@@ -72,6 +73,7 @@ norm_maintenance(d)    = 1.0 - dep-maintenance-health(d)
 ```
 
 **Composite score:**
+
 ```
 dep-risk-score(d) = norm_libyears(d)    × 0.20
                   + norm_vuln_rate(d)   × 0.25
@@ -81,12 +83,12 @@ dep-risk-score(d) = norm_libyears(d)    × 0.20
 
 **Default weight rationale:**
 
-| Sub-metric | Weight | Rationale |
-|---|---|---|
-| `dep-libyears` | 20% | Outdatedness is a lagging indicator of risk; relevant but less urgent than active exposure |
-| `dep-vuln-rate` | 25% | Historical frequency predicts future vulnerability likelihood |
-| `dep-vuln-active` | 40% | Current unpatched exposure is the most immediate and actionable risk signal |
-| `dep-maintenance-health` | 15% | Unmaintained projects accumulate risk over time; a forward-looking structural signal |
+| Sub-metric               | Weight | Rationale                                                                                  |
+| ------------------------ | ------ | ------------------------------------------------------------------------------------------ |
+| `dep-libyears`           | 20%    | Outdatedness is a lagging indicator of risk; relevant but less urgent than active exposure |
+| `dep-vuln-rate`          | 25%    | Historical frequency predicts future vulnerability likelihood                              |
+| `dep-vuln-active`        | 40%    | Current unpatched exposure is the most immediate and actionable risk signal                |
+| `dep-maintenance-health` | 15%    | Unmaintained projects accumulate risk over time; a forward-looking structural signal       |
 
 **Automation:** All four sub-metrics can be computed from a CycloneDX/SPDX SBOM combined with OSV.dev, package registry APIs, and repository host APIs (GitHub/GitLab) or deps.dev. The composite can be computed in a single pipeline step after sub-metric collection.
 

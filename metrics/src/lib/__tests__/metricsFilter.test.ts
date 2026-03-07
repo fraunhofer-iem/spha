@@ -1,6 +1,15 @@
+/*
+ * Copyright (c) Fraunhofer IEM. All rights reserved.
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for details.
+ *
+ * SPDX-License-Identifier: MIT
+ * License-Filename: LICENSE
+ */
+
 import { describe, expect, it } from "vitest";
-import { filterMetrics, buildMetricSearchText } from "./metricsFilter";
-import { metricsIndexFixture } from "../test/fixtures/metricsIndex";
+import { filterMetrics, buildMetricSearchText } from "./../metricsFilter";
+import { metricsIndexFixture } from "./../../test/fixtures/metricsIndex";
 
 const baseMetrics = metricsIndexFixture.metrics;
 

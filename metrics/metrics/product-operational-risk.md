@@ -46,6 +46,7 @@ The result is a single normalised score (0.0–1.0) that summarises the dependen
 # Measurement
 
 **Data sources:**
+
 - SBOM (CycloneDX or SPDX) for the product — must include dependency type classification (direct vs. transitive) and full transitive graph
 - `dep-risk-score(d)` — computed for each dependency `d` in the SBOM
 
@@ -54,6 +55,7 @@ The result is a single normalised score (0.0–1.0) that summarises the dependen
 CycloneDX encodes direct vs. transitive relationships in the `dependencies` element of the BOM. SPDX expresses this via relationship types (`DEPENDS_ON` for direct, inferred transitivity from the dependency graph). Ensure the SBOM generation toolchain populates this information accurately.
 
 **Calculation:**
+
 ```
 weight(d) = 1.0   if d is a direct dependency
             0.5   if d is a transitive dependency
@@ -67,12 +69,12 @@ This is a weighted mean of all dependency risk scores, where each score is scale
 
 **Example:**
 
-| Dependency | Type | dep-risk-score | Weight | Weighted Score |
-|---|---|---|---|---|
-| lib-a | Direct | 0.80 | 1.0 | 0.80 |
-| lib-b | Direct | 0.30 | 1.0 | 0.30 |
-| lib-c | Transitive | 0.70 | 0.5 | 0.35 |
-| lib-d | Transitive | 0.20 | 0.5 | 0.10 |
+| Dependency | Type       | dep-risk-score | Weight | Weighted Score |
+| ---------- | ---------- | -------------- | ------ | -------------- |
+| lib-a      | Direct     | 0.80           | 1.0    | 0.80           |
+| lib-b      | Direct     | 0.30           | 1.0    | 0.30           |
+| lib-c      | Transitive | 0.70           | 0.5    | 0.35           |
+| lib-d      | Transitive | 0.20           | 0.5    | 0.10           |
 
 ```
 product-operational-risk = (0.80 + 0.30 + 0.35 + 0.10) / (1.0 + 1.0 + 0.5 + 0.5)

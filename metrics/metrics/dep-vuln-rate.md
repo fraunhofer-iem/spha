@@ -30,18 +30,20 @@ references:
 
 # Description
 
-Measures the number of publicly disclosed vulnerabilities (CVEs or equivalent advisory records) published against a specific package within the trailing 12-month window. This captures the *historical vulnerability frequency* of a package — an indicator of how actively it attracts security issues, which informs the likelihood of future vulnerabilities.
+Measures the number of publicly disclosed vulnerabilities (CVEs or equivalent advisory records) published against a specific package within the trailing 12-month window. This captures the _historical vulnerability frequency_ of a package — an indicator of how actively it attracts security issues, which informs the likelihood of future vulnerabilities.
 
 A package with a high vulnerability rate may represent a structurally risky dependency regardless of its current patched state: frequent past vulnerabilities suggest the codebase is complex, widely targeted, or under active security scrutiny. This metric is used as a sub-metric to compute the dependency risk score (`dep-risk-score`).
 
 # Measurement
 
 **Data sources:**
+
 - [OSV.dev](https://osv.dev/) API — open, cross-ecosystem vulnerability database covering npm, PyPI, Maven, Go, Rust, and more
 - GitHub Advisory Database (GHSA) — community-curated advisories linked to package ecosystems
 - NVD (National Vulnerability Database) — for CVEs with CPE mappings to package names
 
 **Calculation:**
+
 ```
 dep-vuln-rate(d) = COUNT(vulnerabilities published against package d
                          with disclosure_date >= TODAY - 365 days)
@@ -59,5 +61,5 @@ dep-vuln-rate(d) = COUNT(vulnerabilities published against package d
 - **Package-level, not version-level:** This metric counts vulnerabilities against the package as a whole, not only those affecting the specific version in use. A fixed vulnerability still signals that the package has been a vulnerability target.
 - **Deduplication:** The same vulnerability may appear across multiple databases (NVD, OSV, GHSA). Deduplicate by CVE ID or OSV ID before counting to avoid inflation.
 - **Ecosystem specificity:** Some packages share names across ecosystems (e.g. `requests` in PyPI vs. a hypothetical npm package). Always scope queries by both package name and ecosystem to avoid cross-contamination.
-- **Disclosure lag:** Some vulnerabilities are disclosed months or years after discovery. The trailing 12-month window may not capture all vulnerabilities that were *present* in the dependency during that period, only those *disclosed* during it.
+- **Disclosure lag:** Some vulnerabilities are disclosed months or years after discovery. The trailing 12-month window may not capture all vulnerabilities that were _present_ in the dependency during that period, only those _disclosed_ during it.
 - **High-profile packages:** Widely used packages (e.g. OpenSSL, Log4j) naturally attract more vulnerability research and may show elevated rates that partly reflect scrutiny rather than pure risk. This should be noted when interpreting outliers.

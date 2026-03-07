@@ -1,0 +1,86 @@
+name: "CodeQL"
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "lib/**"
+      - "cli/**"
+      - "server/**"
+      - "ui/**"
+      - "metrics/**"
+      - "build.gradle.kts"
+      - "settings.gradle.kts"
+      - "gradle.properties"
+      - "gradle/**"
+      - "gradlew"
+      - "gradlew.bat"
+      - "buildSrc/**"
+      - ".github/workflows/codeql.yml"
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "lib/**"
+      - "cli/**"
+      - "server/**"
+      - "ui/**"
+      - "metrics/**"
+      - "build.gradle.kts"
+      - "settings.gradle.kts"
+      - "gradle.properties"
+      - "gradle/**"
+      - "gradlew"
+      - "gradlew.bat"
+      - "buildSrc/**"
+      - ".github/workflows/codeql.yml"
+  schedule:
+    - cron: "30 2 * * 1"
+
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: "java-kotlin"
+            build_mode: "manual"
+          - language: "javascript-typescript"
+            build_mode: "none"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+      - name: Set up Java 25
+        if: matrix.language == 'java-kotlin'
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654
+        with:
+          distribution: "temurin"
+          java-version: "25"
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@820e3160e279568db735cee8ed8f8e77a6da7818
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build_mode }}
+          queries: security-extended
+
+      - name: Setup Gradle
+        if: matrix.language == 'java-kotlin'
+        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c
+
+      - name: Build Kotlin projects for CodeQL
+        if: matrix.language == 'java-kotlin'
+        run: ./gradlew :lib:core:classes :lib:model:classes :lib:adapter:classes :cli:classes :server:classes --no-daemon --stacktrace
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@820e3160e279568db735cee8ed8f8e77a6da7818
+        with:
+          category: "/language:${{ matrix.language }}"

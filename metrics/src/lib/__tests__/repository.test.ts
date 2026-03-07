@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { getRepositoryBaseUrl } from "../repository";
+import { getRepositoryBaseUrl } from "../config";
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -26,8 +26,8 @@ describe("getRepositoryBaseUrl", () => {
     expect(getRepositoryBaseUrl()).toBe("https://github.com/fraunhofer-iem/spha");
   });
 
-  it("returns null when env is an empty string", () => {
+  it("returns the fallback when env is an empty string", () => {
     vi.stubEnv("VITE_REPO_URL", "");
-    expect(getRepositoryBaseUrl()).toBeNull();
+    expect(getRepositoryBaseUrl()).toBe("https://github.com/fraunhofer-iem/spha");
   });
 });

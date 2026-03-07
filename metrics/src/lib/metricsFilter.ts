@@ -10,7 +10,9 @@ export type MetricsFilterOptions = {
   searchTextById?: Map<string, string>;
 };
 
-export function buildMetricSearchText(metric: Metric): string {
+export function buildMetricSearchText(
+  metric: Omit<Metric, "search_text" | "parents" | "children" | "missing_dependencies">,
+): string {
   return [
     metric.title,
     metric.id,
@@ -33,7 +35,7 @@ export function filterMetrics(metrics: Metric[], options: MetricsFilterOptions =
 
   return metrics.filter((metric) => {
     if (query) {
-      const haystack = searchTextById?.get(metric.id) ?? buildMetricSearchText(metric);
+      const haystack = searchTextById?.get(metric.id) ?? metric.search_text;
       if (!haystack.includes(query)) {
         return false;
       }

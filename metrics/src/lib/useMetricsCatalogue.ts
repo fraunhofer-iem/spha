@@ -1,6 +1,5 @@
 import { computed, onMounted, ref } from "vue";
 import { loadMetricsIndex, type Metric, type MetricsIndex, type Phase } from "./metrics";
-import { buildMetricSearchText } from "./metricsFilter";
 
 const metricsIndex = ref<MetricsIndex | null>(null);
 const loading = ref(false);
@@ -71,7 +70,7 @@ export function useMetricsCatalogue() {
   const metricSearchTextById = computed(() => {
     const map = new Map<string, string>();
     for (const metric of metrics.value) {
-      map.set(metric.id, buildMetricSearchText(metric));
+      map.set(metric.id, metric.search_text);
     }
     return map;
   });

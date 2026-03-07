@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, defineAsyncComponent } from "vue";
 import { useRoute, RouterLink } from "vue-router";
 import { useMetricsCatalogue } from "../lib/useMetricsCatalogue";
 import { renderMarkdown } from "../lib/markdown";
 import { getRepoBranch, getRepoUrl } from "../lib/config";
-import { buildDependencyMaps } from "../lib/metricGraph";
-import { buildMetricFeedbackUrl } from "../lib/metricFeedback";
-import MetricDependencyGraph from "../components/MetricDependencyGraph.vue";
+import { buildMetricFeedbackUrl } from "../lib/config.ts";
+
+const MetricDependencyGraph = defineAsyncComponent(
+  () => import("../components/MetricDependencyGraph.vue"),
+);
 
 const route = useRoute();
 const { metrics, loading, error, phaseLabelMap, metricById, phases } = useMetricsCatalogue();
@@ -30,20 +32,16 @@ const feedbackUrl = computed(() => {
   });
 });
 
-const dependencyMaps = computed(() => buildDependencyMaps(metrics.value));
-
 const parentMetrics = computed(() => {
   if (!metric.value) return [];
-  const parents = dependencyMaps.value.parentsById.get(metric.value.id) ?? [];
-  return parents
+  return metric.value.parents
     .map((id) => metricById.value.get(id))
     .filter((parent): parent is NonNullable<typeof parent> => Boolean(parent));
 });
 
 const childMetrics = computed(() => {
   if (!metric.value) return [];
-  const children = dependencyMaps.value.childrenById.get(metric.value.id) ?? [];
-  return children
+  return metric.value.children
     .map((id) => metricById.value.get(id))
     .filter((child): child is NonNullable<typeof child> => Boolean(child));
 });

@@ -1,7 +1,23 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { RouterLink } from "vue-router";
-import * as d3 from "d3";
+import { select, type Selection } from "d3-selection";
+import { scaleOrdinal } from "d3-scale";
+import { schemeTableau10 } from "d3-scale-chromatic";
+import { symbol, symbolDiamond, symbolSquare } from "d3-shape";
+import {
+  forceSimulation,
+  forceLink,
+  forceManyBody,
+  forceCenter,
+  forceCollide,
+  forceX,
+  forceY,
+  type Simulation,
+  type SimulationNodeDatum,
+  type SimulationLinkDatum,
+} from "d3-force";
+import { zoom } from "d3-zoom";
 import { useMetricsCatalogue } from "../lib/useMetricsCatalogue";
 import { renderMarkdown } from "../lib/markdown";
 import type { Metric } from "../lib/metrics";
@@ -30,7 +46,7 @@ const isLimited = computed(() => metrics.value.length > maxInitialNodes.value &&
 
 const phaseColorMap = computed(() => {
   const domain = phases.value.map((phase) => phase.id);
-  const scale = d3.scaleOrdinal<string, string>(d3.schemeTableau10).domain(domain);
+  const scale = scaleOrdinal<string, string>(schemeTableau10).domain(domain);
   const map = new Map<string, string>();
   for (const phase of phases.value) {
     map.set(phase.id, scale(phase.id));
@@ -38,14 +54,14 @@ const phaseColorMap = computed(() => {
   return map;
 });
 
-type GraphNode = d3.SimulationNodeDatum & {
+type GraphNode = SimulationNodeDatum & {
   id: string;
   label: string;
   phase?: string;
   role: "metric" | "phase" | "root";
 };
 
-type GraphLink = d3.SimulationLinkDatum<GraphNode> & {
+type GraphLink = SimulationLinkDatum<GraphNode> & {
   source: string | GraphNode;
   target: string | GraphNode;
   role: "phase-link" | "dependency";
@@ -138,7 +154,7 @@ function extractDescription(metric: Metric): string {
   return lines[0]?.replace(/[*_`>]/g, "").trim() ?? "";
 }
 
-let simulation: d3.Simulation<GraphNode, undefined> | null = null;
+let simulation: Simulation<GraphNode, undefined> | null = null;
 
 function stopSimulation() {
   simulation?.stop();
@@ -160,7 +176,7 @@ function renderGraph() {
   const centerY = height / 2;
   const phaseRadius = Math.min(width, height) * (isMobile.value ? 0.24 : 0.28);
 
-  const svg = d3.select(svgRef.value);
+  const svg = select(svgRef.value);
   svg.selectAll("*").remove();
   svg.attr("viewBox", `0 0 ${width} ${height}`);
 
@@ -172,15 +188,14 @@ function renderGraph() {
 
   const zoomGroup = svg.append("g").attr("class", "catalogue-graph__viewport");
 
-  const zoom = d3
-    .zoom<SVGSVGElement, unknown>()
+  const zoomBehavior = zoom<SVGSVGElement, unknown>()
     .scaleExtent([isMobile.value ? 0.35 : 0.5, isMobile.value ? 2.0 : 2.4])
-    .on("zoom", (event) => {
+    .on("zoom", (event: any) => {
       zoomGroup.attr("transform", event.transform);
     });
 
   svg.call(
-    zoom as unknown as (selection: d3.Selection<SVGSVGElement, unknown, null, undefined>) => void,
+    zoomBehavior as unknown as (selection: Selection<SVGSVGElement, unknown, null, undefined>) => void,
   );
 
   stopSimulation();
@@ -273,16 +288,16 @@ function renderGraph() {
       selectedPhaseId.value = null;
     });
 
-  const symbol = d3.symbol();
+  const symbolGenerator = symbol();
 
   nodeSelection
     .filter((node) => node.role === "root" || node.role === "phase")
     .append("path")
     .attr("d", (node) => {
       if (node.role === "root") {
-        return symbol.type(d3.symbolDiamond).size(520)();
+        return symbolGenerator.type(symbolDiamond).size(520)();
       }
-      return symbol.type(d3.symbolSquare).size(360)();
+      return symbolGenerator.type(symbolSquare).size(360)();
     })
     .attr("fill", (node) => {
       if (node.role === "root") return "#1f1749";
@@ -315,25 +330,22 @@ function renderGraph() {
   const phaseLinkDistance = isMobile.value ? 100 : 120;
   const dependencyDistance = isMobile.value ? 120 : 140;
 
-  simulation = d3
-    .forceSimulation(nodeList)
+  simulation = forceSimulation(nodeList)
     .force(
       "link",
-      d3
-        .forceLink<GraphNode, GraphLink>(linkList)
-        .id((node) => node.id)
-        .distance((link) => (link.role === "phase-link" ? phaseLinkDistance : dependencyDistance))
-        .strength((link) => (link.role === "phase-link" ? 0.95 : 0.7)),
+      forceLink<GraphNode, GraphLink>(linkList)
+        .id((node: any) => node.id)
+        .distance((link: any) => (link.role === "phase-link" ? phaseLinkDistance : dependencyDistance))
+        .strength((link: any) => (link.role === "phase-link" ? 0.95 : 0.7)),
     )
     .force(
       "charge",
-      d3.forceManyBody<GraphNode>().strength((node) => (node.role === "root" ? -520 : -320)),
+      forceManyBody<GraphNode>().strength((node) => (node.role === "root" ? -520 : -320)),
     )
-    .force("center", d3.forceCenter(centerX, centerY))
+    .force("center", forceCenter(centerX, centerY))
     .force(
       "phase-cluster",
-      d3
-        .forceX<GraphNode>()
+      forceX<GraphNode>()
         .x((node) => {
           if (node.role === "metric") {
             return phaseAnchors.get(node.phase ?? "")?.x ?? centerX;
@@ -344,8 +356,7 @@ function renderGraph() {
     )
     .force(
       "phase-cluster-y",
-      d3
-        .forceY<GraphNode>()
+      forceY<GraphNode>()
         .y((node) => {
           if (node.role === "metric") {
             return phaseAnchors.get(node.phase ?? "")?.y ?? centerY;
@@ -356,7 +367,7 @@ function renderGraph() {
     )
     .force(
       "collide",
-      d3.forceCollide<GraphNode>().radius((node) => labelRadius(node)),
+      forceCollide<GraphNode>().radius((node) => labelRadius(node)),
     )
     .on("tick", () => {
       linkSelection

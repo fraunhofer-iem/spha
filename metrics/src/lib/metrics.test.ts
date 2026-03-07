@@ -27,8 +27,13 @@ describe("loadMetricsIndex", () => {
           phase: "plan",
           markdown: "Body",
           source_path: "metrics/plan/metric-a.md",
+          search_text: "metric a metric-a body plan",
+          parents: [],
+          children: [],
+          missing_dependencies: [],
         },
       ],
+      dependency_cycles: [],
     };
 
     mockFetch(payload);

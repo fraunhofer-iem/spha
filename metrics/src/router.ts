@@ -1,9 +1,4 @@
 import { createRouter, createWebHistory } from "vue-router";
-import OverviewView from "./views/OverviewView.vue";
-import AboutView from "./views/AboutView.vue";
-import MetricsView from "./views/MetricsView.vue";
-import MetricDetailView from "./views/MetricDetailView.vue";
-import MetricGraphView from "./views/MetricGraphView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,27 +6,27 @@ const router = createRouter({
     {
       path: "/",
       name: "overview",
-      component: OverviewView,
+      component: () => import("./views/OverviewView.vue"),
     },
     {
       path: "/about",
       name: "about",
-      component: AboutView,
+      component: () => import("./views/AboutView.vue"),
     },
     {
       path: "/metrics",
       name: "metrics",
-      component: MetricsView,
+      component: () => import("./views/MetricsView.vue"),
     },
     {
       path: "/metrics/:id",
       name: "metric-detail",
-      component: MetricDetailView,
+      component: () => import("./views/MetricDetailView.vue"),
     },
     {
       path: "/graph",
       name: "metric-graph",
-      component: MetricGraphView,
+      component: () => import("./views/MetricGraphView.vue"),
     },
   ],
   scrollBehavior() {

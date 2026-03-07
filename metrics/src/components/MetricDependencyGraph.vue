@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import * as d3 from "d3";
+import { select } from "d3-selection";
+import { scaleOrdinal } from "d3-scale";
+import { schemeTableau10 } from "d3-scale-chromatic";
 import type { Metric, Phase } from "../lib/metrics";
 
 const props = defineProps<{
@@ -38,7 +40,7 @@ const hasDependencies = computed(() => props.parents.length > 0 || props.childre
 
 const phaseColorMap = computed(() => {
   const domain = props.phases.map((phase) => phase.id);
-  const scale = d3.scaleOrdinal<string, string>(d3.schemeTableau10).domain(domain);
+  const scale = scaleOrdinal<string, string>(schemeTableau10).domain(domain);
   const map = new Map<string, string>();
   for (const phase of props.phases) {
     map.set(phase.id, scale(phase.id));
@@ -56,7 +58,7 @@ const nodes = computed<GraphNodeBase[]>(() => {
     },
   ];
 
-  props.parents.forEach((parent, _) => {
+  props.parents.forEach((parent) => {
     base.push({
       id: parent.id,
       label: parent.title,
@@ -65,7 +67,7 @@ const nodes = computed<GraphNodeBase[]>(() => {
     });
   });
 
-  props.children.forEach((child, _) => {
+  props.children.forEach((child) => {
     base.push({
       id: child.id,
       label: child.title,
@@ -115,7 +117,7 @@ function renderGraph() {
   const centerX = width / 2;
   const centerY = height / 2;
 
-  const svg = d3.select(svgRef.value);
+  const svg = select(svgRef.value);
   svg.selectAll("*").remove();
   svg.attr("viewBox", `0 0 ${width} ${height}`);
 

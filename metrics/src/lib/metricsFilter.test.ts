@@ -12,6 +12,18 @@ const extraMetric = {
   related_tools: ["custom"],
   markdown: "# Description\nNo thresholds.",
   source_path: "metrics/plan-no-thresholds.md",
+  search_text: buildMetricSearchText({
+    id: "plan-no-thresholds",
+    title: "No Thresholds Metric",
+    phase: "plan",
+    tags: ["misc"],
+    related_tools: ["custom"],
+    markdown: "# Description\nNo thresholds.",
+    source_path: "metrics/plan-no-thresholds.md",
+  }),
+  parents: [],
+  children: [],
+  missing_dependencies: [],
 };
 
 const metrics = [...baseMetrics, extraMetric];

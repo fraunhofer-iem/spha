@@ -10,11 +10,60 @@
 package de.fraunhofer.iem.spha.cli.vcs
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import java.nio.file.Files
 import java.nio.file.Path
 
 /** Utility functions for Git operations. */
 object GitUtils {
     private val logger = KotlinLogging.logger {}
+    private const val gitExecutableProperty = "spha.git.executable"
+    private const val windowsOsNamePrefix = "windows"
+    private val unixGitCandidates =
+        listOf(
+            Path.of("/usr/bin/git"),
+            Path.of("/usr/local/bin/git"),
+            Path.of("/opt/homebrew/bin/git"),
+            Path.of("/opt/local/bin/git"),
+            Path.of("/bin/git"),
+        )
+    private val windowsGitCandidates =
+        listOf(
+            Path.of("C:\\Program Files\\Git\\cmd\\git.exe"),
+            Path.of("C:\\Program Files\\Git\\bin\\git.exe"),
+            Path.of("C:\\Program Files (x86)\\Git\\cmd\\git.exe"),
+            Path.of("C:\\Program Files (x86)\\Git\\bin\\git.exe"),
+        )
+
+    private fun resolveGitExecutable(): String? {
+        val configuredExecutable = System.getProperty(gitExecutableProperty)?.trim()
+        if (!configuredExecutable.isNullOrEmpty()) {
+            val configuredPath = Path.of(configuredExecutable)
+            if (!configuredPath.isAbsolute) {
+                logger.warn {
+                    "Configured git executable '$configuredExecutable' is not absolute. " +
+                        "Set -D$gitExecutableProperty to an absolute path."
+                }
+                return null
+            }
+            if (!Files.isRegularFile(configuredPath) || !Files.isExecutable(configuredPath)) {
+                logger.warn {
+                    "Configured git executable '$configuredPath' does not exist or is not executable."
+                }
+                return null
+            }
+            return configuredPath.toString()
+        }
+
+        val candidates =
+            if (System.getProperty("os.name").lowercase().startsWith(windowsOsNamePrefix)) {
+                windowsGitCandidates
+            } else {
+                unixGitCandidates
+            }
+        return candidates
+            .firstOrNull { Files.isRegularFile(it) && Files.isExecutable(it) }
+            ?.toString()
+    }
 
     /**
      * Executes a git command in a specific directory.
@@ -26,7 +75,15 @@ object GitUtils {
      */
     fun runGitCommand(workingDirectory: Path? = null, vararg args: String): String? {
         return try {
-            val processBuilder = ProcessBuilder("git", *args).redirectErrorStream(true)
+            val gitExecutable = resolveGitExecutable()
+            if (gitExecutable == null) {
+                logger.warn {
+                    "No trusted absolute git executable found. Git command execution skipped."
+                }
+                return null
+            }
+
+            val processBuilder = ProcessBuilder(gitExecutable, *args).redirectErrorStream(true)
 
             if (workingDirectory != null) {
                 processBuilder.directory(workingDirectory.toFile())

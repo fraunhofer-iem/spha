@@ -19,6 +19,9 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
 class GitUtilsTest {
+    companion object {
+        private const val gitExecutableProperty = "spha.git.executable"
+    }
 
     @Test
     fun `detectGitRepositoryUrl returns URL from actual git repository`() {
@@ -43,6 +46,22 @@ class GitUtilsTest {
             assertNull(url, "detectGitRepositoryUrl should return null in non-git directory")
         } finally {
             tempDir.toFile().deleteRecursively()
+        }
+    }
+
+    @Test
+    fun `runGitCommand rejects relative configured git executable path`() {
+        val previousValue = System.getProperty(gitExecutableProperty)
+        try {
+            System.setProperty(gitExecutableProperty, "git")
+            val output = GitUtils.runGitCommand(null, "rev-parse", "HEAD")
+            assertNull(output, "runGitCommand should return null for non-absolute configured path")
+        } finally {
+            if (previousValue == null) {
+                System.clearProperty(gitExecutableProperty)
+            } else {
+                System.setProperty(gitExecutableProperty, previousValue)
+            }
         }
     }
 

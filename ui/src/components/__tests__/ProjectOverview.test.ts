@@ -28,7 +28,7 @@ describe("ProjectOverview", () => {
             const repoInfo = createMockRepoInfo();
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.exists()).toBe(true);
@@ -38,7 +38,7 @@ describe("ProjectOverview", () => {
             const repoInfo = createMockRepoInfo();
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             const dashboardCard = wrapper.findComponent({name: "DashboardCard"});
@@ -52,7 +52,7 @@ describe("ProjectOverview", () => {
             };
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.exists()).toBe(true);
@@ -66,7 +66,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.text()).toContain("1,250");
@@ -78,7 +78,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.text()).toContain("0");
@@ -90,7 +90,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.exists()).toBe(true);
@@ -102,7 +102,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             // Component should handle this gracefully
@@ -115,7 +115,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.text()).toContain("15,420");
@@ -129,7 +129,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.text()).toContain("15");
@@ -141,7 +141,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.text()).toContain("1");
@@ -153,7 +153,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.text()).toContain("0");
@@ -165,7 +165,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.exists()).toBe(true);
@@ -177,7 +177,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.exists()).toBe(true);
@@ -191,7 +191,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             // Should display the date in some format
@@ -212,7 +212,7 @@ describe("ProjectOverview", () => {
                 });
 
                 wrapper = mount(ProjectOverview, {
-                    props: repoInfo,
+                    props: { repoInfo },
                 });
 
                 expect(wrapper.exists()).toBe(true);
@@ -225,7 +225,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.exists()).toBe(true);
@@ -237,7 +237,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.text()).toContain("Invalid date");
@@ -249,7 +249,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.exists()).toBe(true);
@@ -261,7 +261,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.exists()).toBe(true);
@@ -275,7 +275,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             const urlInput = wrapper.find("#projectUrlInput");
@@ -298,7 +298,7 @@ describe("ProjectOverview", () => {
                 });
 
                 wrapper = mount(ProjectOverview, {
-                    props: repoInfo,
+                    props: { repoInfo },
                 });
 
                 expect(wrapper.exists()).toBe(true);
@@ -311,7 +311,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             const links = wrapper.findAll("a");
@@ -328,7 +328,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             const links = wrapper.findAll("a");
@@ -348,7 +348,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.exists()).toBe(true);
@@ -360,7 +360,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             const urlInput = wrapper.find("#projectUrlInput");
@@ -373,7 +373,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.exists()).toBe(true);
@@ -385,7 +385,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.exists()).toBe(true);
@@ -402,7 +402,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.exists()).toBe(true);
@@ -414,7 +414,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.exists()).toBe(true);
@@ -426,7 +426,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.exists()).toBe(true);
@@ -443,7 +443,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.exists()).toBe(true);
@@ -464,7 +464,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.text()).toContain("500");
@@ -482,7 +482,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.text()).toContain("5");
@@ -493,7 +493,7 @@ describe("ProjectOverview", () => {
             const repoInfo = createMockRepoInfo();
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             // Look for common Bootstrap icons that might be used
@@ -507,7 +507,7 @@ describe("ProjectOverview", () => {
             const repoInfo = createMockRepoInfo();
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             // Check for Bootstrap classes
@@ -526,7 +526,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.text()).toContain("999,999");
@@ -541,14 +541,16 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.text()).toContain("100");
 
             await wrapper.setProps({
-                ...repoInfo,
-                stars: 200,
+                repoInfo: {
+                    ...repoInfo,
+                    stars: 200,
+                },
             });
 
             expect(wrapper.text()).toContain("200");
@@ -560,12 +562,14 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             await wrapper.setProps({
-                ...repoInfo,
-                projectUrl: "https://github.com/new/repo",
+                repoInfo: {
+                    ...repoInfo,
+                    projectUrl: "https://github.com/new/repo",
+                },
             });
 
             const links = wrapper.findAll("a");
@@ -582,12 +586,14 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             await wrapper.setProps({
-                ...repoInfo,
-                stars: undefined,
+                repoInfo: {
+                    ...repoInfo,
+                    stars: undefined,
+                },
             });
 
             expect(wrapper.exists()).toBe(true);
@@ -605,7 +611,7 @@ describe("ProjectOverview", () => {
             };
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.exists()).toBe(true);
@@ -619,7 +625,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.exists()).toBe(true);
@@ -634,7 +640,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.exists()).toBe(true);
@@ -644,7 +650,7 @@ describe("ProjectOverview", () => {
             const repoInfo = createMockRepoInfo({});
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             expect(wrapper.exists()).toBe(true);
@@ -658,7 +664,7 @@ describe("ProjectOverview", () => {
             });
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             const links = wrapper.findAll("a");
@@ -674,7 +680,7 @@ describe("ProjectOverview", () => {
             const repoInfo = createMockRepoInfo();
 
             wrapper = mount(ProjectOverview, {
-                props: repoInfo,
+                props: { repoInfo },
             });
 
             // Component should use semantic HTML or appropriate ARIA roles

@@ -34,35 +34,50 @@ object GitUtils {
             Path.of("C:\\Program Files (x86)\\Git\\bin\\git.exe"),
         )
 
+    @Volatile
+    private var cachedGitExecutable: String? = null
+    private var lastCheckedProperty: String? = null
+
     private fun resolveGitExecutable(): String? {
-        val configuredExecutable = System.getProperty(gitExecutableProperty)?.trim()
-        if (!configuredExecutable.isNullOrEmpty()) {
-            val configuredPath = Path.of(configuredExecutable)
+        val currentProperty = System.getProperty(gitExecutableProperty)?.trim()
+
+        // Return cached value if system property hasn't changed
+        if (currentProperty == lastCheckedProperty && cachedGitExecutable != null) {
+            return cachedGitExecutable
+        }
+
+        lastCheckedProperty = currentProperty
+
+        val resolved = if (!currentProperty.isNullOrEmpty()) {
+            val configuredPath = Path.of(currentProperty)
             if (!configuredPath.isAbsolute) {
                 logger.warn {
-                    "Configured git executable '$configuredExecutable' is not absolute. " +
+                    "Configured git executable '$currentProperty' is not absolute. " +
                         "Set -D$gitExecutableProperty to an absolute path."
                 }
-                return null
-            }
-            if (!Files.isRegularFile(configuredPath) || !Files.isExecutable(configuredPath)) {
+                null
+            } else if (!Files.isRegularFile(configuredPath) || !Files.isExecutable(configuredPath)) {
                 logger.warn {
                     "Configured git executable '$configuredPath' does not exist or is not executable."
                 }
-                return null
+                null
+            } else {
+                configuredPath.toString()
             }
-            return configuredPath.toString()
+        } else {
+            val candidates =
+                if (System.getProperty("os.name").lowercase().startsWith(windowsOsNamePrefix)) {
+                    windowsGitCandidates
+                } else {
+                    unixGitCandidates
+                }
+            candidates
+                .firstOrNull { Files.isRegularFile(it) && Files.isExecutable(it) }
+                ?.toString()
         }
 
-        val candidates =
-            if (System.getProperty("os.name").lowercase().startsWith(windowsOsNamePrefix)) {
-                windowsGitCandidates
-            } else {
-                unixGitCandidates
-            }
-        return candidates
-            .firstOrNull { Files.isRegularFile(it) && Files.isExecutable(it) }
-            ?.toString()
+        cachedGitExecutable = resolved
+        return resolved
     }
 
     /**

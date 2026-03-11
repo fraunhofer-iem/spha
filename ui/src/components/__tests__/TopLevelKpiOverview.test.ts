@@ -262,12 +262,12 @@ describe("TopLevelKpiOverview", () => {
             ]);
 
             wrapper = mount(TopLevelKpiOverview, {
-                props: kpiProps,
+                props: { root: kpiProps },
             });
 
             expect(wrapper.exists()).toBe(true);
-            expect(wrapper.props().displayName).toBe("Root KPI");
-            expect(wrapper.props().children).toHaveLength(2);
+            expect((wrapper.props().root as Kpi).displayName).toBe("Root KPI");
+            expect((wrapper.props().root as Kpi).children).toHaveLength(2);
         });
 
         it("should create chart on mount", async () => {
@@ -276,7 +276,7 @@ describe("TopLevelKpiOverview", () => {
             ]);
 
             wrapper = mount(TopLevelKpiOverview, {
-                props: kpiProps,
+                props: { root: kpiProps },
             });
 
             await flushPromises();
@@ -297,7 +297,7 @@ describe("TopLevelKpiOverview", () => {
             ]);
 
             wrapper = mount(TopLevelKpiOverview, {
-                props: kpiProps,
+                props: { root: kpiProps },
             });
 
             const vm = wrapper.vm as any;
@@ -322,7 +322,7 @@ describe("TopLevelKpiOverview", () => {
             ]);
 
             wrapper = mount(TopLevelKpiOverview, {
-                props: kpiProps,
+                props: { root: kpiProps },
             });
 
             expect(mockGetKpisOverThreshold).toHaveBeenCalledWith(kpiProps, 60);
@@ -351,7 +351,7 @@ describe("TopLevelKpiOverview", () => {
             mockGetKpiStatusColor.mockReturnValue("text-warning");
 
             wrapper = mount(TopLevelKpiOverview, {
-                props: kpiProps,
+                props: { root: kpiProps },
             });
 
             const vm = wrapper.vm as any;
@@ -371,7 +371,7 @@ describe("TopLevelKpiOverview", () => {
             mockGenerateKpiSummaryText.mockReturnValue("Great performance!");
 
             wrapper = mount(TopLevelKpiOverview, {
-                props: kpiProps,
+                props: { root: kpiProps },
             });
 
             const summaryText = wrapper.find("p.text-start");
@@ -390,7 +390,7 @@ describe("TopLevelKpiOverview", () => {
             ]);
 
             wrapper = mount(TopLevelKpiOverview, {
-                props: kpiProps,
+                props: { root: kpiProps },
             });
 
             await flushPromises();
@@ -429,7 +429,7 @@ describe("TopLevelKpiOverview", () => {
             ]);
 
             wrapper = mount(TopLevelKpiOverview, {
-                props: kpiProps,
+                props: { root: kpiProps },
             });
 
             await flushPromises();
@@ -464,7 +464,7 @@ describe("TopLevelKpiOverview", () => {
             const kpiProps = createMockKpiProps([]);
 
             wrapper = mount(TopLevelKpiOverview, {
-                props: kpiProps,
+                props: { root: kpiProps },
             });
 
             await flushPromises();
@@ -489,7 +489,7 @@ describe("TopLevelKpiOverview", () => {
             ]);
 
             wrapper = mount(TopLevelKpiOverview, {
-                props: initialProps,
+                props: { root: initialProps },
             });
 
             await flushPromises();
@@ -502,7 +502,7 @@ describe("TopLevelKpiOverview", () => {
                 { displayName: "Updated", score: 80 },
             ]);
 
-            await wrapper.setProps(newProps);
+            await wrapper.setProps({ root: newProps });
             await flushPromises();
 
             // Simulate chart recreation after prop change
@@ -523,7 +523,7 @@ describe("TopLevelKpiOverview", () => {
             const kpiProps = createMockKpiProps([{ displayName: "Test", score: 70 }]);
 
             wrapper = mount(TopLevelKpiOverview, {
-                props: kpiProps,
+                props: { root: kpiProps },
             });
 
             wrapper.unmount();
@@ -535,7 +535,7 @@ describe("TopLevelKpiOverview", () => {
             const kpiProps = createMockKpiProps([{ displayName: "Test", score: 60 }]);
 
             wrapper = mount(TopLevelKpiOverview, {
-                props: kpiProps,
+                props: { root: kpiProps },
             });
 
             // Clear previous chart creation calls from mount
@@ -556,7 +556,7 @@ describe("TopLevelKpiOverview", () => {
             const kpiProps = createMockKpiProps([]);
 
             wrapper = mount(TopLevelKpiOverview, {
-                props: kpiProps,
+                props: { root: kpiProps },
             });
 
             expect(
@@ -568,7 +568,7 @@ describe("TopLevelKpiOverview", () => {
             const kpiProps = createMockKpiProps([{ displayName: "Test", score: 75 }]);
 
             wrapper = mount(TopLevelKpiOverview, {
-                props: kpiProps,
+                props: { root: kpiProps },
             });
 
             const chartContainer = wrapper.find(".chart-container");
@@ -588,7 +588,7 @@ describe("TopLevelKpiOverview", () => {
             ]);
 
             wrapper = mount(TopLevelKpiOverview, {
-                props: kpiProps,
+                props: { root: kpiProps },
             });
 
             const button = wrapper.find("button");
@@ -606,7 +606,7 @@ describe("TopLevelKpiOverview", () => {
             ]);
 
             wrapper = mount(TopLevelKpiOverview, {
-                props: kpiProps,
+                props: { root: kpiProps },
             });
 
             const container = wrapper.find(".container");
@@ -630,7 +630,7 @@ describe("TopLevelKpiOverview", () => {
             ]);
 
             wrapper = mount(TopLevelKpiOverview, {
-                props: kpiProps,
+                props: { root: kpiProps },
             });
 
             const button = wrapper.find("button");
@@ -650,7 +650,7 @@ describe("TopLevelKpiOverview", () => {
             ]);
 
             wrapper = mount(TopLevelKpiOverview, {
-                props: kpiProps,
+                props: { root: kpiProps },
             });
 
             const button = wrapper.find("button");
@@ -677,7 +677,7 @@ describe("TopLevelKpiOverview", () => {
             ]);
 
             wrapper = mount(TopLevelKpiOverview, {
-                props: initialProps,
+                props: { root: initialProps },
             });
 
             const updatedProps = createMockKpiProps([
@@ -694,7 +694,7 @@ describe("TopLevelKpiOverview", () => {
                 percentage: 100,
             });
 
-            await wrapper.setProps(updatedProps);
+            await wrapper.setProps({ root: updatedProps });
 
             // The computed properties should trigger with the new props
             expect(mockGetKpisOverThreshold).toHaveBeenCalledWith(updatedProps, 60);
@@ -708,7 +708,7 @@ describe("TopLevelKpiOverview", () => {
             mockGenerateKpiSummaryText.mockReturnValue("Initial text");
 
             wrapper = mount(TopLevelKpiOverview, {
-                props: kpiProps,
+                props: { root: kpiProps },
             });
 
             expect(wrapper.find("p.text-start").text()).toBe("Initial text");
@@ -732,7 +732,7 @@ describe("TopLevelKpiOverview", () => {
             ]);
 
             wrapper = mount(TopLevelKpiOverview, {
-                props: updatedKpiProps,
+                props: { root: updatedKpiProps },
             });
 
             await wrapper.vm.$nextTick();
@@ -767,7 +767,7 @@ describe("TopLevelKpiOverview", () => {
             };
 
             wrapper = mount(TopLevelKpiOverview, {
-                props: kpiProps,
+                props: { root: kpiProps },
             });
 
             const vm = wrapper.vm as any;
@@ -781,7 +781,7 @@ describe("TopLevelKpiOverview", () => {
             ]);
 
             wrapper = mount(TopLevelKpiOverview, {
-                props: kpiProps,
+                props: { root: kpiProps },
             });
 
             const vm = wrapper.vm as any;
@@ -794,7 +794,7 @@ describe("TopLevelKpiOverview", () => {
             ]);
 
             wrapper = mount(TopLevelKpiOverview, {
-                props: kpiProps,
+                props: { root: kpiProps },
             });
 
             await wrapper.vm.$nextTick();
@@ -810,7 +810,7 @@ describe("TopLevelKpiOverview", () => {
             // Trigger initial chart creation
             await triggerChartCreation(wrapper);
 
-            await wrapper.setProps(newProps);
+            await wrapper.setProps({ root: newProps });
             await flushPromises();
 
             // Simulate chart recreation after deep prop change
@@ -840,7 +840,7 @@ describe("TopLevelKpiOverview", () => {
             const kpiProps = createMockKpiProps([{ displayName: "Test", score: 70 }]);
 
             wrapper = mount(TopLevelKpiOverview, {
-                props: kpiProps,
+                props: { root: kpiProps },
             });
 
             // Set chart instance to null
@@ -858,7 +858,7 @@ describe("TopLevelKpiOverview", () => {
             ]);
 
             wrapper = mount(TopLevelKpiOverview, {
-                props: kpiProps,
+                props: { root: kpiProps },
             });
 
             await flushPromises();
@@ -870,7 +870,7 @@ describe("TopLevelKpiOverview", () => {
             const initialCallCount = vi.mocked(Chart).mock.calls.length;
 
             // Update with the same props reference (should still recreate due to deep watch)
-            await wrapper.setProps(kpiProps);
+            await wrapper.setProps({ root: kpiProps });
 
             // The deep watch shouldn't trigger for the same props reference, so no new chart should be created
             expect(vi.mocked(Chart).mock.calls.length).toBe(initialCallCount); // No new chart created for same reference
@@ -885,7 +885,7 @@ describe("TopLevelKpiOverview", () => {
             const kpiProps = createMockKpiProps(manyKpis);
 
             wrapper = mount(TopLevelKpiOverview, {
-                props: kpiProps,
+                props: { root: kpiProps },
             });
 
             await wrapper.vm.$nextTick();

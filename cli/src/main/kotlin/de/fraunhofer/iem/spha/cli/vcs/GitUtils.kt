@@ -34,8 +34,7 @@ object GitUtils {
             Path.of("C:\\Program Files (x86)\\Git\\bin\\git.exe"),
         )
 
-    @Volatile
-    private var cachedGitExecutable: String? = null
+    @Volatile private var cachedGitExecutable: String? = null
     private var lastCheckedProperty: String? = null
 
     private fun resolveGitExecutable(): String? {
@@ -48,33 +47,36 @@ object GitUtils {
 
         lastCheckedProperty = currentProperty
 
-        val resolved = if (!currentProperty.isNullOrEmpty()) {
-            val configuredPath = Path.of(currentProperty)
-            if (!configuredPath.isAbsolute) {
-                logger.warn {
-                    "Configured git executable '$currentProperty' is not absolute. " +
-                        "Set -D$gitExecutableProperty to an absolute path."
-                }
-                null
-            } else if (!Files.isRegularFile(configuredPath) || !Files.isExecutable(configuredPath)) {
-                logger.warn {
-                    "Configured git executable '$configuredPath' does not exist or is not executable."
-                }
-                null
-            } else {
-                configuredPath.toString()
-            }
-        } else {
-            val candidates =
-                if (System.getProperty("os.name").lowercase().startsWith(windowsOsNamePrefix)) {
-                    windowsGitCandidates
+        val resolved =
+            if (!currentProperty.isNullOrEmpty()) {
+                val configuredPath = Path.of(currentProperty)
+                if (!configuredPath.isAbsolute) {
+                    logger.warn {
+                        "Configured git executable '$currentProperty' is not absolute. " +
+                            "Set -D$gitExecutableProperty to an absolute path."
+                    }
+                    null
+                } else if (
+                    !Files.isRegularFile(configuredPath) || !Files.isExecutable(configuredPath)
+                ) {
+                    logger.warn {
+                        "Configured git executable '$configuredPath' does not exist or is not executable."
+                    }
+                    null
                 } else {
-                    unixGitCandidates
+                    configuredPath.toString()
                 }
-            candidates
-                .firstOrNull { Files.isRegularFile(it) && Files.isExecutable(it) }
-                ?.toString()
-        }
+            } else {
+                val candidates =
+                    if (System.getProperty("os.name").lowercase().startsWith(windowsOsNamePrefix)) {
+                        windowsGitCandidates
+                    } else {
+                        unixGitCandidates
+                    }
+                candidates
+                    .firstOrNull { Files.isRegularFile(it) && Files.isExecutable(it) }
+                    ?.toString()
+            }
 
         cachedGitExecutable = resolved
         return resolved

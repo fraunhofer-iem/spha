@@ -66,7 +66,7 @@ jobs:
           java-version: "25"
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@b1bff81932f5cdfc8695c7752dcee935dcd061c8
+        uses: github/codeql-action/init@38697555549f1db7851b81482ff19f1fa5c4fedc
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build_mode }}
@@ -81,6 +81,6 @@ jobs:
         run: ./gradlew :lib:core:classes :lib:model:classes :lib:adapter:classes :cli:classes :server:classes --no-daemon --stacktrace
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@b1bff81932f5cdfc8695c7752dcee935dcd061c8
+        uses: github/codeql-action/analyze@38697555549f1db7851b81482ff19f1fa5c4fedc
         with:
           category: "/language:${{ matrix.language }}"

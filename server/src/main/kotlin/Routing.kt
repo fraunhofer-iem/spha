@@ -10,12 +10,20 @@
 package de.fraunhofer.iem.spha
 
 import io.ktor.server.application.*
+import io.ktor.server.auth.authenticate
 import io.ktor.server.http.content.*
 import io.ktor.server.routing.*
 
 fun Application.configureRouting() {
     routing {
         // Static plugin. Try to access `/static/index.html`
-        staticResources("/", "static")
+        singlePageApplication {
+            vue("static")
+            ignoreFiles { it.endsWith(".gitkeep") }
+        }
     }
+}
+
+fun Route.authenticatedApiRoutes(build: Route.() -> Unit) {
+    authenticate("auth-jwt", "auth-session") { route("/api") { build() } }
 }

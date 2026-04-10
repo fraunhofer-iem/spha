@@ -3,16 +3,28 @@ services:
     build:
       context: .
       dockerfile: server/Dockerfile
-    ports:
-      - "8080:8080"
+    expose:
+      - "8080"
     environment:
       - DATABASE_EMBEDDED=false
       - POSTGRES_URL=jdbc:postgresql://db:5432/spha_db
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+      - SPHA_REQUIRE_HTTPS=true
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - spha-network
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - spha
     networks:
       - spha-network
   db:

@@ -17,9 +17,10 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
+    // order matters, especially for routing - SPA routing must come last
+    configureDatabases()
     configureSecurity()
     configureSerialization()
     configureWebSockets()
-    configureDatabases()
     configureRouting()
 }

@@ -24,12 +24,15 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+import de.fraunhofer.iem.spha.authenticatedApiRoutes
 
 @Serializable data class ProjectChanged(val type: String = "PROJECT_CHANGED", val projectId: Int)
 
 fun Application.configureDatabases() {
     val dbConnection: Connection = connectToPostgres()
     val resultService = ResultService(dbConnection, log)
+    val userService = UserService(dbConnection, log)
+    attributes.put(UserServiceKey, userService)
 
     routing {
         val projectUpdates =
@@ -41,85 +44,87 @@ fun Application.configureDatabases() {
 
         val sharedFlow = projectUpdates.asSharedFlow()
 
-        webSocket("/api/ws/updates") {
-            val job = launch {
-                sharedFlow.collect { event -> send(Frame.Text(event.projectId.toString())) }
+        authenticatedApiRoutes {
+            webSocket("/ws/updates") {
+                val job = launch {
+                    sharedFlow.collect { event -> send(Frame.Text(event.projectId.toString())) }
+                }
+
+                try {
+                    awaitCancellation()
+                } finally {
+                    job.cancel()
+                }
             }
 
-            try {
-                awaitCancellation()
-            } finally {
-                job.cancel()
+            // Submit new SPHA tool result
+            post("/report") {
+                try {
+                    val result = call.receive<SphaToolResult>()
+                    log.debug("Received result for project: ${result.projectInfo.name}")
+                    val projectId = resultService.findOrCreateProject(result.projectInfo)
+                    val resultId = resultService.createResult(projectId, result)
+
+                    // Notify all WebSocket clients about the update
+                    projectUpdates.tryEmit(ProjectChanged(projectId = projectId))
+
+                    call.respond(
+                        HttpStatusCode.Created,
+                        mapOf("id" to resultId, "projectId" to projectId),
+                    )
+                } catch (e: io.ktor.server.plugins.BadRequestException) {
+                    log.error("Error storing result", e)
+                    call.respond(
+                        HttpStatusCode.BadRequest,
+                        mapOf("error" to (e.message ?: "Invalid request body")),
+                    )
+                } catch (e: io.ktor.server.plugins.CannotTransformContentToTypeException) {
+                    log.error("Error storing result", e)
+                    call.respond(
+                        HttpStatusCode.UnsupportedMediaType,
+                        mapOf("error" to (e.message ?: "Unsupported media type")),
+                    )
+                } catch (e: Exception) {
+                    log.error("Error storing result", e)
+                    call.respond(
+                        HttpStatusCode.InternalServerError,
+                        mapOf("error" to (e.message ?: "Unknown error")),
+                    )
+                }
             }
-        }
 
-        // Submit new SPHA tool result
-        post("/api/report") {
-            try {
-                val result = call.receive<SphaToolResult>()
-                log.debug("Received result for project: ${result.projectInfo.name}")
-                val projectId = resultService.findOrCreateProject(result.projectInfo)
-                val resultId = resultService.createResult(projectId, result)
-
-                // Notify all WebSocket clients about the update
-                projectUpdates.tryEmit(ProjectChanged(projectId = projectId))
-
-                call.respond(
-                    HttpStatusCode.Created,
-                    mapOf("id" to resultId, "projectId" to projectId),
-                )
-            } catch (e: io.ktor.server.plugins.BadRequestException) {
-                log.error("Error storing result", e)
-                call.respond(
-                    HttpStatusCode.BadRequest,
-                    mapOf("error" to (e.message ?: "Invalid request body")),
-                )
-            } catch (e: io.ktor.server.plugins.CannotTransformContentToTypeException) {
-                log.error("Error storing result", e)
-                call.respond(
-                    HttpStatusCode.UnsupportedMediaType,
-                    mapOf("error" to (e.message ?: "Unsupported media type")),
-                )
-            } catch (e: Exception) {
-                log.error("Error storing result", e)
-                call.respond(
-                    HttpStatusCode.InternalServerError,
-                    mapOf("error" to (e.message ?: "Unknown error")),
-                )
+            // Get all project IDs
+            get("/projects") {
+                try {
+                    val projectIds = resultService.getAllProjectIds()
+                    call.respond(HttpStatusCode.OK, mapOf("projectIds" to projectIds))
+                } catch (e: Exception) {
+                    log.error("Error retrieving project IDs", e)
+                    call.respond(
+                        HttpStatusCode.InternalServerError,
+                        mapOf("error" to (e.message ?: "Unknown error")),
+                    )
+                }
             }
-        }
 
-        // Get all project IDs
-        get("/api/projects") {
-            try {
-                val projectIds = resultService.getAllProjectIds()
-                call.respond(HttpStatusCode.OK, mapOf("projectIds" to projectIds))
-            } catch (e: Exception) {
-                log.error("Error retrieving project IDs", e)
-                call.respond(
-                    HttpStatusCode.InternalServerError,
-                    mapOf("error" to (e.message ?: "Unknown error")),
-                )
-            }
-        }
-
-        // Get all results for a specific project
-        get("/api/projects/{projectId}/results") {
-            try {
-                val projectId =
-                    call.parameters["projectId"]?.toIntOrNull()
-                        ?: return@get call.respond(
-                            HttpStatusCode.BadRequest,
-                            mapOf("error" to "Invalid project ID"),
-                        )
-                val results = resultService.getResultsByProjectId(projectId)
-                call.respond(HttpStatusCode.OK, mapOf("results" to results))
-            } catch (e: Exception) {
-                log.error("Error retrieving results for project", e)
-                call.respond(
-                    HttpStatusCode.InternalServerError,
-                    mapOf("error" to (e.message ?: "Unknown error")),
-                )
+            // Get all results for a specific project
+            get("/projects/{projectId}/results") {
+                try {
+                    val projectId =
+                        call.parameters["projectId"]?.toIntOrNull()
+                            ?: return@get call.respond(
+                                HttpStatusCode.BadRequest,
+                                mapOf("error" to "Invalid project ID"),
+                            )
+                    val results = resultService.getResultsByProjectId(projectId)
+                    call.respond(HttpStatusCode.OK, mapOf("results" to results))
+                } catch (e: Exception) {
+                    log.error("Error retrieving results for project", e)
+                    call.respond(
+                        HttpStatusCode.InternalServerError,
+                        mapOf("error" to (e.message ?: "Unknown error")),
+                    )
+                }
             }
         }
     }

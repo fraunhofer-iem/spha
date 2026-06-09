@@ -16,30 +16,30 @@
   },
   "dependencies": {
     "d3": "7.9.0",
-    "dompurify": "3.4.1",
+    "dompurify": "3.4.8",
     "gray-matter": "4.0.3",
     "lucide-vue-next": "1.0.0",
-    "marked": "18.0.2",
-    "vue": "3.5.33",
-    "vue-router": "5.0.6",
-    "yaml": "2.8.3",
-    "zod": "4.3.6"
+    "marked": "18.0.5",
+    "vue": "3.5.35",
+    "vue-router": "5.1.0",
+    "yaml": "2.9.0",
+    "zod": "4.4.3"
   },
   "devDependencies": {
     "@types/d3": "7.4.3",
     "@testing-library/vue": "8.1.0",
-    "@types/node": "25.6.0",
-    "@vitejs/plugin-vue": "6.0.6",
+    "@types/node": "25.9.2",
+    "@vitejs/plugin-vue": "6.0.7",
     "@vue/tsconfig": "0.9.1",
-    "happy-dom": "20.9.0",
-    "prettier": "3.8.3",
-    "tsx": "4.21.0",
+    "happy-dom": "20.10.2",
+    "prettier": "3.8.4",
+    "tsx": "4.22.4",
     "typescript": "6.0.3",
-    "vite": "8.0.10",
-    "vitest": "4.1.5",
-    "vue-tsc": "3.2.7"
+    "vite": "8.0.16",
+    "vitest": "4.1.8",
+    "vue-tsc": "3.3.4"
   },
   "overrides": {
-    "vite": "8.0.10"
+    "vite": "8.0.16"
   }
 }

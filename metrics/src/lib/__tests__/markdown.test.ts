@@ -7,6 +7,10 @@
  * License-Filename: LICENSE
  */
 
+// DOMPurify >=3.4.7 fails to sanitize nested elements under happy-dom (its
+// DOM traversal drops the parent node and skips the child), so this file runs
+// under jsdom, which faithfully mirrors real browser DOM behavior.
+// @vitest-environment jsdom
 import { describe, expect, it } from "vitest";
 import { renderMarkdown } from "./../markdown";
 

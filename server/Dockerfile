@@ -1,5 +1,5 @@
 # Stage 1: Cache Gradle dependencies
-FROM eclipse-temurin:25-jdk-alpine-3.23 AS cache
+FROM eclipse-temurin:26-jdk-alpine-3.23 AS cache
 RUN mkdir -p /home/gradle/cache_home
 ENV GRADLE_USER_HOME=/home/gradle/cache_home
 COPY build.gradle.kts gradle.properties settings.gradle.kts /home/gradle/app/
@@ -13,7 +13,7 @@ WORKDIR /home/gradle/app
 RUN ./gradlew dependencies --no-daemon -Pversion=docker-build
 
 # Stage 2: Build UI
-FROM node:25-alpine AS ui-build
+FROM node:26-alpine AS ui-build
 WORKDIR /app/ui
 COPY ui/package*.json ./
 RUN npm ci
@@ -21,7 +21,7 @@ COPY ui ./
 RUN npm run build
 
 # Stage 3: Build Application
-FROM eclipse-temurin:25-jdk-alpine-3.23 AS build
+FROM eclipse-temurin:26-jdk-alpine-3.23 AS build
 ARG VERSION=docker-build
 COPY --from=cache /home/gradle/cache_home /root/.gradle
 COPY build.gradle.kts gradle.properties settings.gradle.kts /home/gradle/src/
@@ -36,7 +36,7 @@ WORKDIR /home/gradle/src
 RUN ./gradlew :server:buildFatJar --no-daemon -Pversion=${VERSION}
 
 # Stage 4: Create the Runtime Image
-FROM eclipse-temurin:25-jre-alpine-3.23 AS runtime
+FROM eclipse-temurin:26-jre-alpine-3.23 AS runtime
 EXPOSE 8080
 RUN mkdir /app
 COPY --from=build /home/gradle/src/server/build/libs/*.jar /app/spha-server.jar

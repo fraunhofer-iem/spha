@@ -60,13 +60,13 @@ jobs:
 
       - name: Set up Java 25
         if: matrix.language == 'java-kotlin'
-        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520
+        uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a
         with:
           distribution: "temurin"
           java-version: "25"
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@8aad20d150bbac5944a9f9d289da16a4b0d87c1e
+        uses: github/codeql-action/init@99df26d4f13ea111d4ec1a7dddef6063f76b97e9
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build_mode }}
@@ -81,6 +81,6 @@ jobs:
         run: ./gradlew :lib:core:classes :lib:model:classes :lib:adapter:classes :cli:classes :server:classes --no-daemon --stacktrace
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@8aad20d150bbac5944a9f9d289da16a4b0d87c1e
+        uses: github/codeql-action/analyze@99df26d4f13ea111d4ec1a7dddef6063f76b97e9
         with:
           category: "/language:${{ matrix.language }}"

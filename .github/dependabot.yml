@@ -18,14 +18,16 @@ updates:
           - "minor"
           - "patch"
     ignore:
-      # Block only the Kotlin 2.4.1x line: CodeQL's Kotlin extractor rejects 2.4.10
+      # Block Kotlin 2.4.10: CodeQL's Kotlin extractor rejects it (supports < 2.4.10).
+      # 2.4.10 is the only 2.4.1x release (Kotlin goes 2.4.0 -> 2.4.10 -> 2.4.20), so an
+      # exact match covers the line while leaving 2.4.20+ open for Dependabot to propose.
       # TODO(security): move to Kotlin 2.4.20 when released. See github/codeql#21938
       - dependency-name: "org.jetbrains.kotlin:*"
-        versions: ["2.4.1*"]
+        versions: ["2.4.10"]
       - dependency-name: "org.jetbrains.kotlin.jvm"
-        versions: ["2.4.1*"]
+        versions: ["2.4.10"]
       - dependency-name: "org.jetbrains.kotlin.plugin.serialization"
-        versions: ["2.4.1*"]
+        versions: ["2.4.10"]
 
   - package-ecosystem: "docker" # See documentation for possible values
     directory: "/" # Location of package manifests

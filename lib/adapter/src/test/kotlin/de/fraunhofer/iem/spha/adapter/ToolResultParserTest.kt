@@ -294,6 +294,115 @@ class ToolResultParserTest {
         }
     }
 
+    // region Ticket 2: envelope-referenced-file exclusion + positive adapter matching
+
+    private val secObserveExport =
+        """{"results":[{"id":1,"vulnerability_id":"CVE-2020-0000","current_severity":"Critical","current_status":"Open","cve_found_in":[{"source":"CISA KEV"}]}]}"""
+
+    private val cycloneDxSbom =
+        """{"bomFormat":"CycloneDX","specVersion":"1.5","metadata":{"timestamp":"2020-01-01T00:00:00Z"},"components":[]}"""
+
+    /** typeIds emitted by each gate adapter, used to assert which adapter claimed a file. */
+    private fun typeIdsOf(result: AdapterResult<*>): Set<String> =
+        result.transformationResults
+            .filterIsInstance<TransformationResult.Success<*>>()
+            .map { it.rawValueKpi.typeId }
+            .toSet()
+
+    @Test
+    fun testEnvelopeReferencedDataFileIsNotProcessedTwice() {
+        // A directory holding an envelope AND the data file it references (the `analyze` layout).
+        // The data file must be processed exactly once — via its envelope — not also directly.
+        val dir = createTempDirectory("envelope-plus-data")
+        try {
+            dir.resolve("secobserve.json").toFile().writeText(secObserveExport)
+            dir.resolve("secobserve.envelope.json")
+                .toFile()
+                .writeText("""{"tool":"secobserve","result_file":"secobserve.json"}""")
+
+            val results = ToolResultParser.parseJsonFilesFromDirectory(dir.toString())
+
+            assertEquals(1, results.size, "data file should be processed once, via its envelope")
+            assertEquals(
+                setOf("KNOWN_EXPLOITED_VULNERABILITIES", "SEVERITY_THRESHOLD_FINDINGS"),
+                typeIdsOf(results.single()),
+            )
+        } finally {
+            dir.toFile().deleteRecursively()
+        }
+    }
+
+    @Test
+    fun testCycloneDxSbomIsNotClaimedBySecObserveAdapter() {
+        // A bare CycloneDX SBOM (no envelope). The permissive SecObserve DTO would previously
+        // "match" it (results defaults to empty) and emit a degenerate, fail-open KPI. With
+        // positive
+        // discriminators it must be claimed by the CycloneDX adapter only.
+        val dir = createTempDirectory("bare-cyclonedx")
+        try {
+            dir.resolve("sbom.cdx.json").toFile().writeText(cycloneDxSbom)
+
+            val results = ToolResultParser.parseJsonFilesFromDirectory(dir.toString())
+
+            assertEquals(1, results.size)
+            assertEquals(setOf("SBOM_FRESHNESS"), typeIdsOf(results.single()))
+        } finally {
+            dir.toFile().deleteRecursively()
+        }
+    }
+
+    @Test
+    fun testSecObserveExportIsNotClaimedByCycloneDxAdapter() {
+        val dir = createTempDirectory("bare-secobserve")
+        try {
+            dir.resolve("secobserve.json").toFile().writeText(secObserveExport)
+
+            val results = ToolResultParser.parseJsonFilesFromDirectory(dir.toString())
+
+            assertEquals(1, results.size)
+            assertEquals(
+                setOf("KNOWN_EXPLOITED_VULNERABILITIES", "SEVERITY_THRESHOLD_FINDINGS"),
+                typeIdsOf(results.single()),
+            )
+        } finally {
+            dir.toFile().deleteRecursively()
+        }
+    }
+
+    @Test
+    fun testMixedEnvelopeDirectoryProcessesEachLogicalInputExactlyOnce() {
+        // The exact ticket scenario: two envelopes + their two data files in one directory.
+        // Expect exactly two results (one SecObserve, one CycloneDX), no duplicates and no
+        // cross-adapter mis-match.
+        val dir = createTempDirectory("mixed-envelopes")
+        try {
+            dir.resolve("secobserve.json").toFile().writeText(secObserveExport)
+            dir.resolve("secobserve.envelope.json")
+                .toFile()
+                .writeText("""{"tool":"secobserve","result_file":"secobserve.json"}""")
+            dir.resolve("sbom.cdx.json").toFile().writeText(cycloneDxSbom)
+            dir.resolve("sbom.envelope.json")
+                .toFile()
+                .writeText("""{"tool":"cyclonedx","result_file":"sbom.cdx.json"}""")
+
+            val results = ToolResultParser.parseJsonFilesFromDirectory(dir.toString())
+
+            assertEquals(2, results.size, "two logical inputs → two results, no duplicates")
+            val emitted = results.map { typeIdsOf(it) }.toSet()
+            assertEquals(
+                setOf(
+                    setOf("KNOWN_EXPLOITED_VULNERABILITIES", "SEVERITY_THRESHOLD_FINDINGS"),
+                    setOf("SBOM_FRESHNESS"),
+                ),
+                emitted,
+            )
+        } finally {
+            dir.toFile().deleteRecursively()
+        }
+    }
+
+    // endregion
+
     private fun createEnvelopeFile(toolId: String, resultFileName: String): Pair<Path, File> {
         val resultFile = File("$testResourcesDir/$resultFileName")
         return createEnvelopeFileWithPath(toolId, resultFile.absolutePath.replace("\\", "/"))

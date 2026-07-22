@@ -22,6 +22,9 @@ import java.nio.file.Paths
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 
 /** A processor that attempts to parse and transform content for a specific tool. */
 internal interface ToolProcessor {
@@ -54,11 +57,17 @@ internal interface ToolProcessor {
  *
  * @param T The specific [ToolResult] DTO type.
  * @property serializer The `KSerializer` for the type `T`.
+ * @property matches An optional positive discriminator. When set, [tryProcess] accepts the content
+ *   only if the parsed JSON satisfies this predicate. This guards against permissive DTOs (all
+ *   fields optional) that would otherwise deserialize — and thus silently "match" — essentially any
+ *   JSON object, e.g. a CycloneDX SBOM being claimed by the SecObserve adapter. Processors whose
+ *   DTO already has a mandatory field can leave this `null` and rely on `SerializationException`.
  * @property transform The function to convert the decoded object of type `T` into the result.
  */
 internal class ToolProcessorImpl<T : ToolResult>(
     override val id: String,
     private val serializer: KSerializer<T>,
+    private val matches: ((JsonElement) -> Boolean)? = null,
     private val transform: (T) -> AdapterResult<*>,
 ) : ToolProcessor {
 
@@ -67,6 +76,15 @@ internal class ToolProcessorImpl<T : ToolResult>(
 
     override fun tryProcess(content: String): AdapterResult<*>? {
         return try {
+            // Positive matching: when a discriminator is defined, the content must satisfy it
+            // before
+            // this processor claims the file. Without it, an all-optional DTO never throws and
+            // would
+            // match unrelated JSON (a fail-open hazard for absence-implies-pass gate KPIs).
+            if (matches != null) {
+                val element = ToolProcessor.jsonParser.parseToJsonElement(content)
+                if (!matches.invoke(element)) return null
+            }
             val resultObject = ToolProcessor.jsonParser.decodeFromString(serializer, content)
             transform(resultObject)
         } catch (_: SerializationException) {
@@ -115,8 +133,48 @@ object ToolResultParser {
             return emptyList()
         }
 
-        return getAdapterResultsFromJsonFiles(jsonFiles)
+        // A directory produced for `analyze` typically holds both envelope files and the data files
+        // they reference. Those data files are routed explicitly through their envelope, so exclude
+        // them from the flat scan. Otherwise each data file is processed twice (once directly, once
+        // via the envelope) and — worse — a permissive adapter may claim a data file it does not
+        // own
+        // before the correct envelope-routed processor runs.
+        val referenced = envelopeReferencedFiles(jsonFiles)
+        val filesToScan = jsonFiles.filterNot { referenced.contains(it.canonicalFileOrSelf()) }
+        val excluded = jsonFiles.size - filesToScan.size
+        if (excluded > 0) {
+            logger.debug {
+                "Excluding $excluded envelope-referenced data file(s) from the direct scan; they are processed via their envelope."
+            }
+        }
+
+        return getAdapterResultsFromJsonFiles(filesToScan)
     }
+
+    /**
+     * Resolves the set of data files referenced by envelope files within [jsonFiles]. Paths are
+     * canonicalized so they can be compared against the scanned files regardless of how they were
+     * expressed in the envelope (absolute, or relative to the envelope's directory).
+     */
+    private fun envelopeReferencedFiles(jsonFiles: List<File>): Set<File> {
+        val referenced = mutableSetOf<File>()
+        for (file in jsonFiles) {
+            val content = runCatching { file.readText(Charsets.UTF_8) }.getOrNull() ?: continue
+            val envelope =
+                when (val parseResult = tryParseEnvelope(content)) {
+                    is EnvelopeParseResult.Success -> parseResult.envelope
+                    is EnvelopeParseResult.NotAnEnvelope -> continue
+                }
+            val resultFilePath = Paths.get(envelope.resultFile)
+            val resultFile =
+                if (resultFilePath.isAbsolute) resultFilePath.toFile()
+                else file.parentFile?.resolve(envelope.resultFile) ?: File(envelope.resultFile)
+            referenced.add(resultFile.canonicalFileOrSelf())
+        }
+        return referenced
+    }
+
+    private fun File.canonicalFileOrSelf(): File = runCatching { canonicalFile }.getOrDefault(this)
 
     fun getAdapterResultsFromJsonFiles(jsonFiles: List<File>): List<AdapterResult<*>> {
 
@@ -298,12 +356,26 @@ internal object ToolProcessorStore {
                 },
             // Quality gate (ADR-6): B1/B2 from SecObserve findings, B3 from the CycloneDX SBOM.
             // Routed by envelope `tool` id — see ci/demo-project/gate/ and the gate CI job.
+            // Both DTOs are intentionally lenient (real exports carry no single guaranteed field),
+            // so each declares a positive discriminator to avoid claiming the other's files (or any
+            // unrelated JSON) through the permissive `tryProcess` fallback.
             "secobserve" to
-                ToolProcessorImpl("secobserve", SecObserveDto.serializer()) {
+                ToolProcessorImpl(
+                    "secobserve",
+                    SecObserveDto.serializer(),
+                    // A SecObserve export is the paginated observation list `{ "results": [ ... ]
+                    // }`.
+                    matches = { it is JsonObject && it["results"] is JsonArray },
+                ) {
                     SecObserveAdapter.transformDataToKpi(it)
                 },
             "cyclonedx" to
-                ToolProcessorImpl("cyclonedx", CycloneDxSbomDto.serializer()) {
+                ToolProcessorImpl(
+                    "cyclonedx",
+                    CycloneDxSbomDto.serializer(),
+                    // CycloneDX JSON is identified by its `bomFormat` / `specVersion` markers.
+                    matches = { it is JsonObject && ("bomFormat" in it || "specVersion" in it) },
+                ) {
                     CycloneDxAdapter.transformDataToKpi(it)
                 },
         )

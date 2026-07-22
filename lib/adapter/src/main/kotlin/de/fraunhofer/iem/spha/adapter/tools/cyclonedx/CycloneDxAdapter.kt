@@ -24,21 +24,23 @@ import java.time.OffsetDateTime
  * `TrivyAdapter`). It reads a `.cdx.json` document and derives SBOM-level KPIs.
  *
  * Today it emits a single KPI — [KpiType.SBOM_FRESHNESS] (gate B3) — but it is deliberately
- * structured as a format adapter, not a single-KPI adapter: additional SBOM-derived KPIs
- * (component count, presence of a valid `metadata.component`, spec-version checks, …) can be added
- * as further [TransformationResult]s in [transformDataToKpi] without a new adapter or registration.
+ * structured as a format adapter, not a single-KPI adapter: additional SBOM-derived KPIs (component
+ * count, presence of a valid `metadata.component`, spec-version checks, …) can be added as further
+ * [TransformationResult]s in [transformDataToKpi] without a new adapter or registration.
  *
  * Freshness: 100 if the document is CycloneDX and `metadata.timestamp` is in the past and within
  * the freshness window, else 0 (fail-closed — a non-CycloneDX document, an absent/unparseable
  * timestamp, or a future timestamp all score 0; missing SBOM data must never silently pass). Window
- * is `SBOM_FRESHNESS_MAX_AGE_HOURS` (default 24), so CI can tune it without CLI changes. This is the
- * in-SPHA equivalent of the interim `gate/sbom-freshness.sh` used on the `calculate` path.
+ * is `SBOM_FRESHNESS_MAX_AGE_HOURS` (default 24), so CI can tune it without CLI changes. This is
+ * the in-SPHA equivalent of the interim `gate/sbom-freshness.sh` used on the `calculate` path.
  */
 object CycloneDxAdapter : KpiAdapter<CycloneDxSbomDto, CycloneDxSbomDto>() {
 
     private const val DEFAULT_MAX_AGE_HOURS = 24L
 
-    override fun transformDataToKpi(vararg data: CycloneDxSbomDto): AdapterResult<CycloneDxSbomDto> {
+    override fun transformDataToKpi(
+        vararg data: CycloneDxSbomDto
+    ): AdapterResult<CycloneDxSbomDto> {
         val sbom = data.firstOrNull()
 
         return AdapterResult(

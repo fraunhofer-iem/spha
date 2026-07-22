@@ -18,6 +18,7 @@ import com.github.ajalt.clikt.parameters.options.option
 import de.fraunhofer.iem.spha.cli.commands.AnalyzeRepositoryCommand
 import de.fraunhofer.iem.spha.cli.commands.CalculateKpiCommand
 import de.fraunhofer.iem.spha.cli.commands.DefaultKpiCalculatorService
+import de.fraunhofer.iem.spha.cli.commands.GateCommand
 import de.fraunhofer.iem.spha.cli.commands.KpiCalculatorService
 import de.fraunhofer.iem.spha.cli.commands.ReportCommand
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -34,17 +35,28 @@ internal val appModules = module {
     single<KpiCalculatorService> { DefaultKpiCalculatorService() }
 }
 
+/** Exit code used by the `gate` subcommand when a blocking KPI does not pass (fail-closed). */
+internal const val GATE_EXIT_CODE = 1
+
+/** Exit code for an unexpected internal error, kept distinct from a clean [GATE_EXIT_CODE]. */
+internal const val ERROR_EXIT_CODE = 2
+
 suspend fun main(args: Array<String>) {
     startKoin { modules(appModules) }
 
     try {
         MainSphaToolCommand()
-            .subcommands(CalculateKpiCommand(), ReportCommand(), AnalyzeRepositoryCommand())
+            .subcommands(
+                CalculateKpiCommand(),
+                ReportCommand(),
+                AnalyzeRepositoryCommand(),
+                GateCommand(),
+            )
             .main(args)
     } catch (e: Exception) {
         val logger = KotlinLogging.logger {}
         logger.error(e) { e.message }
-        exitProcess(1)
+        exitProcess(ERROR_EXIT_CODE)
     }
 }
 
@@ -86,14 +98,6 @@ internal abstract class SphaToolCommandBase(name: String? = null, val help: Stri
     private val _lazyLogger = lazy { KotlinLogging.logger {} }
     protected val Logger
         get() = _lazyLogger.value
-
-    val strict by
-        option(
-                "--strict",
-                help =
-                    "When set, the application is less tolerant to unknown input formats. Default is unset.",
-            )
-            .flag()
 
     override suspend fun run() {
         Logger.trace {

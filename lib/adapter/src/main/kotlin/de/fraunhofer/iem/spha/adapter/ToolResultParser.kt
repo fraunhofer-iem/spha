@@ -10,6 +10,8 @@
 package de.fraunhofer.iem.spha.adapter
 
 import de.fraunhofer.iem.spha.adapter.tools.osv.OsvAdapter
+import de.fraunhofer.iem.spha.adapter.tools.sbom.SbomFreshnessAdapter
+import de.fraunhofer.iem.spha.adapter.tools.secobserve.SecObserveAdapter
 import de.fraunhofer.iem.spha.adapter.tools.tlc.TlcAdapter
 import de.fraunhofer.iem.spha.adapter.tools.trivy.TrivyAdapter
 import de.fraunhofer.iem.spha.adapter.tools.trufflehog.TrufflehogNdjsonProcessor
@@ -293,6 +295,16 @@ internal object ToolProcessorStore {
             "technicalLag" to
                 ToolProcessorImpl("technicalLag", TlcDto.serializer()) {
                     TlcAdapter.transformDataToKpi(it)
+                },
+            // Quality gate (ADR-6): B1/B2 from SecObserve findings, B3 from the CycloneDX SBOM.
+            // Routed by envelope `tool` id — see ci/demo-project/gate/ and the gate CI job.
+            "secobserve" to
+                ToolProcessorImpl("secobserve", SecObserveDto.serializer()) {
+                    SecObserveAdapter.transformDataToKpi(it)
+                },
+            "sbom-freshness" to
+                ToolProcessorImpl("sbom-freshness", CycloneDxSbomDto.serializer()) {
+                    SbomFreshnessAdapter.transformDataToKpi(it)
                 },
         )
 }

@@ -1,0 +1,7 @@
+# Keep the CLI image build hermetic and independent of local build state: never send Gradle
+# outputs or caches into the build context (they can be root-owned from container builds and
+# break the context sender, and they bloat the context regardless).
+**/build/
+**/.gradle/
+.gradle/
+.git/

@@ -30,6 +30,14 @@ enum class KpiType {
     TECHNICAL_LAG_DEV_DIRECT_COMPONENT,
     TECHNICAL_LAG_PROD_DIRECT_COMPONENT,
 
+    // Quality-gate raw-value KPIs (SecObserve + SBOM; boolean 100=pass / 0=fail).
+    // B1: 100 = no non-suppressed known-exploited (KEV) finding, 0 = at least one.
+    KNOWN_EXPLOITED_VULNERABILITIES,
+    // B2: 100 = no non-suppressed finding at/over the severity threshold, 0 = at least one.
+    SEVERITY_THRESHOLD_FINDINGS,
+    // B3: 100 = a valid CycloneDX SBOM within the freshness window, 0 = stale/missing/invalid.
+    SBOM_FRESHNESS,
+
     // Calculated KPIs
     QUALITY,
     TECHNICAL_LAG,
@@ -47,6 +55,9 @@ enum class KpiType {
     SECURITY,
     MAXIMAL_VULNERABILITY,
     DOCUMENTATION,
+
+    // Quality-gate aggregate: AND over B1/B2/B3 (100 iff all three leaves are 100).
+    BLOCKING_GATE,
 
     // ROOT
     ROOT,

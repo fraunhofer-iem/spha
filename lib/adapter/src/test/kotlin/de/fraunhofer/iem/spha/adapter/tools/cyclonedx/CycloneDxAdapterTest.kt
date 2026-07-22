@@ -7,7 +7,7 @@
  * License-Filename: LICENSE
  */
 
-package de.fraunhofer.iem.spha.adapter.tools.sbom
+package de.fraunhofer.iem.spha.adapter.tools.cyclonedx
 
 import de.fraunhofer.iem.spha.adapter.TransformationResult
 import de.fraunhofer.iem.spha.model.adapter.CycloneDxMetadataDto
@@ -18,10 +18,10 @@ import java.time.temporal.ChronoUnit
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class SbomFreshnessAdapterTest {
+class CycloneDxAdapterTest {
 
     private fun score(sbom: CycloneDxSbomDto): Int {
-        val result = SbomFreshnessAdapter.transformDataToKpi(sbom)
+        val result = CycloneDxAdapter.transformDataToKpi(sbom)
         val kpi =
             result.transformationResults
                 .filterIsInstance<TransformationResult.Success.Kpi<*>>()

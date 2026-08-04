@@ -39,17 +39,17 @@
   },
   "devDependencies": {
     "@types/bootstrap": "5.2.11",
-    "@types/node": "26.1.1",
+    "@types/node": "26.1.2",
     "@vitejs/plugin-vue": "6.0.8",
     "@vitest/coverage-v8": "4.1.10",
     "@vue/test-utils": "2.4.11",
     "@vue/tsconfig": "0.9.1",
     "jsdom": "29.1.1",
-    "sass": "1.101.3",
+    "sass": "1.102.0",
     "typescript": "6.0.3",
-    "vite": "8.1.5",
+    "vite": "8.2.0",
     "vite-plugin-singlefile": "2.3.3",
     "vitest": "4.1.10",
-    "vue-tsc": "3.3.7"
+    "vue-tsc": "3.3.9"
   }
 }

@@ -35,7 +35,4 @@ data class CycloneDXRating(
     @SerialName("vector") val vector: String? = null,
 )
 
-@Serializable
-data class CycloneDXAffects(
-    @SerialName("ref") val ref: String? = null
-)
+@Serializable data class CycloneDXAffects(@SerialName("ref") val ref: String? = null)

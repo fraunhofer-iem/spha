@@ -142,7 +142,7 @@ class ToolResultParserTest {
                     File("$testResourcesDir/trivy-result-v2.json"),
                     envelopeFile,
                     File("$testResourcesDir/techLag-npm-vuejs.json"),
-                    File("$testResourcesDir/blackduck-cyclonedx.json"),
+                    File("$testResourcesDir/cyclonedx.json"),
                 )
 
             val results = ToolResultParser.getAdapterResultsFromJsonFiles(jsonFiles)
@@ -328,7 +328,7 @@ class ToolResultParserTest {
                 Arguments.of("trivy", "trivy-result-v2.json"),
                 Arguments.of("trufflehog", "trufflehog-ndjson.json"),
                 Arguments.of("technicalLag", "techLag-npm-vuejs.json"),
-                Arguments.of("blackduck", "blackduck-cyclonedx.json"),
+                Arguments.of("cyclonedx", "cyclonedx.json"),
             )
 
         @JvmStatic
@@ -354,9 +354,9 @@ class ToolResultParserTest {
                     "reference to directory instead of file",
                 ),
                 Arguments.of(
-                    "blackduck",
+                    "cyclonedx",
                     osvResultFile.absolutePath.replace("\\", "/"),
-                    "blackduck tool ID with osv-scanner file",
+                    "cyclonedx tool ID with osv-scanner file",
                 ),
             )
         }

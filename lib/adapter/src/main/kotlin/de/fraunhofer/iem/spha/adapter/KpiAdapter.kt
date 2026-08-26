@@ -51,12 +51,13 @@ data class AdapterResult<T : Origin>(
 @Serializable
 sealed class TransformationResult<out T : Origin> {
     /**
-     * @param origin describes the data that the RawValueKpi was created from. If, for some reason,
-     *   no origin data is available, T should be set to Unit.
+     * @param origin describes the data that the RawValueKpi was created from, or null when the KPI
+     *   does not derive from a single reported finding. A tool that ran and reported nothing has a
+     *   score but no finding to point at.
      */
-    sealed class Success<T : Origin>(val rawValueKpi: RawValueKpi, val origin: T) :
+    sealed class Success<T : Origin>(val rawValueKpi: RawValueKpi, val origin: T?) :
         TransformationResult<T>() {
-        class Kpi<T : Origin>(rawValueKpi: RawValueKpi, origin: T) :
+        class Kpi<T : Origin>(rawValueKpi: RawValueKpi, origin: T? = null) :
             Success<T>(rawValueKpi, origin)
 
         override fun toString(): String {

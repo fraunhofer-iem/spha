@@ -18,17 +18,34 @@ import de.fraunhofer.iem.spha.model.adapter.CycloneDXDto
 import de.fraunhofer.iem.spha.model.adapter.CycloneDXVulnerabilityDto
 import de.fraunhofer.iem.spha.model.adapter.ToolInfo
 import de.fraunhofer.iem.spha.model.kpi.KpiType
+import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 
 object CycloneDXAdapter : KpiAdapter<CycloneDXDto, CycloneDXVulnerabilityDto>() {
+
+    private const val NO_VULNERABILITY_SCORE = 100
 
     override fun transformDataToKpi(
         vararg data: CycloneDXDto
     ): AdapterResult<CycloneDXVulnerabilityDto> {
         require(data.all { it.bomFormat == "CycloneDX" }) { "Input is not a CycloneDX document" }
+        val vulnerabilities = data.flatMap { it.vulnerabilities }
+
         val transformedData =
-            data
-                .flatMap { it.vulnerabilities }
-                .map { vuln ->
+            if (vulnerabilities.isEmpty()) {
+                logger.info {
+                    "CycloneDX document reports no vulnerabilities. " +
+                        "Reporting ${KpiType.CODE_VULNERABILITY_SCORE.name} as $NO_VULNERABILITY_SCORE."
+                }
+                listOf(
+                    TransformationResult.Success.Kpi<CycloneDXVulnerabilityDto>(
+                        RawValueKpi(
+                            typeId = KpiType.CODE_VULNERABILITY_SCORE.name,
+                            score = NO_VULNERABILITY_SCORE,
+                        )
+                    )
+                )
+            } else {
+                vulnerabilities.map { vuln ->
                     val score =
                         getHighestCvssScore(vuln)
                             ?: return@map TransformationResult.Error(
@@ -41,6 +58,8 @@ object CycloneDXAdapter : KpiAdapter<CycloneDXDto, CycloneDXVulnerabilityDto>() 
                             )
                     return@map TransformationResult.Success.Kpi(rawValueKpi, vuln)
                 }
+            }
+
         return AdapterResult(
             toolInfo =
                 ToolInfo(

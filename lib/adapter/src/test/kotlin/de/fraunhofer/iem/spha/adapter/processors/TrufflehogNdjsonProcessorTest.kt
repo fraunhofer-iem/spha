@@ -15,6 +15,7 @@ import de.fraunhofer.iem.spha.adapter.TransformationResult
 import de.fraunhofer.iem.spha.adapter.tools.trufflehog.TrufflehogNdjsonProcessor
 import de.fraunhofer.iem.spha.model.adapter.TrufflehogResultDto
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 class TrufflehogNdjsonProcessorTest : AbstractProcessorTest<TrufflehogResultDto>() {
 
@@ -47,7 +48,7 @@ class TrufflehogNdjsonProcessorTest : AbstractProcessorTest<TrufflehogResultDto>
                 // No verified secrets (both findings have Verified=false), so score should be 100
                 kpis.forEach {
                     assertEquals(100, (it as TransformationResult.Success.Kpi).rawValueKpi.score)
-                    assertEquals(2, it.origin.findings.size)
+                    assertEquals(2, assertNotNull(it.origin).findings.size)
                 }
             }
             "trufflehog-ndjson-verified.json" -> {
@@ -56,7 +57,7 @@ class TrufflehogNdjsonProcessorTest : AbstractProcessorTest<TrufflehogResultDto>
                 // One verified secret found, so score should be 0 for all KPIs
                 kpis.forEach {
                     assertEquals(0, (it as TransformationResult.Success.Kpi).rawValueKpi.score)
-                    assertEquals(2, it.origin.findings.size)
+                    assertEquals(2, assertNotNull(it.origin).findings.size)
                 }
             }
         }

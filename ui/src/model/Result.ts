@@ -144,7 +144,7 @@ export class Product {
     
     this.results.forEach((result) => {
       const date = new Date(result.createdAt);
-      labels.push(date.toLocaleDateString());
+      labels.push(`${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`);
       data.push(result.healthScore);
     });
     

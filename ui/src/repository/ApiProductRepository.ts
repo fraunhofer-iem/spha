@@ -11,6 +11,12 @@ import type { ProductRepository } from './ProductRepository';
 import { Product, type Result } from '../model/Result';
 import { parse } from '../util/Parser';
 
+export function sortResultsOldestFirst(results: Result[]): Result[] {
+    return results.sort(
+        (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+}
+
 /**
  * API-based repository that fetches products from the server
  */
@@ -65,17 +71,18 @@ export class ApiProductRepository implements ProductRepository {
                 }
 
                 if (parsedResults.length > 0) {
-                    // Create a product from the first result
-                    const firstResult = parsedResults[0];
-                    const productName = firstResult?.repoInfo.projectName || `Product ${projectId}`;
+                    sortResultsOldestFirst(parsedResults);
+
+                    const newestResult = parsedResults[parsedResults.length - 1];
+                    const productName = newestResult?.repoInfo.projectName || `Product ${projectId}`;
 
                     const product = new Product(
                         `product-${projectId}`,
                         productName,
                         parsedResults,
                         `Analysis results for ${productName}`,
-                        firstResult?.repoInfo.version,
-                        firstResult?.createdAt
+                        newestResult?.repoInfo.version,
+                        newestResult?.createdAt
                     );
 
                     products.push(product);

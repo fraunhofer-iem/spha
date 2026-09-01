@@ -66,7 +66,7 @@ jobs:
           java-version: "25"
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@e0647621c2984b5ed2f768cb892365bf2a616ad1
+        uses: github/codeql-action/init@cdf488f595d80d6e07e03d4674febd5ab45fa938
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build_mode }}
@@ -74,13 +74,13 @@ jobs:
 
       - name: Setup Gradle
         if: matrix.language == 'java-kotlin'
-        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb
 
       - name: Build Kotlin projects for CodeQL
         if: matrix.language == 'java-kotlin'
         run: ./gradlew :lib:core:classes :lib:model:classes :lib:adapter:classes :cli:classes :server:classes --no-daemon --stacktrace
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@e0647621c2984b5ed2f768cb892365bf2a616ad1
+        uses: github/codeql-action/analyze@cdf488f595d80d6e07e03d4674febd5ab45fa938
         with:
           category: "/language:${{ matrix.language }}"

@@ -23,11 +23,16 @@ import de.fraunhofer.iem.spha.model.kpi.RawValueKpi
 object CycloneDXAdapter : KpiAdapter<CycloneDXDto, CycloneDXVulnerabilityDto>() {
 
     private const val NO_VULNERABILITY_SCORE = 100
+    private val SUPPORTED_SPEC_VERSIONS = setOf("1.4", "1.5", "1.6")
 
     override fun transformDataToKpi(
         vararg data: CycloneDXDto
     ): AdapterResult<CycloneDXVulnerabilityDto> {
         require(data.all { it.bomFormat == "CycloneDX" }) { "Input is not a CycloneDX document" }
+        require(data.all { it.specVersion in SUPPORTED_SPEC_VERSIONS }) {
+            "Unsupported CycloneDX specVersion. Supported: $SUPPORTED_SPEC_VERSIONS"
+        }
+
         val vulnerabilities = data.flatMap { it.vulnerabilities }
 
         val transformedData =
@@ -71,13 +76,21 @@ object CycloneDXAdapter : KpiAdapter<CycloneDXDto, CycloneDXVulnerabilityDto>() 
     }
 
     private fun getHighestCvssScore(vulnerability: CycloneDXVulnerabilityDto): Double? {
-        // Collect all numeric scores from the ratings array and clamp to the
-        // valid CVSS range expected by transformVulnerabilityToKpi (0.0 - 10.0).
-        val scores = vulnerability.ratings.mapNotNull { it.score }
+        val scores =
+            vulnerability.ratings.mapNotNull { rating ->
+                val raw = rating.score ?: rating.severity?.score ?: return@mapNotNull null
+                if (raw !in 0.0..10.0) {
+                    logger.warn {
+                        "Rating for vulnerability '${vulnerability.id}' has out-of-range score $raw. Rejecting!"
+                    }
+                    return null // reject the whole vulnerability -> DATA_VALIDATION_ERROR
+                }
+                raw
+            }
 
         if (scores.isEmpty()) {
             logger.debug {
-                "Reported vulnerability '${vulnerability.id}' does not have a score. Skipping!"
+                "Reported vulnerability '${vulnerability.id}' does not have a score or severity. Skipping!"
             }
             return null
         }

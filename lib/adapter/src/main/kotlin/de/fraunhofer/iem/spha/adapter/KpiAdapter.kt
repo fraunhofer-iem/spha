@@ -30,6 +30,7 @@ abstract class KpiAdapter<T : ToolResult, O : Origin> {
     protected val jsonParser = Json {
         ignoreUnknownKeys = true
         explicitNulls = false
+        coerceInputValues = true
     }
 
     protected val logger = KotlinLogging.logger {}

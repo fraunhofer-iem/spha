@@ -13,6 +13,7 @@ import de.fraunhofer.iem.spha.adapter.ErrorType
 import de.fraunhofer.iem.spha.adapter.TransformationResult
 import de.fraunhofer.iem.spha.model.adapter.CycloneDXDto
 import de.fraunhofer.iem.spha.model.adapter.CycloneDXRating
+import de.fraunhofer.iem.spha.model.adapter.CycloneDXSeverity
 import de.fraunhofer.iem.spha.model.adapter.CycloneDXVulnerabilityDto
 import de.fraunhofer.iem.spha.model.kpi.KpiType
 import java.nio.file.Files
@@ -22,8 +23,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlinx.serialization.MissingFieldException
 import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
 
 class CycloneDXAdapterTest {
@@ -114,13 +118,12 @@ class CycloneDXAdapterTest {
     }
 
     @Test
-    fun testRatingsWithNullScoresProducesError() {
-        // ratings present but no numeric score -> mapNotNull yields empty -> Error
+    fun testRatingsWithNullScoreAndNullSeverityProducesError() {
         val dto =
             dtoWith(
                 CycloneDXVulnerabilityDto(
                     id = "NULL-SCORE",
-                    ratings = listOf(CycloneDXRating(score = null, severity = "high")),
+                    ratings = listOf(CycloneDXRating(score = null, severity = null)),
                 )
             )
 
@@ -128,6 +131,91 @@ class CycloneDXAdapterTest {
         val first = result.first()
         assertTrue(first is TransformationResult.Error)
         assertEquals(ErrorType.DATA_VALIDATION_ERROR, first.type)
+    }
+
+    @Test
+    fun testSeverityUsedWhenScoreMissing() {
+        val dto =
+            dtoWith(
+                CycloneDXVulnerabilityDto(
+                    id = "SEVERITY-ONLY",
+                    ratings =
+                        listOf(CycloneDXRating(score = null, severity = CycloneDXSeverity.HIGH)),
+                )
+            )
+
+        val result = CycloneDXAdapter.transformDataToKpi(dto).transformationResults
+        val first = result.first()
+        assertTrue(first is TransformationResult.Success)
+        // HIGH -> 8.0 -> KPI score 20
+        assertEquals(20, (first as TransformationResult.Success.Kpi).rawValueKpi.score)
+    }
+
+    @Test
+    fun testNumericScoreTakesPrecedenceOverSeverity() {
+        val dto =
+            dtoWith(
+                CycloneDXVulnerabilityDto(
+                    id = "SCORE-WINS",
+                    ratings =
+                        listOf(CycloneDXRating(score = 2.0, severity = CycloneDXSeverity.CRITICAL)),
+                )
+            )
+
+        val result = CycloneDXAdapter.transformDataToKpi(dto).transformationResults
+        val first = result.first()
+        assertTrue(first is TransformationResult.Success)
+        // 2.0 used, not CRITICAL's 9.5 -> score 80
+        assertEquals(80, (first as TransformationResult.Success.Kpi).rawValueKpi.score)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "CRITICAL,5",
+        "HIGH,20",
+        "MEDIUM,45",
+        "LOW,80",
+        "INFO,100",
+        "NONE,100",
+        "UNKNOWN,100",
+    )
+    fun testSeverityMapping(severity: CycloneDXSeverity, expectedKpiScore: Int) {
+        val dto =
+            dtoWith(
+                CycloneDXVulnerabilityDto(
+                    id = "SEV-${severity.name}",
+                    ratings = listOf(CycloneDXRating(severity = severity)),
+                )
+            )
+
+        val result = CycloneDXAdapter.transformDataToKpi(dto).transformationResults
+        val first = result.first()
+        assertTrue(first is TransformationResult.Success)
+        assertEquals(
+            expectedKpiScore,
+            (first as TransformationResult.Success.Kpi).rawValueKpi.score,
+        )
+    }
+
+    @Test
+    fun testUnsupportedSpecVersionThrows() {
+        val dto =
+            CycloneDXDto(bomFormat = "CycloneDX", specVersion = "1.3", vulnerabilities = listOf())
+        assertThrows<IllegalArgumentException> { CycloneDXAdapter.transformDataToKpi(dto) }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["1.4", "1.5", "1.6"])
+    fun testSupportedSpecVersions(version: String) {
+        val dto =
+            CycloneDXDto(bomFormat = "CycloneDX", specVersion = version, vulnerabilities = listOf())
+        assertDoesNotThrow { CycloneDXAdapter.transformDataToKpi(dto) }
+    }
+
+    @Test
+    fun testWrongBomFormatThrows() {
+        val dto = CycloneDXDto(bomFormat = "SPDX", specVersion = "1.6", vulnerabilities = listOf())
+        assertThrows<IllegalArgumentException> { CycloneDXAdapter.transformDataToKpi(dto) }
     }
 
     @Test
@@ -201,9 +289,32 @@ class CycloneDXAdapterTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = ["{}", "{\"bomFormat\":\"CycloneDX\",\"vulnerabilities\":[]}"])
-    fun testEmptyDto(input: String) {
+    @ValueSource(strings = ["{}", "{\"bomFormat\":\"CycloneDX\"}", "{\"specVersion\":\"1.6\"}"])
+    fun testMissingRequiredFieldsThrows(input: String) {
         input.byteInputStream().use {
+            assertThrows<MissingFieldException> {
+                CycloneDXAdapter.dtoFromJson(it, CycloneDXDto.serializer())
+            }
+        }
+    }
+
+    @Test
+    fun testMissingIdDefaultsToUnknown() {
+        """
+        {"bomFormat":"CycloneDX","specVersion":"1.6",
+        "vulnerabilities":[{"ratings":[{"score":5.0}]}]}
+        """
+            .trimIndent()
+            .byteInputStream()
+            .use {
+                val dto = CycloneDXAdapter.dtoFromJson(it, CycloneDXDto.serializer())
+                assertEquals("Unknown", dto.vulnerabilities.first().id)
+            }
+    }
+
+    @Test
+    fun testMinimalValidDto() {
+        """{"bomFormat":"CycloneDX","specVersion":"1.6"}""".byteInputStream().use {
             val dto = CycloneDXAdapter.dtoFromJson(it, CycloneDXDto.serializer())
             assertEquals(0, dto.vulnerabilities.count())
         }
@@ -222,6 +333,33 @@ class CycloneDXAdapterTest {
             assertEquals("CVE-2021-44228", vuln.id)
             assertTrue(vuln.ratings.isNotEmpty())
             assertEquals(10.0, vuln.ratings.first().score)
+            assertEquals("1.6", dto.specVersion)
+            assertEquals(CycloneDXSeverity.CRITICAL, vuln.ratings.first().severity)
+            assertEquals(1, vuln.affects.count())
+            assertEquals(
+                "pkg:maven/org.apache.logging.log4j/log4j-core@2.14.1",
+                vuln.affects.first().ref,
+            )
         }
+    }
+
+    @Test
+    fun testUnrecognisedSeverityIsCoercedToNullAndSkipped() {
+        """
+        {"bomFormat":"CycloneDX","specVersion":"1.6",
+        "vulnerabilities":[{"id":"BOGUS-SEV","ratings":[{"severity":"catastrophic"}]}]}
+        """
+            .trimIndent()
+            .byteInputStream()
+            .use { stream ->
+                // 1. does not throw, and coerces to null
+                val dto = CycloneDXAdapter.dtoFromJson(stream, CycloneDXDto.serializer())
+                assertNull(dto.vulnerabilities.first().ratings.first().severity)
+
+                // 2. the rating is skipped -> no usable score -> validation error
+                val first = CycloneDXAdapter.transformDataToKpi(dto).transformationResults.first()
+                assertTrue(first is TransformationResult.Error)
+                assertEquals(ErrorType.DATA_VALIDATION_ERROR, first.type)
+            }
     }
 }

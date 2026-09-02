@@ -14,23 +14,33 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CycloneDXDto(
-    @SerialName("bomFormat") val bomFormat: String? = null,
-    @SerialName("specVersion") val specVersion: String? = null,
+    @SerialName("bomFormat") val bomFormat: String,
+    @SerialName("specVersion") val specVersion: String,
     @SerialName("vulnerabilities") val vulnerabilities: List<CycloneDXVulnerabilityDto> = listOf(),
 ) : ToolResult
 
 @Serializable
 data class CycloneDXVulnerabilityDto(
-    @SerialName("id") val id: String,
+    @SerialName("id") val id: String = "Unknown",
     @SerialName("ratings") val ratings: List<CycloneDXRating> = listOf(),
     @SerialName("affects") val affects: List<CycloneDXAffects> = listOf(),
 ) : Origin
 
 @Serializable
+enum class CycloneDXSeverity(val score: Double) {
+    @SerialName("critical") CRITICAL(9.5), // 9.0 - 10.0
+    @SerialName("high") HIGH(8.0), // 7.0 - 8.9
+    @SerialName("medium") MEDIUM(5.5), // 4.0 - 6.9
+    @SerialName("low") LOW(2.0), // 0.1 - 3.9
+    @SerialName("info") INFO(0.0),
+    @SerialName("none") NONE(0.0),
+    @SerialName("unknown") UNKNOWN(0.0),
+}
+
+@Serializable
 data class CycloneDXRating(
     @SerialName("score") val score: Double? = null,
-    @SerialName("severity") val severity: String? = null,
-    // e.g. "CVSSv2", "CVSSv3", "CVSSv31", "CVSSv4"
+    @SerialName("severity") val severity: CycloneDXSeverity? = null,
     @SerialName("method") val method: String? = null,
     @SerialName("vector") val vector: String? = null,
 )

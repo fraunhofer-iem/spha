@@ -174,7 +174,7 @@ object ToolResultParser {
                 logger.error {
                     "Unexpected error processing '${file.name}' with '${processor.name}': ${e.message}"
                 }
-                break
+                continue
             }
         }
 

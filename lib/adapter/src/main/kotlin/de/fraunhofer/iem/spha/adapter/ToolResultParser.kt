@@ -9,6 +9,7 @@
 
 package de.fraunhofer.iem.spha.adapter
 
+import de.fraunhofer.iem.spha.adapter.tools.cyclonedx.CycloneDXAdapter
 import de.fraunhofer.iem.spha.adapter.tools.osv.OsvAdapter
 import de.fraunhofer.iem.spha.adapter.tools.tlc.TlcAdapter
 import de.fraunhofer.iem.spha.adapter.tools.trivy.TrivyAdapter
@@ -173,7 +174,7 @@ object ToolResultParser {
                 logger.error {
                     "Unexpected error processing '${file.name}' with '${processor.name}': ${e.message}"
                 }
-                break
+                continue
             }
         }
 
@@ -293,6 +294,10 @@ internal object ToolProcessorStore {
             "technicalLag" to
                 ToolProcessorImpl("technicalLag", TlcDto.serializer()) {
                     TlcAdapter.transformDataToKpi(it)
+                },
+            "cyclonedx" to
+                ToolProcessorImpl("cyclonedx", CycloneDXDto.serializer()) {
+                    CycloneDXAdapter.transformDataToKpi(it)
                 },
         )
 }

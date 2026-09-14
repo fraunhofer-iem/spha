@@ -18,6 +18,7 @@ import java.nio.file.Files
 import kotlin.io.path.Path
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.JsonObject
@@ -536,12 +537,12 @@ class TrivyAdapterTest {
         val result1 = adapterResults.first()
         assertTrue(result1 is TransformationResult.Success)
         assertEquals(50, (result1 as TransformationResult.Success.Kpi).rawValueKpi.score)
-        assertEquals("VULN-1", result1.origin.vulnerabilityID)
+        assertEquals("VULN-1", assertNotNull(result1.origin).vulnerabilityID)
 
         // Check second vulnerability
         val result2 = adapterResults.last()
         assertTrue(result2 is TransformationResult.Success)
         assertEquals(20, (result2 as TransformationResult.Success.Kpi).rawValueKpi.score)
-        assertEquals("VULN-2", result2.origin.vulnerabilityID)
+        assertEquals("VULN-2", assertNotNull(result2.origin).vulnerabilityID)
     }
 }

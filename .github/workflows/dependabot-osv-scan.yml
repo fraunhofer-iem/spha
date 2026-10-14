@@ -12,7 +12,7 @@ permissions:
 jobs:
   osv-scan:
     if: github.actor == 'dependabot[bot]'
-    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable-pr.yml@9a498708959aeaef5ef730655706c5a1df1edbc2
+    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable-pr.yml@a345acffa64b0eaede81a3d9aae6141214d9c8fc
     with:
       fail-on-vuln: true
       upload-sarif: false
